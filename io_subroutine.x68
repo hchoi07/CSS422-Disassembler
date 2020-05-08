@@ -29,10 +29,20 @@ INPUT2	LEA	END_REQUEST, A1
 
 *some input conversion here
 
+CHECK_INPUT
+	*check for valid input size 
+	*if passed, go to hex conversion
+
+CHECK_SIZE
+	*handle invalid input size
 
 
-CR	EQU	#0D
-LF	EQU	#OA
+CONVERTER
+	*ASCII to hex/hex to ASCII converter
+
+
+CR	EQU	#0D	*ASCII code for carriage return
+LF	EQU	#OA	*ASCII code for line feed
 
 
 MESSAGE	DC.B	'This program disassembles a specified region of memory',CR,LF,0
