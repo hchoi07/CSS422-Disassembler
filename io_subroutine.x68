@@ -15,7 +15,8 @@ INPUT1	LEA	START_REQUEST, A1
 
 	LEA	USER_INPUT, A1
 	MOVE.B	#2, D0
-	TRAP #15
+	TRAP	#15
+	BRA	CHECK_INPUT
 
 *some input conversion here
 
@@ -26,12 +27,18 @@ INPUT2	LEA	END_REQUEST, A1
 	LEA	USER_INPUT, A1
 	MOVE.B	#2, D0
 	TRAP	#15
+	BRA     CHECK_INPUT
 
 *some input conversion here
 
 CHECK_INPUT
 	*check for valid input size 
 	*if passed, go to hex conversion
+	CMPI.B	#4, D1	*D1 stores length of keyboard input string
+	BLT	CHECK_SIZE
+	CMPI.B	#8, D1
+	BGT	CHECK_SIZE
+	BRA	CONVERTER
 
 CHECK_SIZE
 	*handle invalid input size
