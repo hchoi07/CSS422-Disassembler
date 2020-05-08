@@ -1,5 +1,5 @@
 * Masks
-*mask_opcode     DC.B    'F000',0
+*mask_opcode     DC.W    $F000
 * Opcodes
 opcode_MOVE	    DC.B	'MOVE',0
 opcode_MOVEM	DC.B	'MOVEM',0
@@ -27,6 +27,7 @@ opcode_JSR  	DC.B	'JSR',0
 opcode_RTS  	DC.B	'RTS',0
 opcode_BRA  	DC.B	'BRA',0
 opcode_DATA  	DC.B	'DATA',0
+
 
 
 
