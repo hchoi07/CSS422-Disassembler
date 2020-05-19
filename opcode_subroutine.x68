@@ -13,7 +13,7 @@ opcode_subroutine:
         MOVEM.L     D0-D7/A0-A6, -(SP)
         MOVE.W      D0,D1
         *MOVE.W      #mask_opcode,D2      *move the mask into D2
-        AND.W       #mask_opcode,D1               *mask the full machine code by the opcode mask
+        AND.W       #mask_MOVE,D1               *mask to only see the first 2 bits
         
         *test the move operations (00SS)
         CMP.W       #match_MOVE,D1
@@ -21,7 +21,8 @@ opcode_subroutine:
         JSR         move_decode
         
         *test the 0100 clump and jump to subroutine (nop,lea,not,jsr,rts)
-skip1   CMP.W       #match_G0100,D1
+skip1   AND.W       #mask_opcode,D1               *mask the full machine code by the opcode mask
+        CMP.W       #match_G0100,D1
         BNE         skip2       
         JSR         group1_decode   *opcode matches group starting with 0100
 
@@ -84,8 +85,12 @@ end_MV  MOVEM.L     (SP)+, D0-D7/A0-A6
         RTS
         
 op_MOVEA:
+        JSR         movea_size  *find the size of the operation
+        BRA         end_MV
 
 op_MOVE:
+        JSR         move_size
+        BRA         end_MV
 
 *-----------------------------------------------------------
 * Subroutine Title: group1_decode
@@ -97,7 +102,7 @@ op_MOVE:
 *-----------------------------------------------------------
 group1_decode:
         MOVEM.L     D0-D7/A0-A6, -(SP)
-        MOVE.W      D0,D1           *put the full opcode back into D2
+        MOVE.W      D0,D1           *put the full opcode back into D1
         
         CMP.W       #match_NOP,D1   *test the full opcode against NOP
         BEQ         op_NOP
@@ -123,15 +128,24 @@ end_G1  MOVEM.L     (SP)+, D0-D7/A0-A6
         RTS
         
 op_NOP:
+        JSR         nop_size
         BRA         end_G1
 
 op_RTS:
+        JSR         rts_size
+        BRA         end_G1
 
 op_LEA:
+        JSR         lea_size
+        BRA         end_G1
         
 op_JSR:
+        JSR         jsr_size
+        BRA         end_G1
 
 op_NOT:
+        JSR         not_size
+        BRA         end_G1
 
 *-----------------------------------------------------------
 * Subroutine Title: group2_decode
@@ -154,9 +168,12 @@ end_G2  MOVEM.L     (SP)+, D0-D7/A0-A6
         RTS
 
 op_ADDA:
+        JSR         adda_size
         BRA         end_G2
 
 op_ADD:
+        JSR         add_size
+        BRA         end_G2
 
 *-----------------------------------------------------------
 * Subroutine Title: group3_decode
@@ -183,10 +200,16 @@ end_G3  MOVEM.L     (SP)+, D0-D7/A0-A6
         RTS
         
 op_BGT:
+        JSR         bgt_size
+        BRA         end_G3
 
 op_BEQ:
+        JSR         beq_size
+        BRA         end_G3
 
 op_BRA:
+        JSR         bra_size
+        BRA         end_G3
 
 *-----------------------------------------------------------
 * Subroutine Title: group4_decode
@@ -263,16 +286,28 @@ op_ROL_M:
 op_ROR_M:
 
 op_LSL_R:
+        JSR     lsl_r_size
+        BRA     end_G4
 
 op_LSR_R:
+        JSR     lsr_r_size
+        BRA     end_G4
 
 op_ASL_R:
+        JSR     asl_r_size
+        BRA     end_G4
 
 op_ASR_R:
+        JSR     asr_r_size
+        BRA     end_G4
 
 op_ROL_R:
+        JSR     rol_r_size
+        BRA     end_G4
 
 op_ROR_R:
+        JSR     ror_r_size
+        BRA     end_G4
 
 *-----------------------------------------------------------
 * Subroutine Title: op_ADDQ
@@ -284,10 +319,11 @@ op_ROR_R:
 op_ADDQ:
         MOVEM.L     D0-D7/A0-A6, -(SP)
         *MOVE.W      D0,D1       *refresh the entire opcode into D1
-        
+        JSR     addq_size
         
 end_AQ  MOVEM.L     (SP)+, D0-D7/A0-A6
         RTS
+
         
 *-----------------------------------------------------------
 * Subroutine Title: op_SUB
@@ -299,10 +335,11 @@ end_AQ  MOVEM.L     (SP)+, D0-D7/A0-A6
 op_SUB:
         MOVEM.L     D0-D7/A0-A6, -(SP)
         *MOVE.W      D0,D1       *refresh the entire opcode into D1
-        
+        JSR         sub_size
         
 end_SB  MOVEM.L     (SP)+, D0-D7/A0-A6
         RTS
+      
 
 *-----------------------------------------------------------
 * Subroutine Title: op_AND
@@ -314,7 +351,7 @@ end_SB  MOVEM.L     (SP)+, D0-D7/A0-A6
 op_AND:
         MOVEM.L     D0-D7/A0-A6, -(SP)
         *MOVE.W      D0,D1       *refresh the entire opcode into D1
-        
+        JSR         and_size
         
 end_AN  MOVEM.L     (SP)+, D0-D7/A0-A6
         RTS
@@ -329,10 +366,12 @@ end_AN  MOVEM.L     (SP)+, D0-D7/A0-A6
 op_OR:
         MOVEM.L     D0-D7/A0-A6, -(SP)
         *MOVE.W      D0,D1       *refresh the entire opcode into D1
-        
+        JSR         or_size
         
 end_OR  MOVEM.L     (SP)+, D0-D7/A0-A6
         RTS
+
+
 *~Font name~Courier New~
 *~Font size~10~
 *~Tab type~1~

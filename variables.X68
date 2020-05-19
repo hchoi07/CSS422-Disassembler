@@ -1,5 +1,6 @@
 *Masks
 mask_opcode     EQU     $F000
+mask_MOVE       EQU     $C000
 mask_MOVE_A     EQU     $01C0
 mask_LEA        EQU     $F1C0
 mask_JSR        EQU     $FFC0
@@ -44,6 +45,40 @@ match_ADDQ       EQU     $5000
 match_SUB        EQU     $9000
 match_AND        EQU     $C000
 match_OR         EQU     $8000
+*Opcode Size Mask
+mask_size_MOVES     EQU     $3000
+mask_size_NOT       EQU     $00C0
+mask_size_ADDA      EQU     $0100
+mask_size_ADD       EQU     $00C0
+mask_size_shifts    EQU     $00C0
+mask_size_SUB       EQU     $00C0
+mask_size_logic     EQU     $00C0
+*Opcode Size Match
+m_size_B_MOVES      EQU     $1000
+m_size_W_MOVES      EQU     $3000
+m_size_L_MOVES      EQU     $2000
+m_size_B_NOT        EQU     $0000
+m_size_W_NOT        EQU     $0040
+m_size_L_NOT        EQU     $0080
+m_size_W_ADDA       EQU     $0000
+m_size_L_ADDA       EQU     $0100
+m_size_B_ADD        EQU     $0000
+m_size_W_ADD        EQU     $0010
+m_size_L_ADD        EQU     $0020
+m_size_B_shfts      EQU     $0000
+m_size_W_shfts      EQU     $0010
+m_size_L_shfts      EQU     $0020
+m_size_B_SUB        EQU     $0000
+m_size_W_SUB        EQU     $0010
+m_size_L_SUB        EQU     $0020
+m_size_B_logic      EQU     $0000
+m_size_W_logic      EQU     $0010
+m_size_L_logic      EQU     $0020
+*Size value
+byte_size           EQU     1
+word_size           EQU     2
+long_size           EQU     3
+no_size             EQU     0
 
 
 *~Font name~Courier New~
