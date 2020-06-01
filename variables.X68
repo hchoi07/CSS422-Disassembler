@@ -9,6 +9,7 @@ mask_ADDA       EQU     $F0C0
 mask_BCC        EQU     $FF00
 mask_SHFT_M     EQU     $FFC0
 mask_SHFT_R     EQU     $F118
+mask_BCC_size   EQU     $00FF
 *Opcode Matches
 match_MOVE       EQU     $0000
 match_MOVEB      EQU     $1000
@@ -27,6 +28,7 @@ match_ADDA       EQU     $D0C0
 match_G0110      EQU     $6000
 match_BGT        EQU     $6E00
 match_BEQ        EQU     $6700
+match_BLE        EQU     $6F00
 match_BRA        EQU     $6000
 match_G1110      EQU     $E000
 match_LSL_M      EQU     $E3C0
@@ -63,22 +65,25 @@ m_size_L_NOT        EQU     $0080
 m_size_W_ADDA       EQU     $0000
 m_size_L_ADDA       EQU     $0100
 m_size_B_ADD        EQU     $0000
-m_size_W_ADD        EQU     $0010
-m_size_L_ADD        EQU     $0020
+m_size_W_ADD        EQU     $0040
+m_size_L_ADD        EQU     $0080
 m_size_B_shfts      EQU     $0000
-m_size_W_shfts      EQU     $0010
-m_size_L_shfts      EQU     $0020
+m_size_W_shfts      EQU     $0070
+m_size_L_shfts      EQU     $0080
 m_size_B_SUB        EQU     $0000
-m_size_W_SUB        EQU     $0010
-m_size_L_SUB        EQU     $0020
+m_size_W_SUB        EQU     $0040
+m_size_L_SUB        EQU     $0080
 m_size_B_logic      EQU     $0000
-m_size_W_logic      EQU     $0010
-m_size_L_logic      EQU     $0020
+m_size_W_logic      EQU     $0040
+m_size_L_logic      EQU     $0080
+m_size_L_bcc        EQU     $00FF
+m_size_W_bcc        EQU     $0000
 *Size value
 byte_size           EQU     1
 word_size           EQU     2
 long_size           EQU     3
 no_size             EQU     0
+
 
 
 *~Font name~Courier New~

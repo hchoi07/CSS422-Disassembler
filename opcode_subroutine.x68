@@ -19,49 +19,61 @@ opcode_subroutine:
         CMP.W       #match_MOVE,D1
         BNE         skip1
         JSR         move_decode
+        BRA         end_op
         
         *test the 0100 clump and jump to subroutine (nop,lea,not,jsr,rts)
-skip1   AND.W       #mask_opcode,D1               *mask the full machine code by the opcode mask
+skip1   MOVE.W      D0,D1
+        AND.W       #mask_opcode,D1               *mask the full machine code by the opcode mask
         CMP.W       #match_G0100,D1
         BNE         skip2       
         JSR         group1_decode   *opcode matches group starting with 0100
+        BRA         end_op
 
         *test the 1101 clump and jump to subroutine (add,adda)
 skip2   CMP.W       #match_G1101,D1
         BNE         skip3
         JSR         group2_decode
+        BRA         end_op
         
         *test the 0110 clump and jump to subroutine (bra,bgt,beq)
 skip3   CMP.W       #match_G0110,D1
         BNE         skip4
         JSR         group3_decode
+        BRA         end_op
         
         *test the 1110 clump and jump to subroutine (lsl/lsr,asl/asr,rol/ror)
 skip4   CMP.W       #match_G1110,D1
         BNE         skip5
         JSR         group4_decode
+        BRA         end_op
 
         *test addq
 skip5   CMP.W       #match_ADDQ,D1
         BNE         skip6
         JSR         op_ADDQ
+        BRA         end_op
         
         *test sub
 skip6   CMP.W       #match_SUB,D1
         BNE         skip7
         JSR         op_SUB
+        BRA         end_op
         
         *test and
 skip7   CMP.W       #match_AND,D1
         BNE         skip8
         JSR         op_AND
+        BRA         end_op
         
-        *test and
+        *test or
 skip8   CMP.W       #match_OR,D1
-        BNE         end
+        BNE         data
         JSR         op_OR
+        BRA         end_op
         
-end     MOVEM.L     (SP)+, D0-D7/A0-A6
+data    JSR         op_DATA
+        
+end_op  MOVEM.L     (SP)+, D0-D7/A0-A6
         RTS
         
 *-----------------------------------------------------------
@@ -193,8 +205,13 @@ group3_decode:
         CMP.W       #match_BEQ,D1   *test the first 8 bits against the BEQ cond
         BEQ         op_BEQ
         
+        CMP.W       #match_BLE,D1
+        BEQ         op_BLE
+        
         CMP.W       #match_BRA,D1   *test the first 8 bits against the BRA cond
         BEQ         op_BRA
+        
+        
         
 end_G3  MOVEM.L     (SP)+, D0-D7/A0-A6
         RTS
@@ -205,6 +222,10 @@ op_BGT:
 
 op_BEQ:
         JSR         beq_size
+        BRA         end_G3
+        
+op_BLE:
+        JSR         ble_size
         BRA         end_G3
 
 op_BRA:
@@ -370,6 +391,24 @@ op_OR:
         
 end_OR  MOVEM.L     (SP)+, D0-D7/A0-A6
         RTS
+        
+*-----------------------------------------------------------
+* Subroutine Title: op_DATA
+* Description: This subroutine determines the length used in
+* the OR operation.
+* D0 is copied into D1 where specific masking occurs.
+* D0 is used to pass in the machine code word.
+*-----------------------------------------------------------
+op_DATA:
+        MOVEM.L     D0-D7/A0-A6, -(SP)
+        LEA         opcode_DATA,A1  *move data string into 
+        MOVE.W      D0,D1           *move the full data into D1 for printing
+        JSR         print_string
+        JSR         print_hex
+        
+end_DATA MOVEM.L     (SP)+, D0-D7/A0-A6
+        RTS
+
 
 
 *~Font name~Courier New~
