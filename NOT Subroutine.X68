@@ -4,6 +4,7 @@
 * D1 will be loaded with the mask for the EA mode
 * D2 will be loaded with the mask for the EA mode and register to be compared with matchs of the dettermined mode and register
 * A1 will point to the location of the string constants
+* A3 will point to where the EA error message is stored in memory
 *-----------------------------------------------------------
 
 NOT_sub                          MOVEM.L           D1-D5/D7/A0-A6, -(SP)                                  ;preserve the registers, 
@@ -12,6 +13,11 @@ NOT_sub                          MOVEM.L           D1-D5/D7/A0-A6, -(SP)        
 data_reg_dir                     CMP.L             #match_NOT_Dn,D1                               ;check to see if mode is data reg direct
                                  BNE               An_indir                                            ;if not, go check add reg dir
                                  BEQ               Dn_reg                                        ;if equal go figure out the register
+
+An_indir                         CMP.L             #match_NOT_An_indir,D1                        ;check to see if mode is add reg indir
+                                 BNE               An_indir_predec                                   ;if not, go check add reg indir predec 
+                                 BEQ               An_indir_reg                                 ;if equal go figure out the register           
+
  
 An_indir                         CMP.L             #match_NOT_An_indir,D1                        ;check to see if mode is add reg indir
                                  BNE               An_indir_predec                                   ;if not, go check add reg indir predec 
@@ -33,7 +39,7 @@ abs_add_word                     AND.L             #mask_NOT_ea_mode_abs_add,D2 
   
 abs_add_long                     CMP.L             #match_NOT_abs_add_long,D2                      ;check to see if abs add long
                                  BEQ               abs_add_long_out                            ;if equal go to output
-								 
+								  BNE              ERROR                                        :if not equal to an addresssing mode, pritn error
 							 
 
 ;--------------------Determine EFFECTIVE ADDRESS Register----------------------------------------------------------------------------------------
@@ -70,7 +76,8 @@ rD6                             CMP.L              #match_NOT_D6,D2             
 
 rD7                             CMP.L              #match_NOT_D7,D2                       ;check to see in the register is 7
                                 BEQ                D7_output                              ;if equal go to output subroutine
-
+                                BNE              ERROR                                        :if not equal to an addresssing mode, pritn error
+                                
 ;--------------------Data Register Direct Output-----------------------
 D0_output				LEA			ea_D0,A1							;load string constant into A1
 						RTS												;return to subroutine
@@ -97,33 +104,33 @@ D7_output				LEA			ea_D7,A1							;load string constant into A1
 						RTS												;return to subroutine
 									
 ;------------------Address Register Indirect-----------------------
-An_indir_reg                               CMP.L           #match_NOT_An_indir_r0,D2              ;check reg is equal to 0
+An_indir_reg                                CMP.L           #match_NOT_An_indir_r0,D2              ;check reg is equal to 0
                                             BNE             An_indir_reg1                            ;if not try reg 1
                                             BEQ             An_indir_reg0_out                     ;if equal go to output subroutine
 
-An_indir_reg1                              CMP.L           #match_NOT_An_indir_r1,D2              ;check reg is equal to 1
+An_indir_reg1                               CMP.L           #match_NOT_An_indir_r1,D2              ;check reg is equal to 1
                                             BNE             An_indir_reg2                            ;if not try reg 2
                                             BEQ             An_indir_reg1_out                     ;if equal go to output subroutine
 
-An_indir_reg2                              CMP.L           #match_NOT_An_indir_r2,D2              ;check reg is equal to 2
+An_indir_reg2                               CMP.L           #match_NOT_An_indir_r2,D2              ;check reg is equal to 2
                                             BNE             An_indir_reg3                            ;if not try reg 3
                                             BEQ             An_indir_reg2_out                     ;if equal go to output subroutine
 
-An_indir_reg3                              CMP.L           #match_NOT_An_indir_r3,D2              ;check reg is equal to 3
+An_indir_reg3                               CMP.L           #match_NOT_An_indir_r3,D2              ;check reg is equal to 3
                                             BNE             An_indir_reg4                            ;if not try reg 4
                                             BEQ             An_indir_reg3_out                     ;if equal go to output subroutine
 
-An_indir_reg4                              CMP.L           #match_NOT_An_indir_r4,D2              ;check reg is equal to 4
+An_indir_reg4                               CMP.L           #match_NOT_An_indir_r4,D2              ;check reg is equal to 4
                                             BNE             An_indir_reg5                            ;if not try reg 5
                                             BEQ             An_indir_reg4_out                    ;if equal go to output subroutine
 
-An_indir_reg5                              CMP.L           #match_NOT_An_indir_r5,D2              ;check reg is equal to 5
+An_indir_reg5                               CMP.L           #match_NOT_An_indir_r5,D2              ;check reg is equal to 5
                                             BNE             An_indir_reg6                            ;if not try reg 6
                                             BEQ             An_indir_reg5_out                     ;if equal go to output subroutine
 
-An_indir_reg6                              CMP.L           #match_NOT_An_indir_r6,D2              ;check reg is equal to 6
+An_indir_reg6                               CMP.L           #match_NOT_An_indir_r6,D2              ;check reg is equal to 6
                                             BEQ             An_indir_reg6_out                     ;if equal go to output subroutine
-
+                                            BNE              ERROR                                        :if not equal to an addresssing mode, pritn error
 
 ;--------------------Address Register Indirect Output-----------------------
 An_indir_reg0_out			            LEA			ea_indir_A0,A1							;load string constant into A1
@@ -176,7 +183,7 @@ An_indir_postinc_reg5                       CMP.L      #match_NOT_An_indir_posti
 
 An_indir_postinc_reg6                       CMP.L      #match_NOT_An_indir_postinc_r6,D2        ;check reg is equal to 6
                                             BEQ        An_indir_postinc_reg6_out              ;if equal go to output subroutine
-
+                                            BNE              ERROR                                        :if not equal to an addresssing mode, pritn error
 
 ;--------------------Address Register Indirect with Post Increment Output-----------------------
 An_indir_postinc_reg0_out		        	LEA		    	ea_indir_postinc_A1,A1							;load string constant into A1
@@ -227,7 +234,7 @@ An_indir_predec_reg5                        CMP.L      #match_NOT_An_indir_prede
 
 An_indir_predec_reg6                        CMP.L      #match_NOT_An_indir_predec_r6,D2         ;check reg is equal to 6
                                             BEQ        An_indir_predec_reg6_out               ;if equal go to output subroutine
-
+                                            BNE              ERROR                                        :if not equal to an addresssing mode, pritn error
 ;--------------------Address Register Indirect with Pre Decrement Output-----------------------
 An_indir_predec_reg0_out			        LEA			ea_indir_predec_A0,A1							;load string constant into A1
 											RTS														;return to subroutine
@@ -263,7 +270,7 @@ abs_add_long_out							LEA			ea_paren_open,A1							;load the open parenthesis
 											MOVEM.L		(PC),A2										;pull the next 32 bits for the absolute address
 											MOVE.L		A2,A1									;load address
 											LEA			ea_paren_closed,A1						;load close parenthesis 
-                                            RTS
+                                           RTS
 
     SIMHALT             ; halt simulator
 
@@ -354,7 +361,7 @@ ea_abs_word_string	    	DC.B		'.W',0
 ea_abs_long_string	    	DC.B		'.L',0
 ea_$				    	DC.B		'$',0
 
-
+ERROR_MESSAGE               DC.B        'Incorrect EA format',0
 
 *~Font name~Courier New~
 *~Font size~10~
