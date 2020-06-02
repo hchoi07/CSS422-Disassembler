@@ -83,6 +83,13 @@ byte_size           EQU     1
 word_size           EQU     2
 long_size           EQU     3
 no_size             EQU     0
+*IO flag
+not_hex             EQU     $FFFFFFFF
+hex_clear           EQU     $00000000
+*IO range
+start_Adr           EQU     $00007000
+end_Adr             EQU     $000073BA
+
 
 
 
