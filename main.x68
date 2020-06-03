@@ -3,25 +3,28 @@
 *-----------------------------------------------------------
     ORG $1000
 MAIN:
+    MOVEA.L #$00100000,SP
+    
+    JSR     io_subroutine
+    JSR     main_loop
+
+    SIMHALT             ; halt simulator   
+        
+    INCLUDE 'toHex.x68'
+    INCLUDE 'io_subroutine.x68'
+    INCLUDE 'main_loop.x68'
+    INCLUDE 'output.x68'
     INCLUDE 'variables.X68'
     INCLUDE 'strings.x68'
     INCLUDE 'opcode_size.X68'
     INCLUDE 'opcode_subroutine.x68'
-    *INCLUDE 'ea_subroutine.x68'
-    *INCLUDE 'io_subroutine.x68'
-
-    MOVEA.L #$00100000,SP
-    ; do some initial setup work
-    ; call functions defined in subroutines
-    JSR     opcode_subroutine
-    ; you can define more subroutines
+    INCLUDE 'testFile.x68'
     
-    
-    
-    SIMHALT             ; halt simulator
 
 STOP:
     END    MAIN
+
+
 
 
 

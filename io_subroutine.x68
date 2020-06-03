@@ -24,7 +24,7 @@ input_loop  CMP.B       D4,D5           *loop 8 time for a long info
             MOVE.B      #5,D0           *Trap task 5: read a character from keyboard into D1.L
             TRAP        #15
             MOVE.B      D1,D6
-            BSR         toHex           *convert the value to hex
+            JSR         toHex           *convert the value to hex
             LSL.L       #4,D7           *Move the hex value one byte left
             ADD.L       D6,D7           *append the character to the input
             *loop code done
@@ -97,7 +97,7 @@ input_loop2 CMP.B       D4,D5           *loop 8 time for a long info
             MOVE.B      #5,D0           *Trap task 5: read a character from keyboard into D1.L
             TRAP        #15
             MOVE.B      D1,D6
-            BSR         toHex           *convert the value to hex
+            JSR         toHex           *convert the value to hex
             LSL.L       #4,D7           *Move the hex value one byte left
             ADD.L       D6,D7           *append the character to the input
             *loop code done
@@ -171,20 +171,6 @@ end_bad:
             BRA         INPUT1  
 
     
-
-CR	        EQU 	$0D	*ASCII code for carriage return
-LF	        EQU	    $0A	*ASCII code for line feed
-
-
-LOAD_MESSAGE	DC.B	'Welcome to The Disassemblers project to disassemble code in memory',CR,LF,0
-START_REQUEST	DC.B	'Input starting memory location between $00007000 and $000073BA',CR,LF,'in the format "########": ',0
-END_REQUEST	    DC.B	'Input ending memory location between $00007000 and $000073BA',CR,LF,'in the format "########": ',0
-NOT_HEX_MSG	    DC.B    'Input was not in the hexadecimal range 0-F',0
-BAD_RANGE       DC.B    'Input is not in the range between $00007000 and $000073BA',CR,LF,0
-BAD_END         DC.B    'Ending location is less than the starting location, please switch the inputs.',CR,LF,0
-BAD_BOUND       DC.B    'Input is not on an input boundary, please enter address divisible by 2.',CR,LF,0
-SPACE           DC.B    CR,LF,0
-
 *~Font name~Courier New~
 *~Font size~10~
 *~Tab type~1~
