@@ -1,10 +1,11 @@
 *-----------------------------------------------------------
 * Title      :ADDQ Subroutine
-* D0 holds the whole instruction, D6 holds the size
+* D0 holds the whole instruction, 
+* D6 holds the size
+* Both will be left intact for the subroutine
 * D1 will be loaded with the mask for the EA mode
 * D2 will be loaded with the mask for the EA mode and register to be compared with matchs of the dettermined mode and register
 * A1 will point to the location of the string constants
-* A3 will point to the error message in memory
 *-----------------------------------------------------------
    
 ADDQ_sub                         MOVEM.L           D1-D5/D7/A0-A6, -(SP)                                  ;preserve the registers, 
@@ -338,14 +339,14 @@ An_indir_predec_reg7_out			        MOVE.L      #ea_indir_predec_A7,A1						;load
 											RTS														;return to subroutine
 
 ;------------------Absolute Addressing Output-----------------------
-abs_add_word_out						  MOVE.W      (A0)+,D5                           ;pull the next word instruction that holds the address
+abs_add_word_out						 MOVE.W      (A0)+,D5                           ;pull the next word instruction that holds the address
                                          MOVE.W      #16,D6                             ;load number of bits to deal with
                                          MOVE.L      #ea_$,(A1)+                         ;load $ for hex and increment A1
                                          MOVE.L      D5,(A1)+                           ;load address                  
                                          RTS                                            :return to subroutine
                                            
 
-abs_add_long_out    					  MOVE.W      (A0)+,D5                           ;pull the next word instruction that holds the address
+abs_add_long_out    					 MOVE.W      (A0)+,D5                           ;pull the next word instruction that holds the address
                                          MOVE.W      #32,D6                             ;load number of bits to deal with
                                          MOVE.L      #ea_$,(A1)+                         ;load $ for hex and increment A1
                                          MOVE.L      D5,(A1)+                           ;load address                  
@@ -388,32 +389,32 @@ ADDQ_reg7										CMP.L		#match_ADDQ_reg7,D2								;check to see if reg equal 
 								
 
 ;--------------------Data Output-----------------------
-ADDQ_reg0_out			                    LEA			ea_data0,A1					      ;load string constant into A1
+ADDQ_reg0_out			                    MOVE.L      #ea_data0,A1					      ;load string constant into A1
 											RTS														;return to subroutine
 											
-ADDQ_reg1_out			                    LEA			ea_data1,A1						;load string constant into A1
+ADDQ_reg1_out			                    MOVE.L      #ea_data1,A1						;load string constant into A1
 											RTS														;return to subroutine
 
-ADDQ_reg2_out			                    LEA			ea_data2,A1						;load string constant into A1
+ADDQ_reg2_out			                    MOVE.L      #ea_data2,A1						;load string constant into A1
 											RTS														;return to subroutine
 
-ADDQ_reg3_out			                    LEA			ea_data3,A1						;load string constant into A1
+ADDQ_reg3_out			                    MOVE.L      #ea_data3,A1						;load string constant into A1
 											RTS														;return to subroutine
 
-ADDQ_reg4_out			                    LEA			ea_data4,A1						;load string constant into A1
+ADDQ_reg4_out			                    MOVE.L      #ea_data4,A1						;load string constant into A1
 											RTS														;return to subroutine
 
-ADDQ_reg5_out			                    LEA			ea_data5,A1						;load string constant into A1
+ADDQ_reg5_out			                    MOVE.L      #ea_data5,A1						;load string constant into A1
 											RTS														;return to subroutine
 
-ADDQ_reg6_out			                    LEA			ea_data6,A1						;load string constant into A1
+ADDQ_reg6_out			                    MOVE.L      #ea_data6,A1						;load string constant into A1
 											RTS														;return to subroutine
 
-ADDQ_reg7_out			                    LEA			ea_data7,A1						;load string constant into A1
+ADDQ_reg7_out			                    MOVE.L      #ea_data7,A1						;load string constant into A1
 											RTS														;return to subroutine
 				
 ;----------------------Error Handling----------------------------------------
-ERROR                                           LEA     ERROR_MESSAGE,A3                                          ;load error messge into A3
+ERROR                                       LEA     ERROR_MESSAGE,A1                                          ;load error messge into A3
 					
 ERROR_MESSAGE                   DC.B            'Incorrect EA Format',0
 
@@ -469,54 +470,54 @@ ea_abs_word_string	    	DC.B		'.W',0
 ea_abs_long_string	    	DC.B		'.L',0
 ea_$				    	DC.B		'$',0
 
-ea_data0                       DC.B      '#0',0
-ea_data1                       DC.B      '#1',0
-ea_data2                       DC.B      '#2',0
-ea_data3                       DC.B      '#3',0
-ea_data4                       DC.B      '#4',0
-ea_data5                       DC.B      '#5',0
-ea_data6                       DC.B      '#6',0
-ea_data7                       DC.B      '#7',0
+ea_data0                    DC.B      '#0',0
+ea_data1                    DC.B      '#1',0
+ea_data2                    DC.B      '#2',0
+ea_data3                    DC.B      '#3',0
+ea_data4                    DC.B      '#4',0
+ea_data5                    DC.B      '#5',0
+ea_data6                    DC.B      '#6',0
+ea_data7                    DC.B      '#7',0
 
-mask_ADDQ_ea_mode						EQU			$0038
-mask_ADDQ_abs_add						EQU			$003F
-mask_ADDQ_ea_reg_and_mode				EQU			$003F
-mask_ADDQ_reg						    EQU			$0E00
+mask_ADDQ_ea_mode			EQU			$0038
+mask_ADDQ_abs_add			EQU			$003F
+mask_ADDQ_ea_reg_and_mode	EQU			$003F
+mask_ADDQ_reg				EQU			$0E00
 
-match_ADDQ_Dn							EQU			$0000
-match_ADDQ_An							EQU			$0008
-match_ADDQ_An_indir						EQU			$0010
-match_ADDQ_An_indir_predec				EQU			$0020
-match_ADDQ_An_indir_postinc				EQU			$0018
-match_ADDQ_abs_add_word					EQU			$0038
-match_ADDQ_abs_add_long					EQU			$0039
+match_ADDQ_Dn				EQU			$0000
+match_ADDQ_An				EQU			$0008
+match_ADDQ_An_indir			EQU			$0010
+match_ADDQ_An_indir_predec	EQU			$0020
+match_ADDQ_An_indir_postinc	EQU			$0018
+match_ADDQ_abs_add_word		EQU			$0038
+match_ADDQ_abs_add_long		EQU			$0039
 
-match_ADDQ_D0							EQU			$0000
-match_ADDQ_D1							EQU			$0001
-match_ADDQ_D2							EQU			$0002
-match_ADDQ_D3							EQU			$0003
-match_ADDQ_D4							EQU			$0004
-match_ADDQ_D5							EQU			$0005
-match_ADDQ_D6							EQU			$0006
-match_ADDQ_D7							EQU			$0007
+match_ADDQ_D0				EQU			$0000
+match_ADDQ_D1				EQU			$0001
+match_ADDQ_D2				EQU			$0002
+match_ADDQ_D3				EQU			$0003
+match_ADDQ_D4				EQU			$0004
+match_ADDQ_D5				EQU			$0005
+match_ADDQ_D6				EQU			$0006
+match_ADDQ_D7				EQU			$0007
 
-match_ADDQ_A0							EQU			$0008
-match_ADDQ_A1							EQU			$0009
-match_ADDQ_A2							EQU			$000A
-match_ADDQ_A3							EQU			$000B
-match_ADDQ_A4							EQU			$000C
-match_ADDQ_A5							EQU			$000D
-match_ADDQ_A6							EQU			$000E
-match_ADDQ_A7							EQU			$000F
+match_ADDQ_A0				EQU			$0008
+match_ADDQ_A1				EQU			$0009
+match_ADDQ_A2				EQU			$000A
+match_ADDQ_A3				EQU			$000B
+match_ADDQ_A4				EQU			$000C
+match_ADDQ_A5				EQU			$000D
+match_ADDQ_A6				EQU			$000E
+match_ADDQ_A7				EQU			$000F
 
-match_ADDQ_An_indir_r0					EQU			$0010
-match_ADDQ_An_indir_r1					EQU			$0011
-match_ADDQ_An_indir_r2					EQU			$0012
-match_ADDQ_An_indir_r3					EQU			$0013
-match_ADDQ_An_indir_r4					EQU			$0014
-match_ADDQ_An_indir_r5					EQU			$0015
-match_ADDQ_An_indir_r6					EQU			$0016
-match_ADDQ_An_indir_r7					EQU			$0017
+match_ADDQ_An_indir_r0		EQU			$0010
+match_ADDQ_An_indir_r1		EQU			$0011
+match_ADDQ_An_indir_r2		EQU			$0012
+match_ADDQ_An_indir_r3		EQU			$0013
+match_ADDQ_An_indir_r4		EQU			$0014
+match_ADDQ_An_indir_r5		EQU			$0015
+match_ADDQ_An_indir_r6		EQU			$0016
+match_ADDQ_An_indir_r7		EQU			$0017
 
 match_ADDQ_An_indir_postinc_reg0		EQU			$0018
 match_ADDQ_An_indir_postinc_reg1		EQU			$0019
@@ -545,6 +546,7 @@ match_ADDQ_reg4							EQU			$0800
 match_ADDQ_reg5							EQU			$0A00
 match_ADDQ_reg6							EQU			$0C00
 match_ADDQ_reg7							EQU			$0E00
+
 
 
 
