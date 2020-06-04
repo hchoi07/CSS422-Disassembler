@@ -10,7 +10,7 @@
 START:                  ; first instruction of program
 
    
-JSR_sub                         MOVEM.L           D1-D5/D7/A0-A6, -(SP)                                  ;preserve the registers, 
+JSR_sub                          MOVEM.L           D1-D5/D7/A0-A6, -(SP)                                  ;preserve the registers, 
                                  AND.L             #mask_JSR_ea_mode,D1                                   ;move the mask to D1
 ;--------------Determine EFFECTIVE ADDRESS Mode-----------------------------------                
 add_reg_indir                    CMP.L             #match_JSR_An_indir,D1                       ;check to see if mode is add reg indir
@@ -20,15 +20,13 @@ add_reg_indir                    CMP.L             #match_JSR_An_indir,D1       
 abs_add_word                     AND.L             #mask_JSR_abs_add,D2                          ;load mask to determine if abs add word or long
                                  
                                  CMP.L             #match_JSR_abs_add_word,D2                    ;check if abs add word
+                                 MOVE.L            (A0)+,D5                                      ;pull the next word instruction that holds the address 
                                  BNE               abs_add_long                                  ;if not go check abs add long
                                  BEQ               abs_add_word_out                              ;if equal go to output
   
 abs_add_long                     CMP.L             #match_JSR_abs_add_long,D2                     ;check to see if abs add long
                                  BEQ               abs_add_long_out                               ;if equal go to output
-                                 
-immediate_add                    CMP.L             #match_imm_add,D1                              ;check if immediate address
-                                 BEQ               immediate_add_out                              ;if equal go to immediate add sub routine
-								 BNE               ERROR                                         ;if not equal go to error mesage sub routine
+                                 BNE               ERROR                                         ;if not equal go to error mesage sub routine
 
 ;--------------------Determine EFFECTIVE ADDRESS Register----------------------------------------------------------------------------------------
                                  
@@ -92,25 +90,17 @@ An_indir_reg7_out			            MOVE.L			#ea_indir_A7,A1		    			      ;load str
 								        RTS								            		;return to subroutine
 
 ;------------------Absolute Addressing Output-----------------------
-abs_add_word_out						       MOVE.W      (A0)+,D5                           ;pull the next word instruction that holds the address
-                                            MOVE.W      #16,D6                             ;load number of bits to deal with
-                                            MOVE.L      #ea_$,(A1)+                         ;load $ for hex and increment A1
-                                            MOVE.L      D5,(A1)+                           ;load address                  
-                                            RTS                                            :return to subroutine
+abs_add_word_out						 MOVE.L      #ea_$,(A1)+                        ;load $ for hex and increment A1
+                                         MOVE.L      D5,(A1)+                           ;load address                  
+                                         RTS                                            :return to subroutine
                                            
 
-abs_add_long_out    						   MOVE.W      (A0)+,D5                           ;pull the next word instruction that holds the address
-                                            MOVE.W      #32,D6                             ;load number of bits to deal with
-                                            MOVE.L      #ea_$,(A1)+                         ;load $ for hex and increment A1
-                                            MOVE.L      D5,(A1)+                           ;load address                  
-                                            RTS                                            :return to subroutine                                            
-;---------------Immediate Addersing---------------------------
-immediate_add_out                        MOVE.L		(A0),D5                                 ;capture the immediate address
-										MOVE.L      D5,A3                                   ;move to A3
-                                         RTS                                                 ;return to subroutine
-  
+abs_add_long_out    					 MOVE.L      (A0)+,D5                           ;pull the next long instruction that holds the address
+                                         MOVE.L      #ea_$,(A1)+                         ;load $ for hex and increment A1
+                                         MOVE.L      D5,(A1)+                           ;load address                  
+                                         RTS                                            :return to subroutine                                            
 ;----------------------Error Handling----------------------------------------
-ERROR                                    LEA     ERROR_MESSAGE,A3                             ;load error messge into A3
+ERROR                                    LEA     ERROR_MESSAGE,A1                             ;load error messge into A3
 					                     RTS
 					                            
 					                            
@@ -159,9 +149,8 @@ match_JSR_An_indir_r5				EQU			$0015
 match_JSR_An_indir_r6				EQU			$0016
 match_JSR_An_indir_r7				EQU			$0017
 
-match_imm_add                        EQU         $003C
-
     END    START        ; last line of source
+
 
 
 *~Font name~Courier New~
