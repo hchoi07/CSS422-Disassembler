@@ -4,10 +4,8 @@
 * D1 will be loaded with the mask for the EA mode
 * D2 will be loaded with the mask for the EA mode and register to be compared with matchs of the dettermined mode and register
 * A1 will point to the location of the string constants
-* A3 will point to the error message in memory
-*-----------------------------------------------------------    ORG    $1000
-START:                  ; first instruction of program
-
+*-----------------------------------------------------------    
+START                       ORG         $1000
    
 ADDA_sub                         MOVEM.L           D1-D5/D7/A0-A6, -(SP)                                  ;preserve the registers, 
                                  AND.L             #mask_ADDA_ea_mode,D1                                   ;move the mask to D1
@@ -84,15 +82,15 @@ rD7                              CMP.L              #match_ADDA_D7,D2           
 D0_out                          MOVE.L          #ea_D0,A1							;load string constant into A1
                                 RTS												;return to subroutine
 
-D1_out                         MOVE.L          #ea_D1,A1							;load string constant into A1
+D1_out                          MOVE.L          #ea_D1,A1							;load string constant into A1
         						RTS												;return to subroutine
 
 
 D2_out                          MOVE.L          #ea_D2,A1							;load string constant into A1
         						RTS												;return to subroutine
 
-D3_out                         MOVE.L			#ea_D3,A1							;load string constant into A1
-                               RTS												;return to subroutine
+D3_out                          MOVE.L			#ea_D3,A1							;load string constant into A1
+                                RTS												;return to subroutine
 
 
 D4_out                          MOVE.L			#ea_D4,A1							;load string constant into A1
@@ -103,11 +101,11 @@ D5_out                          MOVE.L			#ea_D5,A1							;load string constant i
         						RTS												;return to subroutine
 
 
-D6_out                         MOVE.L			#ea_D6,A1							;load string constant into A1
+D6_out                          MOVE.L			#ea_D6,A1							;load string constant into A1
         						RTS												;return to subroutine
 
 
-D7_out                         MOVE.L			#ea_D7,A1							;load string constant into A1
+D7_out                          MOVE.L			#ea_D7,A1							;load string constant into A1
         						RTS												;return to subroutine
 
 ;------------------Address Register Direct-----------------------
@@ -169,7 +167,7 @@ A7_out                         MOVE.L			#ea_A7,A1							;load string constant in
                                RTS												;return to subroutine
 
 ;------------------Address Register Indirect-----------------------
-An_indir_reg                      CMP.L          #match_ADDA_An_indir_r0,D2              ;check reg is equal to 0
+An_indir_reg                     CMP.L          #match_ADDA_An_indir_r0,D2              ;check reg is equal to 0
                                  BNE             An_indir_reg1                           ;if not try reg 1
                                  BEQ             An_indir_reg0_out                       ;if equal go to output subroutine
 
@@ -343,22 +341,33 @@ An_indir_predec_reg7_out			        MOVE.L			#ea_indir_predec_A7,A1						;load st
 											RTS														;return to subroutine
 
 ;------------------Absolute Addressing Output-----------------------
-abs_add_word_out						  MOVE.W      (A0)+,D5                           ;pull the next word instruction that holds the address
+abs_add_word_out						 MOVE.W      (A0)+,D5                           ;pull the next word instruction that holds the address
                                          MOVE.W      #16,D6                             ;load number of bits to deal with
                                          MOVE.L      #ea_$,(A1)+                         ;load $ for hex and increment A1
                                          MOVE.L      D5,(A1)+                           ;load address                  
                                          RTS                                            :return to subroutine
                                            
 
-abs_add_long_out    					  MOVE.W      (A0)+,D5                           ;pull the next word instruction that holds the address
+abs_add_long_out    					 MOVE.W      (A0)+,D5                           ;pull the next word instruction that holds the address
                                          MOVE.W      #32,D6                             ;load number of bits to deal with
                                          MOVE.L      #ea_$,(A1)+                         ;load $ for hex and increment A1
                                          MOVE.L      D5,(A1)+                           ;load address                  
                                          RTS                                            :return to subroutine                                            
-;---------------Immediate Addersing---------------------------
-immediate_add_out                        MOVE.L		(A0),D5                                 ;capture the immediate address
-										  MOVE.L      D5,A3                                   ;move to A3
-                                         RTS                                                 ;return to subroutine
+;---------------Immediate Addresing---------------------------
+immediate_add_out                        MOVE.L		(A0)+,D5                             ;capture the immediate address
+										 CMP.L       #match_imm_add_word,D6               ;check to see if need to pull word
+										 MOVE.L      (A0)+,D5                            ;pull the word
+                                         BEQ         imm_add_w                           ;if equal go pull word    
+										 BNE         imm_add_l                           ;if not equal, go check long
+										 
+imm_add_w                                MOVE.L     #ea_$,(A1)+                          ;load the $
+                                         MOVE.W     D5,(A1)+                             ;load the word address                           
+                                         RTS                                             ;return to subroutine
+                                         
+imm_add_l                                MOVE.L     (A0)+,D5                             ;pull the long and increase the pointer
+                                         MOVE.L     #ea_$,(A1)+                          ;load the $
+                                         MOVE.L      D5,A1                               ;move to A1
+                                         RTS                                             ;return to subroutine
                                              
 ;---------------------------------Determine Register----------------------------------------------------------------------------------------
 												CLR.L		D2												;clear D2 
@@ -444,7 +453,7 @@ ea_A3                       			DC.B        'A3',0
 ea_A4                       			DC.B        'A4',0
 ea_A5                       			DC.B        'A5',0
 ea_A6			                        DC.B        'A6',0
-ea_A7                      			DC.B        'A7',0
+ea_A7                      			    DC.B        'A7',0
 
 ea_indir_A0		    		DC.B		'(A0)',0
 ea_indir_A1		    		DC.B		'(A1)',0
@@ -453,7 +462,7 @@ ea_indir_A3		    		DC.B		'(A3)',0
 ea_indir_A4			    	DC.B		'(A4)',0
 ea_indir_A5			    	DC.B		'(A5)',0
 ea_indir_A6			    	DC.B		'(A6)',0
-ea_indir_A7               			 DC.B              '(A7)',0
+ea_indir_A7                 DC.B              '(A7)',0
 
 ea_indir_postinc_A0			DC.B		'(A0)+',0
 ea_indir_postinc_A1			DC.B		'(A1)+',0
@@ -539,6 +548,8 @@ match_ADDA_An_indir_predec_reg6			EQU			$0026
 match_ADDA_An_indir_predec_reg7			EQU			$0027
 
 match_imm_add                           EQU         $003C
+match_imm_add_word                      EQU         $00FC
+match_imm_add_long                      EQU         $01FC
 
 match_ADDA_reg0							EQU			$0000
 match_ADDA_reg1							EQU			$0200
@@ -550,6 +561,7 @@ match_ADDA_reg6							EQU			$0C00
 match_ADDA_reg7							EQU			$0E00
 
     END    START        ; last line of source
+
 
 *~Font name~Courier New~
 *~Font size~10~
