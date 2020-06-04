@@ -34,6 +34,7 @@ add_reg_indir_postinc            CMP.L             #match_ADDQ_An_indir_postinc,
 abs_add_word                     AND.L             #mask_ADDQ_abs_add,D2                         ;load mask to determine if abs add word or long
                                  
                                  CMP.L             #match_ADDQ_abs_add_word,D2                   ;check if abs add word
+                                 MOVE.L            (A0)+,D5                                      ;pull the next word instruction that holds the address
                                  BNE               abs_add_long                                  ;if not go check abs add long
                                  BEQ               abs_add_word_out                              ;if equal go to output
   
@@ -339,18 +340,15 @@ An_indir_predec_reg7_out			        MOVE.L      #ea_indir_predec_A7,A1						;load
 											RTS														;return to subroutine
 
 ;------------------Absolute Addressing Output-----------------------
-abs_add_word_out						 MOVE.W      (A0)+,D5                           ;pull the next word instruction that holds the address
-                                         MOVE.W      #16,D6                             ;load number of bits to deal with
-                                         MOVE.L      #ea_$,(A1)+                         ;load $ for hex and increment A1
+abs_add_word_out						 MOVE.L      #ea_$,(A1)+                        ;load $ for hex and increment A1
                                          MOVE.L      D5,(A1)+                           ;load address                  
                                          RTS                                            :return to subroutine
                                            
 
-abs_add_long_out    					 MOVE.W      (A0)+,D5                           ;pull the next word instruction that holds the address
-                                         MOVE.W      #32,D6                             ;load number of bits to deal with
+abs_add_long_out    					 MOVE.L      (A0)+,D5                           ;pull the next long instruction that holds the address
                                          MOVE.L      #ea_$,(A1)+                         ;load $ for hex and increment A1
                                          MOVE.L      D5,(A1)+                           ;load address                  
-                                         RTS                                            :return to subroutine                                            
+                                         RTS                                           
 ;---------------------------------Determine Register----------------------------------------------------------------------------------------
 												CLR.L		D2												;clear D2 
 												AND.L		#mask_ADDQ_reg,D2								;load the mask for the register into D2, masks bit 11-9
@@ -546,6 +544,7 @@ match_ADDQ_reg4							EQU			$0800
 match_ADDQ_reg5							EQU			$0A00
 match_ADDQ_reg6							EQU			$0C00
 match_ADDQ_reg7							EQU			$0E00
+
 
 
 
