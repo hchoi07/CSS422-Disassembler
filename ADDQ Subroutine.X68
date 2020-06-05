@@ -10,7 +10,72 @@
    
 ADDQ_sub                         MOVEM.L           D1-D5/D7/A0-A6, -(SP)                                  ;preserve the registers, 
                                  AND.L             #mask_ADDQ_ea_mode,D1                                   ;move the mask to D1
+                                 
+;---------------------------------Determine Register----------------------------------------------------------------------------------------
+												CLR.L		D2												;clear D2 
+												AND.L		#mask_ADDQ_reg,D2								;load the mask for the register into D2, masks bit 11-9
+												
+ADDQ_reg0										CMP.L		#match_ADDQ_reg0,D2								;check to see if reg equal 0
+												BNE			ADDQ_reg1										;if not equal got check reg 1
+												BEQ			ADDQ_reg0_out									;if equal go to output
+												
+ADDQ_reg1										CMP.L		#match_ADDQ_reg1,D2								;check to see if reg equal 1
+												BNE			ADDQ_reg2										;if not equal got check reg 2
+												BEQ			ADDQ_reg1_out									;if equal go to output
+
+ADDQ_reg2										CMP.L		#match_ADDQ_reg2,D2								;check to see if reg equal 2
+												BNE			ADDQ_reg3										;if not equal got check reg 3
+												BEQ			ADDQ_reg2_out									;if equal go to output
+
+ADDQ_reg3										CMP.L		#match_ADDQ_reg3,D2								;check to see if reg equal 3
+												BNE			ADDQ_reg4										;if not equal got check reg 4
+												BEQ			ADDQ_reg3_out									;if equal go to output
+												
+ADDQ_reg4										CMP.L		#match_ADDQ_reg4,D2								;check to see if reg equal 4
+												BNE			ADDQ_reg5										;if not equal got check reg 5
+												BEQ			ADDQ_reg4_out									;if equal go to output
+
+ADDQ_reg5										CMP.L		#match_ADDQ_reg5,D2								;check to see if reg equal 5
+												BNE			ADDQ_reg6										;if not equal got check reg 6
+												BEQ			ADDQ_reg5_out									;if equal go to output
+
+ADDQ_reg6										CMP.L		#match_ADDQ_reg6,D2								;check to see if reg equal 6
+												BNE			ADDQ_reg7										;if not equal got check reg 7
+												BEQ			ADDQ_reg6_out									;if equal go to output			
+
+ADDQ_reg7										CMP.L		#match_ADDQ_reg7,D2								;check to see if reg equal 7
+												BEQ			ADDQ_reg7_out									;if equal go to output
+												BNE         ERROR                                                       ;if not equal to an addresssing mode, pritn error
+								
+
+;--------------------Data Output-----------------------
+ADDQ_reg0_out			                    MOVE.L      #ea_data0,A1					      ;load string constant into A1
+											JSR         determine_second_operand                ;jump to subroutine to determine the second operand
+											
+ADDQ_reg1_out			                    MOVE.L      #ea_data1,A1						;load string constant into A1
+											JSR         determine_second_operand                ;jump to subroutine to determine the second operand
+
+ADDQ_reg2_out			                    MOVE.L      #ea_data2,A1						;load string constant into A1
+											JSR         determine_second_operand                ;jump to subroutine to determine the second operand
+
+ADDQ_reg3_out			                    MOVE.L      #ea_data3,A1						;load string constant into A1
+											JSR         determine_second_operand                ;jump to subroutine to determine the second operand
+
+ADDQ_reg4_out			                    MOVE.L      #ea_data4,A1						;load string constant into A1
+											JSR         determine_second_operand                ;jump to subroutine to determine the second operand
+
+ADDQ_reg5_out			                    MOVE.L      #ea_data5,A1						;load string constant into A1
+											JSR         determine_second_operand                ;jump to subroutine to determine the second operand
+
+ADDQ_reg6_out			                    MOVE.L      #ea_data6,A1						;load string constant into A1
+											JSR         determine_second_operand                ;jump to subroutine to determine the second operand
+
+ADDQ_reg7_out			                    MOVE.L      #ea_data7,A1						;load string constant into A1
+											JSR         determine_second_operand                ;jump to subroutine to determine the second operand
+				
+
 ;--------------Determine EFFECTIVE ADDRESS Mode-----------------------------------                
+determine_second_operand
 data_reg_dir                     CMP.L             #match_ADDQ_Dn,D1                             ;check to see if mode is data reg direct
                                  BNE               add_reg_dir                                   ;if not, go check add reg dir
                                  BEQ               Dn_reg                                        ;if equal go figure out the register
@@ -349,68 +414,6 @@ abs_add_long_out    					 MOVE.L      (A0)+,D5                           ;pull t
                                          MOVE.L      #ea_$,(A1)+                         ;load $ for hex and increment A1
                                          MOVE.L      D5,(A1)+                           ;load address                  
                                          RTS                                           
-;---------------------------------Determine Register----------------------------------------------------------------------------------------
-												CLR.L		D2												;clear D2 
-												AND.L		#mask_ADDQ_reg,D2								;load the mask for the register into D2, masks bit 11-9
-												
-ADDQ_reg0										CMP.L		#match_ADDQ_reg0,D2								;check to see if reg equal 0
-												BNE			ADDQ_reg1										;if not equal got check reg 1
-												BEQ			ADDQ_reg0_out									;if equal go to output
-												
-ADDQ_reg1										CMP.L		#match_ADDQ_reg1,D2								;check to see if reg equal 1
-												BNE			ADDQ_reg2										;if not equal got check reg 2
-												BEQ			ADDQ_reg1_out									;if equal go to output
-
-ADDQ_reg2										CMP.L		#match_ADDQ_reg2,D2								;check to see if reg equal 2
-												BNE			ADDQ_reg3										;if not equal got check reg 3
-												BEQ			ADDQ_reg2_out									;if equal go to output
-
-ADDQ_reg3										CMP.L		#match_ADDQ_reg3,D2								;check to see if reg equal 3
-												BNE			ADDQ_reg4										;if not equal got check reg 4
-												BEQ			ADDQ_reg3_out									;if equal go to output
-												
-ADDQ_reg4										CMP.L		#match_ADDQ_reg4,D2								;check to see if reg equal 4
-												BNE			ADDQ_reg5										;if not equal got check reg 5
-												BEQ			ADDQ_reg4_out									;if equal go to output
-
-ADDQ_reg5										CMP.L		#match_ADDQ_reg5,D2								;check to see if reg equal 5
-												BNE			ADDQ_reg6										;if not equal got check reg 6
-												BEQ			ADDQ_reg5_out									;if equal go to output
-
-ADDQ_reg6										CMP.L		#match_ADDQ_reg6,D2								;check to see if reg equal 6
-												BNE			ADDQ_reg7										;if not equal got check reg 7
-												BEQ			ADDQ_reg6_out									;if equal go to output			
-
-ADDQ_reg7										CMP.L		#match_ADDQ_reg7,D2								;check to see if reg equal 7
-												BEQ			ADDQ_reg7_out									;if equal go to output
-												BNE         ERROR                                                       ;if not equal to an addresssing mode, pritn error
-								
-
-;--------------------Data Output-----------------------
-ADDQ_reg0_out			                    MOVE.L      #ea_data0,A1					      ;load string constant into A1
-											RTS														;return to subroutine
-											
-ADDQ_reg1_out			                    MOVE.L      #ea_data1,A1						;load string constant into A1
-											RTS														;return to subroutine
-
-ADDQ_reg2_out			                    MOVE.L      #ea_data2,A1						;load string constant into A1
-											RTS														;return to subroutine
-
-ADDQ_reg3_out			                    MOVE.L      #ea_data3,A1						;load string constant into A1
-											RTS														;return to subroutine
-
-ADDQ_reg4_out			                    MOVE.L      #ea_data4,A1						;load string constant into A1
-											RTS														;return to subroutine
-
-ADDQ_reg5_out			                    MOVE.L      #ea_data5,A1						;load string constant into A1
-											RTS														;return to subroutine
-
-ADDQ_reg6_out			                    MOVE.L      #ea_data6,A1						;load string constant into A1
-											RTS														;return to subroutine
-
-ADDQ_reg7_out			                    MOVE.L      #ea_data7,A1						;load string constant into A1
-											RTS														;return to subroutine
-				
 ;----------------------Error Handling----------------------------------------
 ERROR                                       LEA     ERROR_MESSAGE,A1                                          ;load error messge into A3
 					
@@ -544,6 +547,7 @@ match_ADDQ_reg4							EQU			$0800
 match_ADDQ_reg5							EQU			$0A00
 match_ADDQ_reg6							EQU			$0C00
 match_ADDQ_reg7							EQU			$0E00
+
 
 
 
