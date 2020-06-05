@@ -9,6 +9,10 @@ io_subroutine:
 	        LEA	        LOAD_MESSAGE, A1
 	        MOVE.B	    #13, D0
 	        TRAP	    #15
+	        *display the intro message to the user
+	        LEA	        LOAD2_MESSAGE, A1
+	        MOVE.B	    #13, D0
+	        TRAP	    #15
 
 *prompt the user for starting input
 INPUT1	    LEA	        START_REQUEST, A1
@@ -171,6 +175,7 @@ end_bad:
             BRA         INPUT1  
 
     
+
 *~Font name~Courier New~
 *~Font size~10~
 *~Tab type~1~

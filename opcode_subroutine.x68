@@ -21,7 +21,7 @@ opcode_subroutine:
         JSR         move_decode
         BRA         end_op
         
-        *test the 0100 clump and jump to subroutine (nop,lea,not,jsr,rts)
+        *test the 0100 clump and jump to subroutine (nop,lea,not,jsr,rts,movem)
 skip1   MOVE.W      D0,D1
         AND.W       #mask_opcode,D1               *mask the full machine code by the opcode mask
         CMP.W       #match_G0100,D1
@@ -67,8 +67,13 @@ skip7   CMP.W       #match_AND,D1
         
         *test or
 skip8   CMP.W       #match_OR,D1
-        BNE         data
+        BNE         skip9
         JSR         op_OR
+        BRA         end_op
+        
+skip9   CMP.W       #match_MOVEQ,D1
+        BNE         data
+        JSR         op_MOVEQ
         BRA         end_op
         
 data    JSR         op_DATA
@@ -127,6 +132,13 @@ group1_decode:
         BEQ         op_LEA
         
         MOVE.W      D0,D1           *refresh D1 back into the full opcode
+        AND.W       #mask_MOVEM,D1    *test the masked opcode against movem
+        CMP.W       #match_MOVEM_RM,D1   *look for 0100 1000 1000
+        BEQ         op_MOVEM_RM
+        CMP.W       #match_MOVEM_MR,D1   *look for 0100 1100 1000
+        BEQ         op_MOVEM_MR
+        
+        MOVE.W      D0,D1           *refresh D1 back into the full opcode
         AND.W       #mask_JSR,D1    *test the masked opcode against JSR
         CMP.W       #match_JSR,D1   *look for 0100 1110 10xx
         BEQ         op_JSR
@@ -149,6 +161,14 @@ op_RTS:
 
 op_LEA:
         JSR         lea_size
+        BRA         end_G1
+        
+op_MOVEM_RM:
+        JSR         movem_rm_size
+        BRA         end_G1
+        
+op_MOVEM_MR:
+        JSR         movem_mr_size
         BRA         end_G1
         
 op_JSR:
@@ -295,17 +315,29 @@ end_G4  MOVEM.L     (SP)+, D0-D7/A0-A6
         RTS
         
 op_LSL_M:
-
+        JSR     lsl_m_size
+        BRA     end_G4
+        
 op_LSR_M:
-
+        JSR     lsr_m_size
+        BRA     end_G4
+        
 op_ASL_M:
-
+        JSR     asl_m_size
+        BRA     end_G4
+        
 op_ASR_M:
+        JSR     asr_m_size
+        BRA     end_G4
 
 op_ROL_M:
+        JSR     rol_m_size
+        BRA     end_G4
 
 op_ROR_M:
-
+        JSR     ror_m_size
+        BRA     end_G4
+        
 op_LSL_R:
         JSR     lsl_r_size
         BRA     end_G4
@@ -393,6 +425,22 @@ end_OR  MOVEM.L     (SP)+, D0-D7/A0-A6
         RTS
         
 *-----------------------------------------------------------
+* Subroutine Title: op_OR
+* Description: This subroutine determines the length used in
+* the OR operation.
+* D0 is copied into D1 where specific masking occurs.
+* D0 is used to pass in the machine code word.
+*-----------------------------------------------------------
+op_MOVEQ:
+        MOVEM.L     D0-D7/A0-A6, -(SP)
+        *MOVE.W      D0,D1       *refresh the entire opcode into D1
+        JSR         moveq_size
+        
+end_MOVEQ  
+        MOVEM.L     (SP)+, D0-D7/A0-A6
+        RTS
+
+*-----------------------------------------------------------
 * Subroutine Title: op_DATA
 * Description: This subroutine determines the length used in
 * the OR operation.
@@ -403,11 +451,13 @@ op_DATA:
         MOVEM.L     D0-D7/A0-A6, -(SP)
         LEA         opcode_DATA,A1  *move data string into 
         MOVE.W      D0,D1           *move the full data into D1 for printing
-        JSR         print_string
-        JSR         print_hex
+        JSR         print_string_op_nl
         
 end_DATA MOVEM.L     (SP)+, D0-D7/A0-A6
         RTS
+
+
+
 
 
 

@@ -14,15 +14,18 @@ MAIN:
     INCLUDE 'io_subroutine.x68'
     INCLUDE 'main_loop.x68'
     INCLUDE 'output.x68'
-    INCLUDE 'variables.X68'
-    INCLUDE 'strings.x68'
     INCLUDE 'opcode_size.X68'
     INCLUDE 'opcode_subroutine.x68'
     INCLUDE 'testFile.x68'
+    INCLUDE 'variables.X68'
+    INCLUDE 'strings.x68'
     
 
 STOP:
     END    MAIN
+
+
+
 
 
 

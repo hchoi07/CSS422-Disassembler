@@ -10,6 +10,7 @@ mask_BCC        EQU     $FF00
 mask_SHFT_M     EQU     $FFC0
 mask_SHFT_R     EQU     $F118
 mask_BCC_size   EQU     $00FF
+mask_MOVEM      EQU     $FF80
 *Opcode Matches
 match_MOVE       EQU     $0000
 match_MOVEB      EQU     $1000
@@ -47,6 +48,8 @@ match_ADDQ       EQU     $5000
 match_SUB        EQU     $9000
 match_AND        EQU     $C000
 match_OR         EQU     $8000
+match_MOVEM_RM   EQU     $4880
+match_MOVEM_MR   EQU     $4C80
 *Opcode Size Mask
 mask_size_MOVES     EQU     $3000
 mask_size_NOT       EQU     $00C0
@@ -55,6 +58,8 @@ mask_size_ADD       EQU     $00C0
 mask_size_shifts    EQU     $00C0
 mask_size_SUB       EQU     $00C0
 mask_size_logic     EQU     $00C0
+mask_size_MOVEM     EQU     $0040
+mask_size_MOVEQ     EQU     $F100
 *Opcode Size Match
 m_size_B_MOVES      EQU     $1000
 m_size_W_MOVES      EQU     $3000
@@ -78,6 +83,9 @@ m_size_W_logic      EQU     $0040
 m_size_L_logic      EQU     $0080
 m_size_L_bcc        EQU     $00FF
 m_size_W_bcc        EQU     $0000
+m_size_W_MOVEM      EQU     $0000
+m_size_L_MOVEM      EQU     $0040
+m_size_L_MOVEQ      EQU     $7000
 *Size value
 byte_size           EQU     1
 word_size           EQU     2
@@ -89,6 +97,8 @@ hex_clear           EQU     $00000000
 *IO range
 start_Adr           EQU     $00007000
 end_Adr             EQU     $000073BA
+
+
 
 
 

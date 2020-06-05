@@ -55,12 +55,16 @@ opcode_BEQ  	DC.B	'BEQ',0
 opcode_JSR  	DC.B	'JSR',0
 opcode_RTS  	DC.B	'RTS',0
 opcode_BRA  	DC.B	'BRA',0
+opcode_MOVEMW   DC.B    'MOVEM.W',0
+opcode_MOVEML   DC.B    'MOVEM.L',0
 opcode_DATA  	DC.B	'DATA',0
 *io strings
 CR	        EQU 	$0D	*ASCII code for carriage return
 LF	        EQU	    $0A	*ASCII code for line feed
+HT          EQU     $09 *ASCII code for horizontal tab
 
 LOAD_MESSAGE	DC.B	'Welcome to The Disassemblers CSS 422 projectA',CR,LF,'Select "demo_test.s68" in File->Open Data for test data',CR,LF,0
+LOAD2_MESSAGE   DC.B    'If you got to this page without loading the test file,',CR,LF,'please exit and follow the directions above.',CR,LF,0
 START_REQUEST	DC.B	'Input starting memory location between $00007000 and $000073BA',CR,LF,'in the format "########": ',0
 END_REQUEST	    DC.B	'Input ending memory location between $00007000 and $000073BA',CR,LF,'in the format "########": ',0
 NOT_HEX_MSG	    DC.B    'Input was not in the hexadecimal range 0-F',0
@@ -69,6 +73,9 @@ BAD_END         DC.B    'Ending location is less than the starting location, ple
 BAD_BOUND       DC.B    'Input is not on an input boundary, please enter address divisible by 2.',CR,LF,0
 SPACE           DC.B    CR,LF,0
 PRESS_ENTER     DC.B    'Press ENTER to continue.',CR,LF,0
+TAB             DC.B    HT,0
+
+
 
 
 

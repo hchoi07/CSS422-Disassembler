@@ -9,11 +9,12 @@ main_loop:
             MOVE.B      #30,D5
 
             MOVE.L      D3,A0   *move the starting address to A0
+            ADDQ.L      #2,D2   *add 1 word to ending address so it gets covered
             MOVE.L      D2,A2   *move the ending address to A2
 loopM       CMP.L       A0,A2
             BEQ         loopM_done
             *inside loop code
-            DIVU        #30,D4      *test if full page has been reached
+            DIVU        #29,D4      *test if full page has been reached
             CLR.W       D4
             SWAP        D4
             CMP.L       #hex_clear,D4
@@ -40,6 +41,8 @@ loopM_Cont  MOVE.W      (A0),D0 *move the opcode into D0 for testing
             BRA         loopM   
                 
 loopM_done  RTS
+
+
 *~Font name~Courier New~
 *~Font size~10~
 *~Tab type~1~
