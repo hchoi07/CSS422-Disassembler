@@ -50,11 +50,19 @@ opcode_RORB  	DC.B	'ROR.B',0
 opcode_RORW  	DC.B	'ROR.W',0
 opcode_RORL  	DC.B	'ROR.L',0
 opcode_BGT  	DC.B	'BGT',0
+opcode_BGTB  	DC.B	'BGT.B',0
+opcode_BGTW  	DC.B	'BGT.W',0
 opcode_BLE  	DC.B	'BLE',0
+opcode_BLEB  	DC.B	'BLE.B',0
+opcode_BLEW  	DC.B	'BLE.W',0
 opcode_BEQ  	DC.B	'BEQ',0
+opcode_BEQB  	DC.B	'BEQ.B',0
+opcode_BEQW  	DC.B	'BEQ.W',0
 opcode_JSR  	DC.B	'JSR',0
 opcode_RTS  	DC.B	'RTS',0
 opcode_BRA  	DC.B	'BRA',0
+opcode_BRAB  	DC.B	'BRA.B',0
+opcode_BRAW  	DC.B	'BRA.W',0
 opcode_MOVEMW   DC.B    'MOVEM.W',0
 opcode_MOVEML   DC.B    'MOVEM.L',0
 opcode_DATA  	DC.B	'DATA',0
@@ -62,6 +70,8 @@ opcode_DATA  	DC.B	'DATA',0
 CR	        EQU 	$0D	*ASCII code for carriage return
 LF	        EQU	    $0A	*ASCII code for line feed
 HT          EQU     $09 *ASCII code for horizontal tab
+QT          EQU     $71 *ascii for lowercase q
+RT          EQU     $72 *ascii for lowercase r
 
 LOAD_MESSAGE	DC.B	'Welcome to The Disassemblers CSS 422 projectA',CR,LF,'Select "demo_test.s68" in File->Open Data for test data',CR,LF,0
 LOAD2_MESSAGE   DC.B    'If you got to this page without loading the test file,',CR,LF,'please exit and follow the directions above.',CR,LF,0
@@ -74,6 +84,70 @@ BAD_BOUND       DC.B    'Input is not on an input boundary, please enter address
 SPACE           DC.B    CR,LF,0
 PRESS_ENTER     DC.B    'Press ENTER to continue.',CR,LF,0
 TAB             DC.B    HT,0
+RESTART_Q       DC.B    'Would you like to test again?',CR,LF,'Press r to restart or q to quit.',CR,LF,0
+
+*EA strings
+ERROR_MESSAGE                   DC.B            'Incorrect EA Format',0
+ea_D0				    	DC.B		'D0',0
+ea_D1			    		DC.B		'D1',0
+ea_D2			    		DC.B		'D2',0
+ea_D3				    	DC.B		'D3',0
+ea_D4			    		DC.B		'D4',0
+ea_D5			    		DC.B		'D5',0
+ea_D6				    	DC.B		'D6',0
+ea_D7			   	    	DC.B		'D7',0
+
+ea_A0                 		DC.B        'A0',0
+ea_A1                       DC.B        'A1',0
+ea_A2                       DC.B        'A2',0
+ea_A3                       DC.B        'A3',0
+ea_A4                       DC.B        'A4',0
+ea_A5                       DC.B        'A5',0
+ea_A6			            DC.B        'A6',0
+ea_A7                       DC.B        'A7',0
+
+ea_indir_A0		    		DC.B		'(A0)',0
+ea_indir_A1		    		DC.B		'(A1)',0
+ea_indir_A2		    		DC.B		'(A2)',0
+ea_indir_A3		    		DC.B		'(A3)',0
+ea_indir_A4			    	DC.B		'(A4)',0
+ea_indir_A5			    	DC.B		'(A5)',0
+ea_indir_A6			    	DC.B		'(A6)',0
+ea_indir_A7                 DC.B        '(A7)',0
+
+ea_indir_postinc_A0			DC.B		'(A0)+',0
+ea_indir_postinc_A1			DC.B		'(A1)+',0
+ea_indir_postinc_A2			DC.B		'(A2)+',0
+ea_indir_postinc_A3			DC.B		'(A3)+',0
+ea_indir_postinc_A4			DC.B		'(A4)+',0
+ea_indir_postinc_A5			DC.B		'(A5)+',0
+ea_indir_postinc_A6			DC.B		'(A6)+',0
+ea_indir_postinc_A7			DC.B		'(A7)+',0
+
+
+ea_indir_predec_A0			DC.B		'-(A0)',0
+ea_indir_predec_A1			DC.B		'-(A1)',0
+ea_indir_predec_A2			DC.B		'-(A2)',0
+ea_indir_predec_A3			DC.B		'-(A3)',0
+ea_indir_predec_A4			DC.B		'-(A4)',0
+ea_indir_predec_A5			DC.B		'-(A5)',0
+ea_indir_predec_A6			DC.B		'-(A6)',0
+ea_indir_predec_A7			DC.B		'-(A7)',0
+
+ea_paren_open			    DC.B		'(',0
+ea_paren_closed		    	DC.B		')',0
+ea_abs_word_string	    	DC.B		'.W',0
+ea_abs_long_string	    	DC.B		'.L',0
+ea_$				    	DC.B		'$',0
+
+ea_data0                    DC.B      '#0',0
+ea_data1                    DC.B      '#1',0
+ea_data2                    DC.B      '#2',0
+ea_data3                    DC.B      '#3',0
+ea_data4                    DC.B      '#4',0
+ea_data5                    DC.B      '#5',0
+ea_data6                    DC.B      '#6',0
+ea_data7                    DC.B      '#7',0
 
 
 

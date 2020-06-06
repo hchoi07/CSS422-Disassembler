@@ -49,21 +49,6 @@ print_string_op_nn:
     LEA         TAB,A1
     MOVE.B      #14,D0              *move number 14 into d0 for string
     TRAP        #15                 *print the data
-    *print opcode
-    MOVE.W      D3,D1
-    MOVE.B      #15,D0
-    MOVE.B      #16,D2          *display in base 16 (hex)
-    TRAP        #15
-    *print a tab
-    LEA         TAB,A1
-    MOVE.B      #14,D0              *move number 14 into d0 for string
-    TRAP        #15                 *print the data
-    *FOR TESTING REMOVE AFTER EA
-    *print new line
-    LEA         SPACE,A1
-    MOVE.B      #14,D0              *move number 14 into d0 for string
-    TRAP        #15                 *print the data
-    *REMOVE AFTERR TESTING
     
     MOVEM.L     (SP)+, D0-D7/A0-A6
     RTS
@@ -148,6 +133,45 @@ print_string_sized:
 
 *-----------------------------------------------------------
 * Subroutine Title: print_string_nl
+* Description: This subroutine prints the line number, tab for
+* spaceing, the opcode (currently in A1), another tab, and the 
+* opcode.
+* A1 passes in the output
+*-----------------------------------------------------------
+print_data:
+    MOVEM.L     D0-D7/A0-A6, -(SP)
+    MOVE.W      D0,D3           *move full opcode to D2 temporarily
+    MOVEA.L     A1,A2           *move string into A2 temp
+    *print the line number
+    JSR         print_line_number
+    *print a tab
+    LEA         TAB,A1
+    MOVE.B      #14,D0              *move number 14 into d0 for string
+    TRAP        #15                 *print the data
+    *print data
+    MOVE.L      A2,A1
+    MOVE.B      #14,D0              *move number 14 into d0 for string
+    TRAP        #15                 *print the data
+    *print a tab
+    LEA         TAB,A1
+    MOVE.B      #14,D0              *move number 14 into d0 for string
+    TRAP        #15                 *print the data
+    *print opcode
+    MOVE.W      D3,D1
+    MOVE.B      #15,D0
+    MOVE.B      #16,D2          *display in base 16 (hex)
+    TRAP        #15
+    *print new line
+    LEA         SPACE,A1
+    MOVE.B      #14,D0              *move number 14 into d0 for string
+    TRAP        #15                 *print the data
+    
+    MOVEM.L     (SP)+, D0-D7/A0-A6
+    RTS
+
+
+*-----------------------------------------------------------
+* Subroutine Title: print_string_nl
 * Description: This subroutine prints current line number with
 * 8 digits
 *-----------------------------------------------------------
@@ -174,6 +198,40 @@ line_loop   CMP.B       D4,D5           *loop 2 time for a byte of info
             
 line_done   MOVEM.L     (SP)+, D0-D7/A0-A6
             RTS
+            
+*-----------------------------------------------------------
+* Subroutine Title: print_ea
+* Description: This subroutine prints the ea string in A1
+* A1 passes in the output
+*-----------------------------------------------------------
+print_eat:
+    MOVEM.L     D0-D7/A0-A6, -(SP)
+    *print data
+    MOVE.B      #14,D0              *move number 14 into d0 for string
+    TRAP        #15                 *print the data
+    MOVEM.L     (SP)+, D0-D7/A0-A6
+    RTS
+    
+*-----------------------------------------------------------
+* Subroutine Title: print_ea_end
+* Description: This subroutine prints the ea string in A1
+* appended with a new line. Used for the second ea.
+* A1 passes in the output
+*-----------------------------------------------------------
+print_ea:
+    MOVEM.L     D0-D7/A0-A6, -(SP)
+    *print data
+    MOVE.B      #14,D0              *move number 14 into d0 for string
+    TRAP        #15                 *print the data in A1
+    *print new line
+    LEA         SPACE,A1
+    MOVE.B      #14,D0              *move number 14 into d0 for string
+    TRAP        #15                 *print the data
+    MOVEM.L     (SP)+, D0-D7/A0-A6
+    RTS
+
+
+
 
 *~Font name~Courier New~
 *~Font size~10~

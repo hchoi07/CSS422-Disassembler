@@ -73,7 +73,7 @@ m_size_B_ADD        EQU     $0000
 m_size_W_ADD        EQU     $0040
 m_size_L_ADD        EQU     $0080
 m_size_B_shfts      EQU     $0000
-m_size_W_shfts      EQU     $0070
+m_size_W_shfts      EQU     $0040
 m_size_L_shfts      EQU     $0080
 m_size_B_SUB        EQU     $0000
 m_size_W_SUB        EQU     $0040
@@ -97,6 +97,147 @@ hex_clear           EQU     $00000000
 *IO range
 start_Adr           EQU     $00007000
 end_Adr             EQU     $000073BA
+*EA ADDA
+mask_ADDA_ea_mode						EQU			$0038
+mask_ADDA_abs_add						EQU			$003F
+mask_ADDA_ea_reg_and_mode				EQU			$003F
+mask_ADDA_An_reg					    EQU			$0E00
+
+match_ADDA_Dn							EQU			$0000
+match_ADDA_An							EQU			$0008
+match_ADDA_An_indir						EQU			$0010
+match_ADDA_An_indir_predec				EQU			$0020
+match_ADDA_An_indir_postinc				EQU			$0018
+match_ADDA_abs_add_word					EQU			$0038
+match_ADDA_abs_add_long					EQU			$0039
+
+match_ADDA_D0							EQU			$0000
+match_ADDA_D1							EQU			$0001
+match_ADDA_D2							EQU			$0002
+match_ADDA_D3							EQU			$0003
+match_ADDA_D4							EQU			$0004
+match_ADDA_D5							EQU			$0005
+match_ADDA_D6							EQU			$0006
+match_ADDA_D7							EQU			$0007
+
+match_ADDA_A0							EQU			$0008
+match_ADDA_A1							EQU			$0009
+match_ADDA_A2							EQU			$000A
+match_ADDA_A3							EQU			$000B
+match_ADDA_A4							EQU			$000C
+match_ADDA_A5							EQU			$000D
+match_ADDA_A6							EQU			$000E
+match_ADDA_A7							EQU			$000F
+
+match_ADDA_An_indir_r0					EQU			$0010
+match_ADDA_An_indir_r1					EQU			$0011
+match_ADDA_An_indir_r2					EQU			$0012
+match_ADDA_An_indir_r3					EQU			$0013
+match_ADDA_An_indir_r4					EQU			$0014
+match_ADDA_An_indir_r5					EQU			$0015
+match_ADDA_An_indir_r6					EQU			$0016
+match_ADDA_An_indir_r7					EQU			$0017
+
+match_ADDA_An_indir_postinc_reg0		EQU			$0018
+match_ADDA_An_indir_postinc_reg1		EQU			$0019
+match_ADDA_An_indir_postinc_reg2		EQU			$001A
+match_ADDA_An_indir_postinc_reg3		EQU			$001B
+match_ADDA_An_indir_postinc_reg4		EQU			$001C
+match_ADDA_An_indir_postinc_reg5		EQU			$001D
+match_ADDA_An_indir_postinc_reg6		EQU			$001E
+match_ADDA_An_indir_postinc_reg7		EQU			$001F
+
+match_ADDA_An_indir_predec_reg0			EQU			$0020
+match_ADDA_An_indir_predec_reg1			EQU			$0021
+match_ADDA_An_indir_predec_reg2			EQU			$0022
+match_ADDA_An_indir_predec_reg3			EQU			$0023
+match_ADDA_An_indir_predec_reg4			EQU			$0024
+match_ADDA_An_indir_predec_reg5			EQU			$0025
+match_ADDA_An_indir_predec_reg6			EQU			$0026
+match_ADDA_An_indir_predec_reg7			EQU			$0027
+
+match_imm_add                           EQU         $003C
+match_imm_add_word                      EQU         $00FC
+match_imm_add_long                      EQU         $01FC
+
+match_ADDA_reg0							EQU			$0000
+match_ADDA_reg1							EQU			$0200
+match_ADDA_reg2							EQU			$0400
+match_ADDA_reg3							EQU			$0600
+match_ADDA_reg4							EQU			$0800
+match_ADDA_reg5							EQU			$0A00
+match_ADDA_reg6							EQU			$0C00
+match_ADDA_reg7							EQU			$0E00
+
+*ADDQ EA
+mask_ADDQ_ea_mode			EQU			$0038
+mask_ADDQ_abs_add			EQU			$003F
+mask_ADDQ_ea_reg_and_mode	EQU			$003F
+mask_ADDQ_reg				EQU			$0E00
+
+match_ADDQ_Dn				EQU			$0000
+match_ADDQ_An				EQU			$0008
+match_ADDQ_An_indir			EQU			$0010
+match_ADDQ_An_indir_predec	EQU			$0020
+match_ADDQ_An_indir_postinc	EQU			$0018
+match_ADDQ_abs_add_word		EQU			$0038
+match_ADDQ_abs_add_long		EQU			$0039
+
+match_ADDQ_D0				EQU			$0000
+match_ADDQ_D1				EQU			$0001
+match_ADDQ_D2				EQU			$0002
+match_ADDQ_D3				EQU			$0003
+match_ADDQ_D4				EQU			$0004
+match_ADDQ_D5				EQU			$0005
+match_ADDQ_D6				EQU			$0006
+match_ADDQ_D7				EQU			$0007
+
+match_ADDQ_A0				EQU			$0008
+match_ADDQ_A1				EQU			$0009
+match_ADDQ_A2				EQU			$000A
+match_ADDQ_A3				EQU			$000B
+match_ADDQ_A4				EQU			$000C
+match_ADDQ_A5				EQU			$000D
+match_ADDQ_A6				EQU			$000E
+match_ADDQ_A7				EQU			$000F
+
+match_ADDQ_An_indir_r0		EQU			$0010
+match_ADDQ_An_indir_r1		EQU			$0011
+match_ADDQ_An_indir_r2		EQU			$0012
+match_ADDQ_An_indir_r3		EQU			$0013
+match_ADDQ_An_indir_r4		EQU			$0014
+match_ADDQ_An_indir_r5		EQU			$0015
+match_ADDQ_An_indir_r6		EQU			$0016
+match_ADDQ_An_indir_r7		EQU			$0017
+
+match_ADDQ_An_indir_postinc_reg0		EQU			$0018
+match_ADDQ_An_indir_postinc_reg1		EQU			$0019
+match_ADDQ_An_indir_postinc_reg2		EQU			$001A
+match_ADDQ_An_indir_postinc_reg3		EQU			$001B
+match_ADDQ_An_indir_postinc_reg4		EQU			$001C
+match_ADDQ_An_indir_postinc_reg5		EQU			$001D
+match_ADDQ_An_indir_postinc_reg6		EQU			$001E
+match_ADDQ_An_indir_postinc_reg7		EQU			$001F
+
+match_ADDQ_An_indir_predec_reg0			EQU			$0020
+match_ADDQ_An_indir_predec_reg1			EQU			$0021
+match_ADDQ_An_indir_predec_reg2			EQU			$0022
+match_ADDQ_An_indir_predec_reg3			EQU			$0023
+match_ADDQ_An_indir_predec_reg4			EQU			$0024
+match_ADDQ_An_indir_predec_reg5			EQU			$0025
+match_ADDQ_An_indir_predec_reg6			EQU			$0026
+match_ADDQ_An_indir_predec_reg7			EQU			$0027
+
+
+match_ADDQ_reg0							EQU			$0000
+match_ADDQ_reg1							EQU			$0200
+match_ADDQ_reg2							EQU			$0400
+match_ADDQ_reg3							EQU			$0600
+match_ADDQ_reg4							EQU			$0800
+match_ADDQ_reg5							EQU			$0A00
+match_ADDQ_reg6							EQU			$0C00
+match_ADDQ_reg7							EQU			$0E00
+
 
 
 

@@ -5,9 +5,8 @@
 * D2 will be loaded with the mask for the EA mode and register to be compared with matchs of the dettermined mode and register
 * A1 will point to the location of the string constants
 *-----------------------------------------------------------    
-START                       ORG         $1000
    
-ADDA_sub                         MOVEM.L           D1-D5/D7/A0-A6, -(SP)                                  ;preserve the registers, 
+ADDA_sub                         MOVEM.L           D1-D5/D7/A0/A2-A6, -(SP)                                  ;preserve the registers, 
                                  AND.L             #mask_ADDA_ea_mode,D1                                   ;move the mask to D1
 ;--------------Determine EFFECTIVE ADDRESS Mode-----------------------------------                
 data_reg_dir                     CMP.L             #match_ADDA_Dn,D1                             ;check to see if mode is data reg direct
@@ -345,12 +344,14 @@ An_indir_predec_reg7_out			        MOVE.L			#ea_indir_predec_A7,A1						;load st
 ;------------------Absolute Addressing Output-----------------------
 abs_add_word_out						 MOVE.L      #ea_$,(A1)+                         ;load $ for hex and increment A1
                                          MOVE.L      D5,(A1)+                           ;load address                  
+                                         MOVEM.L     (SP)+, D1-D5/D7/A0/A2-A6  
                                          RTS                                            :return to subroutine
                                            
 
 abs_add_long_out    					 MOVE.L      (A0)+,D5                           ;pull the next long instruction that holds the address
                                          MOVE.L      #ea_$,(A1)+                         ;load $ for hex and increment A1
                                          MOVE.L      D5,(A1)+                           ;load address                  
+                                         MOVEM.L     (SP)+, D1-D5/D7/A0/A2-A6  
                                          RTS                                            :return to subroutine                                            
 ;---------------Immediate Addresing---------------------------
 immediate_add_out                        MOVE.L		(A0)+,D5                             ;capture the immediate address
@@ -407,158 +408,44 @@ ADDA_reg7										CMP.L		#match_ADDA_reg7,D2								;check to see if reg equal 
 
 ;--------------------Data Output-----------------------
 ADDA_reg0_out			                    MOVE.L			#ea_A0,A1					                       ;load string constant into A1
+                                            MOVEM.L     (SP)+, D1-D5/D7/A0/A2-A6
                                             RTS
 											
 ADDA_reg1_out			                    MOVE.L			#ea_A1,A1				                		;load string constant into A1
+                                            MOVEM.L     (SP)+, D1-D5/D7/A0/A2-A6
                                             RTS
                                             
 ADDA_reg2_out			                    MOVE.L			#ea_A2,A1				                		;load string constant into A1
+                                            MOVEM.L     (SP)+, D1-D5/D7/A0/A2-A6
                                             RTS
                                             
 ADDA_reg3_out			                    MOVE.L			#ea_A3,A1				                        	;load string constant into A1
+                                            MOVEM.L     (SP)+, D1-D5/D7/A0/A2-A6
                                             RTS
                                             
 ADDA_reg4_out			                    MOVE.L			#ea_A4,A1				                    		;load string constant into A1
+                                            MOVEM.L     (SP)+, D1-D5/D7/A0/A2-A6
                                             RTS
                                             
 ADDA_reg5_out			                    MOVE.L			#ea_A5,A1					                     	;load string constant into A1
+                                            MOVEM.L     (SP)+, D1-D5/D7/A0/A2-A6
                                             RTS
                                             
 ADDA_reg6_out			                    MOVE.L			#ea_A6,A1					                    	;load string constant into A1
+                                            MOVEM.L     (SP)+, D1-D5/D7/A0/A2-A6
                                             RTS
                                             
 ADDA_reg7_out			                    MOVE.L			#ea_A7,A1					                    	;load string constant into A1
+                                            MOVEM.L     (SP)+, D1-D5/D7/A0/A2-A6
                                             RTS				
 ;----------------------Error Handling----------------------------------------
-ERROR                                           LEA     ERROR_MESSAGE,A3                                          ;load error messge into A3
-					                            RTS
+ERROR                                           LEA     ERROR_MESSAGE,A1                                         ;load error messge into A3
+					                            MOVEM.L     (SP)+, D1-D5/D7/A0/A2-A6
+                                                RTS
 					                            
 					                            
-ERROR_MESSAGE                   DC.B            'Incorrect EA Format',0
-ea_D0				    	DC.B		'D0',0
-ea_D1			    		DC.B		'D1',0
-ea_D2			    		DC.B		'D2',0
-ea_D3				    	DC.B		'D3',0
-ea_D4			    		DC.B		'D4',0
-ea_D5			    		DC.B		'D5',0
-ea_D6				    	DC.B		'D6',0
-ea_D7			   	    	DC.B		'D7',0
-
-ea_A0                 		DC.B        'A0',0
-ea_A1                       DC.B        'A1',0
-ea_A2                       DC.B        'A2',0
-ea_A3                       DC.B        'A3',0
-ea_A4                       DC.B        'A4',0
-ea_A5                       DC.B        'A5',0
-ea_A6			            DC.B        'A6',0
-ea_A7                       DC.B        'A7',0
-
-ea_indir_A0		    		DC.B		'(A0)',0
-ea_indir_A1		    		DC.B		'(A1)',0
-ea_indir_A2		    		DC.B		'(A2)',0
-ea_indir_A3		    		DC.B		'(A3)',0
-ea_indir_A4			    	DC.B		'(A4)',0
-ea_indir_A5			    	DC.B		'(A5)',0
-ea_indir_A6			    	DC.B		'(A6)',0
-ea_indir_A7                 DC.B              '(A7)',0
-
-ea_indir_postinc_A0			DC.B		'(A0)+',0
-ea_indir_postinc_A1			DC.B		'(A1)+',0
-ea_indir_postinc_A2			DC.B		'(A2)+',0
-ea_indir_postinc_A3			DC.B		'(A3)+',0
-ea_indir_postinc_A4			DC.B		'(A4)+',0
-ea_indir_postinc_A5			DC.B		'(A5)+',0
-ea_indir_postinc_A6			DC.B		'(A6)+',0
-ea_indir_postinc_A7			DC.B		'(A7)+',0
 
 
-ea_indir_predec_A0			DC.B		'-(A0)',0
-ea_indir_predec_A1			DC.B		'-(A1)',0
-ea_indir_predec_A2			DC.B		'-(A2)',0
-ea_indir_predec_A3			DC.B		'-(A3)',0
-ea_indir_predec_A4			DC.B		'-(A4)',0
-ea_indir_predec_A5			DC.B		'-(A5)',0
-ea_indir_predec_A6			DC.B		'-(A6)',0
-ea_indir_predec_A7			DC.B		'-(A7)',0
-
-ea_paren_open			    DC.B		'(',0
-ea_paren_closed		    	DC.B		')',0
-ea_abs_word_string	    	DC.B		'.W',0
-ea_abs_long_string	    	DC.B		'.L',0
-ea_$				    	DC.B		'$',0
-
-mask_ADDA_ea_mode						EQU			$0038
-mask_ADDA_abs_add						EQU			$003F
-mask_ADDA_ea_reg_and_mode				EQU			$003F
-mask_ADDA_An_reg					    EQU			$0E00
-
-match_ADDA_Dn							EQU			$0000
-match_ADDA_An							EQU			$0008
-match_ADDA_An_indir						EQU			$0010
-match_ADDA_An_indir_predec				EQU			$0020
-match_ADDA_An_indir_postinc				EQU			$0018
-match_ADDA_abs_add_word					EQU			$0038
-match_ADDA_abs_add_long					EQU			$0039
-
-match_ADDA_D0							EQU			$0000
-match_ADDA_D1							EQU			$0001
-match_ADDA_D2							EQU			$0002
-match_ADDA_D3							EQU			$0003
-match_ADDA_D4							EQU			$0004
-match_ADDA_D5							EQU			$0005
-match_ADDA_D6							EQU			$0006
-match_ADDA_D7							EQU			$0007
-
-match_ADDA_A0							EQU			$0008
-match_ADDA_A1							EQU			$0009
-match_ADDA_A2							EQU			$000A
-match_ADDA_A3							EQU			$000B
-match_ADDA_A4							EQU			$000C
-match_ADDA_A5							EQU			$000D
-match_ADDA_A6							EQU			$000E
-match_ADDA_A7							EQU			$000F
-
-match_ADDA_An_indir_r0					EQU			$0010
-match_ADDA_An_indir_r1					EQU			$0011
-match_ADDA_An_indir_r2					EQU			$0012
-match_ADDA_An_indir_r3					EQU			$0013
-match_ADDA_An_indir_r4					EQU			$0014
-match_ADDA_An_indir_r5					EQU			$0015
-match_ADDA_An_indir_r6					EQU			$0016
-match_ADDA_An_indir_r7					EQU			$0017
-
-match_ADDA_An_indir_postinc_reg0		EQU			$0018
-match_ADDA_An_indir_postinc_reg1		EQU			$0019
-match_ADDA_An_indir_postinc_reg2		EQU			$001A
-match_ADDA_An_indir_postinc_reg3		EQU			$001B
-match_ADDA_An_indir_postinc_reg4		EQU			$001C
-match_ADDA_An_indir_postinc_reg5		EQU			$001D
-match_ADDA_An_indir_postinc_reg6		EQU			$001E
-match_ADDA_An_indir_postinc_reg7		EQU			$001F
-
-match_ADDA_An_indir_predec_reg0			EQU			$0020
-match_ADDA_An_indir_predec_reg1			EQU			$0021
-match_ADDA_An_indir_predec_reg2			EQU			$0022
-match_ADDA_An_indir_predec_reg3			EQU			$0023
-match_ADDA_An_indir_predec_reg4			EQU			$0024
-match_ADDA_An_indir_predec_reg5			EQU			$0025
-match_ADDA_An_indir_predec_reg6			EQU			$0026
-match_ADDA_An_indir_predec_reg7			EQU			$0027
-
-match_imm_add                           EQU         $003C
-match_imm_add_word                      EQU         $00FC
-match_imm_add_long                      EQU         $01FC
-
-match_ADDA_reg0							EQU			$0000
-match_ADDA_reg1							EQU			$0200
-match_ADDA_reg2							EQU			$0400
-match_ADDA_reg3							EQU			$0600
-match_ADDA_reg4							EQU			$0800
-match_ADDA_reg5							EQU			$0A00
-match_ADDA_reg6							EQU			$0C00
-match_ADDA_reg7							EQU			$0E00
-
-    END    START        ; last line of source
 
 
 

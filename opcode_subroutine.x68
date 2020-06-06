@@ -201,6 +201,9 @@ end_G2  MOVEM.L     (SP)+, D0-D7/A0-A6
 
 op_ADDA:
         JSR         adda_size
+        MOVE.W      D0,D1
+        *JSR         ADDA_sub
+        JSR         print_ea
         BRA         end_G2
 
 op_ADD:
@@ -364,15 +367,18 @@ op_ROR_R:
 
 *-----------------------------------------------------------
 * Subroutine Title: op_ADDQ
-* Description: This subroutine determines the length used
-* in the ADDQ operation.
+* Description: This subroutine calls a subroutine to
+* determine the length used in the ADDQ operation.
 * D0 is copied into D1 where specific masking occurs.
 * D0 is used to pass in the machine code word.
 *-----------------------------------------------------------
 op_ADDQ:
         MOVEM.L     D0-D7/A0-A6, -(SP)
         *MOVE.W      D0,D1       *refresh the entire opcode into D1
-        JSR     addq_size
+        JSR         addq_size
+        MOVE.W      D0,D1
+        JSR         ADDQ_sub
+        JSR         print_ea
         
 end_AQ  MOVEM.L     (SP)+, D0-D7/A0-A6
         RTS
@@ -381,7 +387,8 @@ end_AQ  MOVEM.L     (SP)+, D0-D7/A0-A6
 *-----------------------------------------------------------
 * Subroutine Title: op_SUB
 * Description: This subroutine determines the length used
-* in the SUB operation.
+* in the SUB operation by using another subroutine. The
+* subroutine then calls the appropriate ea subroutine.
 * D0 is copied into D1 where specific masking occurs.
 * D0 is used to pass in the machine code word.
 *-----------------------------------------------------------
@@ -397,7 +404,8 @@ end_SB  MOVEM.L     (SP)+, D0-D7/A0-A6
 *-----------------------------------------------------------
 * Subroutine Title: op_AND
 * Description: This subroutine determines the length used in
-* the AND operation.
+* the AND operation. The subroutine then calls the appropriate 
+* ea subroutine.
 * D0 is copied into D1 where specific masking occurs.
 * D0 is used to pass in the machine code word.
 *-----------------------------------------------------------
@@ -427,7 +435,8 @@ end_OR  MOVEM.L     (SP)+, D0-D7/A0-A6
 *-----------------------------------------------------------
 * Subroutine Title: op_OR
 * Description: This subroutine determines the length used in
-* the OR operation.
+* the OR operation.The subroutine then calls the appropriate 
+* ea subroutine.
 * D0 is copied into D1 where specific masking occurs.
 * D0 is used to pass in the machine code word.
 *-----------------------------------------------------------
@@ -443,7 +452,8 @@ end_MOVEQ
 *-----------------------------------------------------------
 * Subroutine Title: op_DATA
 * Description: This subroutine determines the length used in
-* the OR operation.
+* the OR operation. The subroutine then calls the appropriate 
+* ea subroutine.
 * D0 is copied into D1 where specific masking occurs.
 * D0 is used to pass in the machine code word.
 *-----------------------------------------------------------
@@ -451,10 +461,12 @@ op_DATA:
         MOVEM.L     D0-D7/A0-A6, -(SP)
         LEA         opcode_DATA,A1  *move data string into 
         MOVE.W      D0,D1           *move the full data into D1 for printing
-        JSR         print_string_op_nl
+        JSR         print_data
         
 end_DATA MOVEM.L     (SP)+, D0-D7/A0-A6
         RTS
+
+
 
 
 
