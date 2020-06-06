@@ -361,26 +361,38 @@ bgt_size:
         *test for long displacement size
 BGT_L   CMP.W       #m_size_L_bcc,D1
         BNE         BGT_W
-        *grab the next 32 bits
-        MOVE.L      (A0),D1         *move the long value into D1
-        ADDQ        #4,A0           *increment the pointer by 1 long
         LEA         opcode_BGT,A1
-        JSR         print_string_sized  *print the output
+        *grab the next 32 bits
+        ADDQ        #2,A0           *increment the pointer by 1 word
+        MOVE.L      (A0),D3         *move the data to D3
+        MOVE.L      A0,D2           *move the address location to D2
+        ADDQ        #2,A0           *increment the pointer by another 1 word
+        JSR         bcc_address
+        JSR         print_bcc       *print the output
         BRA         BGT_END
         
         *test for word displacement size
 BGT_W   CMP.W       #m_size_W_bcc,D1
         BNE         BGT_B
-        *grab the next 16 bits
-        MOVE.W      (A0),D1         *move the long value into D1
-        ADDQ        #2,A0           *increment the pointer by 1 word
         LEA         opcode_BGTW,A1
-        JSR         print_string_sized  *print the output
+        *grab the next 16 bits
+        ADDQ        #2,A0           *increment the pointer by 1 word
+        MOVE.W      (A0),D3         *move the data to D3
+        MOVE.L      A0,D2           *move the address location to D2
+        EXT.L       D3              *make the word into long
+        JSR         bcc_address
+        JSR         print_bcc       *print the output
         BRA         BGT_END
         
         *neither so it is byte size, print byte
 BGT_B   LEA         opcode_BGTB,A1
-        JSR         print_string_op_nl
+        MOVE.W      (A0),D3         *move the data to D3
+        LSL.W       #8,D3           *get rid of the first byte, rotate left then right
+        LSR.W       #8,D3
+        MOVE.L      A0,D2           *move the address location to D2
+        EXT.L       D3              *make the word into long
+        JSR         bcc_address
+        JSR         print_bcc       *print the output
         BRA         BGT_END
         
 BGT_END MOVEM.L     (SP)+, D0-D5/D7/A0-A6
@@ -399,31 +411,42 @@ beq_size:
         *test for long displacement size
 BEQ_L   CMP.W       #m_size_L_bcc,D1
         BNE         BEQ_W
-        *grab the next 32 bits
-        MOVE.L      (A0),D1         *move the long value into D1
-        ADDQ        #4,A0           *increment the pointer by 1 long
         LEA         opcode_BEQ,A1
-        JSR         print_string_sized  *print the output
+        *grab the next 32 bits
+        ADDQ        #2,A0           *increment the pointer by 1 word
+        MOVE.L      (A0),D3         *move the data to D3
+        MOVE.L      A0,D2           *move the address location to D2
+        ADDQ        #2,A0           *increment the pointer by another 1 word
+        JSR         bcc_address
+        JSR         print_bcc       *print the output
         BRA         BEQ_END
         
         *test for word displacement size
 BEQ_W   CMP.W       #m_size_W_bcc,D1
         BNE         BEQ_B
-        *grab the next 16 bits
-        MOVE.W      (A0),D1         *move the long value into D1
-        ADDQ        #2,A0           *increment the pointer by 1 word
         LEA         opcode_BEQW,A1
-        JSR         print_string_sized  *print the output
-        BRA         BGT_END
+        *grab the next 16 bits
+        ADDQ        #2,A0           *increment the pointer by 1 word
+        MOVE.W      (A0),D3         *move the data to D3
+        MOVE.L      A0,D2           *move the address location to D2
+        EXT.L       D3              *make the word into long
+        JSR         bcc_address
+        JSR         print_bcc       *print the output
+        BRA         BEQ_END
         
         *neither so it is byte size, print byte
 BEQ_B   LEA         opcode_BEQB,A1
-        JSR         print_string_op_nl
+        MOVE.W      (A0),D3         *move the data to D3
+        LSL.W       #8,D3           *get rid of the first byte, rotate left then right
+        LSR.W       #8,D3
+        MOVE.L      A0,D2           *move the address location to D2
+        EXT.L       D3              *make the word into long
+        JSR         bcc_address
+        JSR         print_bcc       *print the output
         BRA         BEQ_END
         
 BEQ_END MOVEM.L     (SP)+, D0-D5/D7/A0-A6
         RTS
-
         
 *-----------------------------------------------------------
 * Subroutine Title: ble_size
@@ -438,26 +461,38 @@ ble_size:
         *test for long displacement size
 BLE_L   CMP.W       #m_size_L_bcc,D1
         BNE         BLE_W
-        *grab the next 32 bits
-        MOVE.L      (A0),D1         *move the long value into D1
-        ADDQ        #4,A0           *increment the pointer by 1 long
         LEA         opcode_BLE,A1
-        JSR         print_string_sized  *print the output
+        *grab the next 32 bits
+        ADDQ        #2,A0           *increment the pointer by 1 word
+        MOVE.L      (A0),D3         *move the data to D3
+        MOVE.L      A0,D2           *move the address location to D2
+        ADDQ        #2,A0           *increment the pointer by another 1 word
+        JSR         bcc_address
+        JSR         print_bcc       *print the output
         BRA         BLE_END
         
         *test for word displacement size
 BLE_W   CMP.W       #m_size_W_bcc,D1
         BNE         BLE_B
-        *grab the next 16 bits
-        MOVE.W      (A0),D1         *move the long value into D1
-        ADDQ        #2,A0           *increment the pointer by 1 word
         LEA         opcode_BLEW,A1
-        JSR         print_string_sized  *print the output
+        *grab the next 16 bits
+        ADDQ        #2,A0           *increment the pointer by 1 word
+        MOVE.W      (A0),D3         *move the data to D3
+        MOVE.L      A0,D2           *move the address location to D2
+        EXT.L       D3              *make the word into long
+        JSR         bcc_address
+        JSR         print_bcc       *print the output
         BRA         BLE_END
         
         *neither so it is byte size, print byte
 BLE_B   LEA         opcode_BLEB,A1
-        JSR         print_string_op_nl
+        MOVE.W      (A0),D3         *move the data to D3
+        LSL.W       #8,D3           *get rid of the first byte, rotate left then right
+        LSR.W       #8,D3
+        MOVE.L      A0,D2           *move the address location to D2
+        EXT.L       D3              *make the word into long
+        JSR         bcc_address
+        JSR         print_bcc       *print the output
         BRA         BLE_END
         
 BLE_END MOVEM.L     (SP)+, D0-D5/D7/A0-A6
@@ -478,29 +513,63 @@ bra_size:
         *test for long displacement size
 BRA_L   CMP.W       #m_size_L_bcc,D1
         BNE         BRA_W
-        *grab the next 32 bits
-        MOVE.L      (A0),D1         *move the long value into D1
-        ADDQ        #4,A0           *increment the pointer by 1 long
         LEA         opcode_BRA,A1
-        JSR         print_string_sized  *print the output
+        *grab the next 32 bits
+        ADDQ        #2,A0           *increment the pointer by 1 word
+        MOVE.L      (A0),D3         *move the data to D3
+        MOVE.L      A0,D2           *move the address location to D2
+        ADDQ        #2,A0           *increment the pointer by another 1 word
+        JSR         bcc_address
+        JSR         print_bcc       *print the output
         BRA         BRA_END
         
         *test for word displacement size
 BRA_W   CMP.W       #m_size_W_bcc,D1
         BNE         BRA_B
-        *grab the next 16 bits
-        MOVE.W      (A0),D1         *move the long value into D1
-        ADDQ        #2,A0           *increment the pointer by 1 word
         LEA         opcode_BRAW,A1
-        JSR         print_string_sized  *print the output
+        *grab the next 16 bits
+        ADDQ        #2,A0           *increment the pointer by 1 word
+        MOVE.W      (A0),D3         *move the data to D3
+        MOVE.L      A0,D2           *move the address location to D2
+        EXT.L       D3              *make the word into long
+        JSR         bcc_address
+        JSR         print_bcc       *print the output
         BRA         BRA_END
         
         *neither so it is byte size, print byte
 BRA_B   LEA         opcode_BRAB,A1
-        JSR         print_string_op_nl
+        MOVE.W      (A0),D3         *move the data to D3
+        LSL.W       #8,D3           *get rid of the first byte, rotate left then right
+        LSR.W       #8,D3
+        MOVE.L      A0,D2           *move the address location to D2
+        EXT.L       D3              *make the word into long
+        JSR         bcc_address
+        JSR         print_bcc       *print the output
         BRA         BRA_END
         
 BRA_END MOVEM.L     (SP)+, D0-D5/D7/A0-A6
+        RTS
+
+*-----------------------------------------------------------
+* Subroutine Title: bcc_address
+* Description: Calculate the displacement address of bcc opcodes.
+* D3 is used to pass in the data (A0)
+* D2 is used to pass in the address location (current + 2)
+*-----------------------------------------------------------
+bcc_address:
+        MOVEM.L     D0-D2/D4-D7/A0-A6, -(SP)
+        CMP.L       #0,D3           *compare against 0
+        BLT         bcc_negative    *branch if the value is negative
+        *else
+        ADD.L       D2,D3           *add address by displacement
+        BRA         bcc_add_end     *return for printing
+bcc_negative
+        MOVE.L      #0,D4
+        SUB.L       D3,D4           *flip the bits
+        SUB.L       D4,D2           *get the address of displacemnt
+        MOVE.L      D2,D3           *move back for printing
+bcc_add_end  
+        MOVEM.L     (SP)+, D0-D2/D4-D7/A0-A6
         RTS
                 
 *-----------------------------------------------------------
@@ -1043,6 +1112,7 @@ MOVEQ_FAIL
 MOVEQ_END 
         MOVEM.L     (SP)+, D0-D5/D7/A0-A6
         RTS
+
 
 
 
