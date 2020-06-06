@@ -24,15 +24,15 @@ ea_Dn_match_l                          CMP.L              #match_SUB_l_Dn_ea,D1 
                                        BNE                ea_Dn_match                           ;if not check other order
 
 Dn_ea_match                            CMP.L              #match_SUB_b_ea_Dn,D1                 ;check to see if it's ea,Dn
-                                       BEQ                ea_Dn                                 ;if equal go figure out ea mode
-                                       BNE                ea_Dn_match_w                         ;if not go check word size for same order
+                                       BEQ                Dn_ea                                 ;if equal go figure out ea mode
+                                       BNE                Dn_ea_match_w                         ;if not go check word size for same order
 
 Dn_ea_match_w                          CMP.L              #match_SUB_w_ea_Dn,D1                 ;check to see if it's ea,Dn
-                                       BEQ                ea_Dn                                 ;if equal go figure out ea mode
-                                       BNE                ea_Dn_match_l                         ;if not go check word size for same order
+                                       BEQ                Dn_ea                                 ;if equal go figure out ea mode
+                                       BNE                Dn_ea_match_l                         ;if not go check word size for same order
 
 Dn_ea_match_l                          CMP.L              #match_SUB_l_ea_Dn,D1                 ;check to see if it's ea,Dn
-                                       BEQ                ea_Dn                                 ;if equal go figure out ea mode
+                                       BEQ                Dn_ea                                 ;if equal go figure out ea mode
                                        BNE                ERROR                                 ;if not go to error message
 ;--------------------------------------------------------------------------------------------------------------------------
 *                                               EA,Dn Order                                       
