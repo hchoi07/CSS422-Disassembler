@@ -1,7 +1,13 @@
-*----------------------------
-* io_subroutine
-* prompts user for input
-*----------------------------
+*-----------------------------------------------------------
+* Subroutine Title: io_subroutine
+* Description: This subroutine asks the user for two sets of 
+* 8 ascii characters and tests a couple conditions, if the
+* ending address is greater than the starter address, if
+* the input is in the given range, if only hex digits are given
+* and if the input is on a word boundary.
+* A2 passes the starting address
+* A3 passes the ending address
+*-----------------------------------------------------------
 
 io_subroutine:
             MOVEM.L      D0-D1/D4-D7/A0-A6,-(SP)
@@ -60,7 +66,7 @@ range_check1:
             CMP.L       #end_Adr,D3
             BGT         wrong_range1
             *noting wrong, continue
-            BRA         INPUT2
+            BRA         boundary1
 
 wrong_range1:
             *not in correct range
@@ -133,7 +139,7 @@ range_check2:
             CMP.L       #end_Adr,D2
             BGT         wrong_range2
             *noting wrong, continue
-            BRA         test_ends
+            BRA         boundary2
 
 wrong_range2:
             *not in correct range
@@ -175,6 +181,8 @@ end_bad:
             BRA         INPUT1  
 
     
+
+
 
 *~Font name~Courier New~
 *~Font size~10~

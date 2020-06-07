@@ -7,6 +7,8 @@
 * hexadecimal.
 * D6 is used to pass in the ASCII value of the character.
 * D6 returns the updated hexadecimal value.
+* Sourced from: http://www.mwftr.com/ucF08/uc-07-68K-PROG.pdf
+* For academic purposes only
 *-----------------------------------------------------------
 *test if the input is in the number range of ascii
 toHex:
@@ -32,6 +34,7 @@ letter      CMPI.B      #$41,D6
             SUBI.B      #$37,D6
             MOVEM.L     (SP)+,A0-A6/D0-D1/D3-D5/D7
             RTS
+
 
 
 
