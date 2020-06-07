@@ -6,105 +6,102 @@
 * A0 holds the next instruction
 * A1 will point to the location of the string constants
 * A3 will point to the error message in memory
-*-----------------------------------------------------------    ORG    $1000
-START:                  ; first instruction of program
+*-----------------------------------------------------------    
 
    
 JSR_sub                          MOVEM.L           D1-D5/D7/A0-A6, -(SP)                                  ;preserve the registers, 
                                  AND.L             #mask_JSR_ea_mode,D1                                   ;move the mask to D1
 ;--------------Determine EFFECTIVE ADDRESS Mode-----------------------------------                
-add_reg_indir                    CMP.L             #match_JSR_An_indir,D1                       ;check to see if mode is add reg indir
-                                 BNE               abs_add_word                                 ;if not, go check add reg indir predec 
-                                 BEQ               An_indir_reg                                  ;if equal go figure out the register           
+JSR_add_reg_indir                CMP.L             #match_JSR_An_indir,D1                       ;check to see if mode is add reg indir
+                                 BNE               JSR_abs_add_word                                 ;if not, go check add reg indir predec 
+                                 BEQ               JSR_An_indir_reg                                  ;if equal go figure out the register           
            
-abs_add_word                     AND.L             #mask_JSR_abs_add,D2                          ;load mask to determine if abs add word or long
+JSR_abs_add_word                 AND.L             #mask_JSR_abs_add,D2                          ;load mask to determine if abs add word or long
                                  
                                  CMP.L             #match_JSR_abs_add_word,D2                    ;check if abs add word
                                  MOVE.L            (A0)+,D5                                      ;pull the next word instruction that holds the address 
-                                 BNE               abs_add_long                                  ;if not go check abs add long
-                                 BEQ               abs_add_word_out                              ;if equal go to output
+                                 BNE               JSR_abs_add_long                                  ;if not go check abs add long
+                                 BEQ               JSR_abs_add_word_out                              ;if equal go to output
   
-abs_add_long                     CMP.L             #match_JSR_abs_add_long,D2                     ;check to see if abs add long
-                                 BEQ               abs_add_long_out                               ;if equal go to output
+JSR_abs_add_long                 CMP.L             #match_JSR_abs_add_long,D2                     ;check to see if abs add long
+                                 BEQ               JSR_abs_add_long_out                               ;if equal go to output
                                  BNE               ERROR                                         ;if not equal go to error mesage sub routine
 
 ;--------------------Determine EFFECTIVE ADDRESS Register----------------------------------------------------------------------------------------
                                  
-                                 AND.L            #mask_JSR_ea_reg_and_mode,D2                       ;load the mask into D2 for the mode and the register
+                     
 ;------------------Address Register Indirect-----------------------
-An_indir_reg                      CMP.L          #match_JSR_An_indir_r0,D2              ;check reg is equal to 0
-                                 BNE             An_indir_reg1                           ;if not try reg 1
-                                 BEQ             An_indir_reg0_out                       ;if equal go to output subroutine
+JSR_An_indir_reg                 AND.L           #mask_JSR_ea_reg_and_mode,D2                       ;load the mask into D2 for the mode and the register
+                                 CMP.L           #match_JSR_An_indir_r0,D2              ;check reg is equal to 0
+                                 BNE             JSR_An_indir_reg1                           ;if not try reg 1
+                                 BEQ             JSR_An_indir_reg0_out                       ;if equal go to output subroutine
 
-An_indir_reg1                    CMP.L           #match_JSR_An_indir_r1,D2              ;check reg is equal to 1
-                                 BNE             An_indir_reg2                           ;if not try reg 2
-                                 BEQ             An_indir_reg1_out                       ;if equal go to output subroutine
+JSR_An_indir_reg1                CMP.L           #match_JSR_An_indir_r1,D2              ;check reg is equal to 1
+                                 BNE             JSR_An_indir_reg2                           ;if not try reg 2
+                                 BEQ             JSR_An_indir_reg1_out                       ;if equal go to output subroutine
 
-An_indir_reg2                    CMP.L           #match_JSR_An_indir_r2,D2              ;check reg is equal to 2
-                                 BNE             An_indir_reg3                           ;if not try reg 3
-                                 BEQ             An_indir_reg2_out                       ;if equal go to output subroutine
+JSR_An_indir_reg2                CMP.L           #match_JSR_An_indir_r2,D2              ;check reg is equal to 2
+                                 BNE             JSR_An_indir_reg3                           ;if not try reg 3
+                                 BEQ             JSR_An_indir_reg2_out                       ;if equal go to output subroutine
 
-An_indir_reg3                    CMP.L           #match_JSR_An_indir_r3,D2              ;check reg is equal to 3
-                                 BNE             An_indir_reg4                           ;if not try reg 4
-                                 BEQ             An_indir_reg3_out                       ;if equal go to output subroutine
+JSR_An_indir_reg3                CMP.L           #match_JSR_An_indir_r3,D2              ;check reg is equal to 3
+                                 BNE             JSR_An_indir_reg4                           ;if not try reg 4
+                                 BEQ             JSR_An_indir_reg3_out                       ;if equal go to output subroutine
     
-An_indir_reg4                    CMP.L           #match_JSR_An_indir_r4,D2              ;check reg is equal to 4
-                                 BNE             An_indir_reg5                           ;if not try reg 5
-                                 BEQ             An_indir_reg4_out                       ;if equal go to output subroutine
+JSR_An_indir_reg4                CMP.L           #match_JSR_An_indir_r4,D2              ;check reg is equal to 4
+                                 BNE             JSR_An_indir_reg5                           ;if not try reg 5
+                                 BEQ             JSR_An_indir_reg4_out                       ;if equal go to output subroutine
         
-An_indir_reg5                    CMP.L           #match_JSR_An_indir_r5,D2              ;check reg is equal to 5
-                                 BNE             An_indir_reg6                           ;if not try reg 6
-                                 BEQ             An_indir_reg5_out                       ;if equal go to output subroutine
+JSR_An_indir_reg5                CMP.L           #match_JSR_An_indir_r5,D2              ;check reg is equal to 5
+                                 BNE             JSR_An_indir_reg6                           ;if not try reg 6
+                                 BEQ             JSR_An_indir_reg5_out                       ;if equal go to output subroutine
 
-An_indir_reg6                    CMP.L           #match_JSR_An_indir_r6,D2              ;check reg is equal to 6
-                                 BNE             An_indir_reg7                           ;if not try reg 7
-                                 BEQ             An_indir_reg6_out                       ;if equal go to output subroutine
+JSR_An_indir_reg6                CMP.L           #match_JSR_An_indir_r6,D2              ;check reg is equal to 6
+                                 BNE             JSR_An_indir_reg7                           ;if not try reg 7
+                                 BEQ             JSR_An_indir_reg6_out                       ;if equal go to output subroutine
 
-An_indir_reg7                    CMP.L           #match_JSR_An_indir_r7,D2              ;check reg is equal to 7
-                                 BEQ             An_indir_reg7_out                       ;if equal go to output subroutine
+JSR_An_indir_reg7                CMP.L           #match_JSR_An_indir_r7,D2              ;check reg is equal to 7
+                                 BEQ             JSR_An_indir_reg7_out                       ;if equal go to output subroutine
                                  BNE             ERROR                                   :if not equal to an addresssing mode, pritn error
 
 ;--------------------Address Register Indirect Output-----------------------
-An_indir_reg0_out			            MOVE.L          #ea_indir_A0,A1		    			      ;load string constant into A1
-								        RTS								            		;return to subroutine
+JSR_An_indir_reg0_out			            MOVE.L          #ea_indir_A0,A1		    		;load string constant into A1
+								            RTS								            		;return to subroutine
 
-An_indir_reg1_out			            MOVE.L          #ea_indir_A1,A1		    			      ;load string constant into A1
-								        RTS								            		;return to subroutine
+JSR_An_indir_reg1_out			            MOVE.L          #ea_indir_A1,A1		    		;load string constant into A1
+							    	        RTS								            		;return to subroutine
 
-An_indir_reg2_out			            MOVE.L          #ea_indir_A2,A1		    			      ;load string constant into A1
-								        RTS								            		;return to subroutine
+JSR_An_indir_reg2_out			            MOVE.L          #ea_indir_A2,A1		    		;load string constant into A1
+						    		        RTS								            		;return to subroutine
 
-An_indir_reg3_out			            MOVE.L			#ea_indir_A3,A1		    			      ;load string constant into A1
-								        RTS								            		;return to subroutine
+JSR_An_indir_reg3_out			            MOVE.L			#ea_indir_A3,A1		    		;load string constant into A1
+					    			        RTS								            		;return to subroutine
 
-An_indir_reg4_out			            MOVE.L			#ea_indir_A4,A1		    			      ;load string constant into A1
-								        RTS								            		;return to subroutine
+JSR_An_indir_reg4_out			            MOVE.L			#ea_indir_A4,A1		    		;load string constant into A1
+				    				        RTS								            		;return to subroutine
 
-An_indir_reg5_out			            MOVE.L			#ea_indir_A5,A1		    			      ;load string constant into A1
-								        RTS								            		;return to subroutine
+JSR_An_indir_reg5_out			            MOVE.L			#ea_indir_A5,A1		    		;load string constant into A1
+			    					        RTS								            		;return to subroutine
 
-An_indir_reg6_out			            MOVE.L			#ea_indir_A6,A1		    			      ;load string constant into A1
-								        RTS								            		;return to subroutine
+JSR_An_indir_reg6_out			            MOVE.L			#ea_indir_A6,A1		    		;load string constant into A1
+		    						        RTS								            		;return to subroutine
 								        
-An_indir_reg7_out			            MOVE.L			#ea_indir_A7,A1		    			      ;load string constant into A1
-								        RTS								            		;return to subroutine
+JSR_An_indir_reg7_out			            MOVE.L			#ea_indir_A7,A1		    		;load string constant into A1
+	    							        RTS								            		;return to subroutine
 
 ;------------------Absolute Addressing Output-----------------------
-abs_add_word_out						 MOVE.L      #ea_$,(A1)+                        ;load $ for hex and increment A1
+JSR_abs_add_word_out					 MOVE.L      #ea_$,(A1)+                        ;load $ for hex and increment A1
                                          MOVE.L      D5,(A1)+                           ;load address                  
                                          RTS                                            :return to subroutine
                                            
 
-abs_add_long_out    					 MOVE.L      (A0)+,D5                           ;pull the next long instruction that holds the address
+JSR_abs_add_long_out        			 MOVE.L      (A0)+,D5                           ;pull the next long instruction that holds the address
                                          MOVE.L      #ea_$,(A1)+                         ;load $ for hex and increment A1
                                          MOVE.L      D5,(A1)+                           ;load address                  
                                          RTS                                            :return to subroutine                                            
-;----------------------Error Handling----------------------------------------
-ERROR                                    LEA     ERROR_MESSAGE,A1                             ;load error messge into A3
-					                     RTS
-					                            
-					                            
-ERROR_MESSAGE                        DC.B            'Incorrect EA Format',0
+*-------------------------------------------------------------------------------------------------------------
+*                           Variables
+*-------------------------------------------------------------------------------------------------------------
 
 ea_indir_A0		    		        DC.B		'(A0)',0
 ea_indir_A1		    		        DC.B		'(A1)',0
@@ -149,7 +146,6 @@ match_JSR_An_indir_r5				EQU			$0015
 match_JSR_An_indir_r6				EQU			$0016
 match_JSR_An_indir_r7				EQU			$0017
 
-    END    START        ; last line of source
 
 
 
