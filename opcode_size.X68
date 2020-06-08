@@ -15,6 +15,7 @@ MA_W    CMP.W       #m_size_W_MOVES,D1
         LEA         opcode_MOVEAW,A1
         MOVE.B      #word_size,D6
         JSR         print_string_op_nn  *print the opcode
+        MOVE.W      D0,D1               *reload the opcode into D1
         JSR         MOVEA_sub
         JSR         print_ea
         BRA         MA_END
@@ -25,6 +26,7 @@ MA_L    CMP.W       #m_size_L_MOVES,D1
         LEA         opcode_MOVEAL,A1
         MOVE.B      #long_size,D6
         JSR         print_string_op_nn  *print the opcode
+        MOVE.W      D0,D1               *reload the opcode into D1
         JSR         MOVEA_sub
         JSR         print_ea
         BRA         MA_END
@@ -101,6 +103,7 @@ movem_rm_size:
         LEA         opcode_MOVEMW,A1    *move the value for printing
         MOVE.B      #word_size,D6
         JSR         print_string_op_nn  *print the opcode
+        MOVE.W      D0,D1               *reload the opcode into D1
         JSR         MOVEM_sub
         JSR         print_ea
         BRA         MOVEM_rm_END
@@ -112,6 +115,7 @@ MOVEM_rm_L
         LEA         opcode_MOVEML,A1
         MOVE.B      #long_size,D6
         JSR         print_string_op_nn  *print the opcode
+        MOVE.W      D0,D1               *reload the opcode into D1
         JSR         MOVEM_sub
         JSR         print_ea
         BRA         MOVEM_rm_END
@@ -140,6 +144,7 @@ movem_mr_size:
         LEA         opcode_MOVEMW,A1    *move the value for printing
         MOVE.B      #word_size,D6
         JSR         print_string_op_nn  *print the opcode
+        MOVE.W      D0,D1               *reload the opcode into D1
         JSR         MOVEM_sub
         JSR         print_ea
         BRA         MOVEM_mr_END
@@ -151,6 +156,7 @@ MOVEM_mr_L
         LEA         opcode_MOVEML,A1
         MOVE.B      #long_size,D6
         JSR         print_string_op_nn  *print the opcode
+        MOVE.W      D0,D1               *reload the opcode into D1
         JSR         MOVEM_sub
         JSR         print_ea
         BRA         MOVEM_mr_END
@@ -200,6 +206,7 @@ lea_size:
         LEA         opcode_LEA,A1
         MOVE.B      #long_size,D6
         JSR         print_string_op_nn  *print the opcode
+        MOVE.W      D0,D1               *reload the opcode into D1
         JSR         LEA_sub
         JSR         print_ea
         MOVEM.L     (SP)+, D0-D5/D7/A0-A6
@@ -215,6 +222,7 @@ jsr_size:
         LEA         opcode_JSR,A1
         MOVE.B      #no_size,D6
         JSR         print_string_op_nn  *print the opcode
+        MOVE.W      D0,D1               *reload the opcode into D1
         JSR         JSR_sub
         JSR         print_ea
         MOVEM.L     (SP)+, D0-D5/D7/A0-A6
@@ -237,6 +245,7 @@ not_size:
         LEA         opcode_NOTB,A1    *move the value for printing
         MOVE.B      #byte_size,D6
         JSR         print_string_op_nn  *print the opcode
+        MOVE.W      D0,D1               *reload the opcode into D1
         JSR         NOT_sub
         JSR         print_ea
         BRA         NOT_END
@@ -247,6 +256,7 @@ NOT_W   CMP.W       #m_size_W_NOT,D1
         LEA         opcode_NOTW,A1
         MOVE.B      #word_size,D6
         JSR         print_string_op_nn  *print the opcode
+        MOVE.W      D0,D1               *reload the opcode into D1
         JSR         NOT_sub
         JSR         print_ea
         BRA         NOT_END
@@ -257,6 +267,7 @@ NOT_L   CMP.W       #m_size_L_NOT,D1
         LEA         opcode_NOTL,A1
         MOVE.B      #long_size,D6
         JSR         print_string_op_nn  *print the opcode
+        MOVE.W      D0,D1               *reload the opcode into D1
         JSR         NOT_sub
         JSR         print_ea
         BRA         NOT_END
@@ -285,6 +296,7 @@ adda_size:
         LEA         opcode_ADDAW,A1    *move the value for printing
         MOVE.B      #word_size,D6
         JSR         print_string_op_nn  *print the opcode
+        MOVE.W      D0,D1               *reload the opcode into D1
         JSR         ADDA_sub
         JSR         print_ea
         BRA         ADDA_END
@@ -295,6 +307,7 @@ ADDA_L  CMP.W       #m_size_L_ADDA,D1
         LEA         opcode_ADDAL,A1
         MOVE.B      #long_size,D6
         JSR         print_string_op_nn  *print the opcode
+        MOVE.W      D0,D1               *reload the opcode into D1
         JSR         ADDA_sub
         JSR         print_ea
         BRA         ADDA_END
@@ -321,6 +334,7 @@ add_size:
         LEA         opcode_ADDB,A1    *move the value for printing
         MOVE.B      #byte_size,D6
         JSR         print_string_op_nn  *print the opcode
+        MOVE.W      D0,D1               *reload the opcode into D1
         JSR         ADD_ADD             *calculate ea and print
         JSR         print_ea
         BRA         ADD_END
@@ -331,6 +345,7 @@ ADD_W   CMP.W       #m_size_W_ADD,D1
         LEA         opcode_ADDW,A1
         MOVE.B      #word_size,D6
         JSR         print_string_op_nn  *print the opcode
+        MOVE.W      D0,D1               *reload the opcode into D1
         JSR         ADD_ADD             *calculate ea and print
         JSR         print_ea
         BRA         ADD_END
@@ -341,6 +356,7 @@ ADD_L   CMP.W       #m_size_L_ADD,D1
         LEA         opcode_ADDL,A1
         MOVE.B      #long_size,D6
         JSR         print_string_op_nn  *print the opcode
+        MOVE.W      D0,D1               *reload the opcode into D1
         JSR         ADD_ADD             *calculate ea and print
         JSR         print_ea
         BRA         ADD_END
@@ -630,6 +646,7 @@ lsl_r_size:
         LEA         opcode_LSLB,A1    *move the value for printing
         MOVE.B      #byte_size,D6
         JSR         print_string_op_nn  *print the opcode
+        MOVE.W      D0,D1               *reload the opcode into D1
         JSR         LSD_sub
         JSR         print_ea
         BRA         LSLR_END
@@ -640,6 +657,7 @@ LSLR_W  CMP.W       #m_size_W_shfts,D1
         LEA         opcode_LSLW,A1
         MOVE.B      #word_size,D6
         JSR         print_string_op_nn  *print the opcode
+        MOVE.W      D0,D1               *reload the opcode into D1
         JSR         LSD_sub
         JSR         print_ea
         BRA         LSLR_END
@@ -650,6 +668,7 @@ LSLR_L  CMP.W       #m_size_L_shfts,D1
         LEA         opcode_LSLL,A1
         MOVE.B      #long_size,D6
         JSR         print_string_op_nn  *print the opcode
+        MOVE.W      D0,D1               *reload the opcode into D1
         JSR         LSD_sub
         JSR         print_ea
         BRA         LSLR_END
@@ -673,6 +692,7 @@ lsl_m_size:
         LEA         opcode_LSLW,A1
         MOVE.B      #word_size,D6
         JSR         print_string_op_nn  *print the opcode
+        MOVE.W      D0,D1               *reload the opcode into D1
         JSR         LSD_sub
         JSR         print_ea
         BRA         LSLM_END
@@ -698,6 +718,7 @@ lsr_r_size:
         LEA         opcode_LSRB,A1    *move the value for printing
         MOVE.B      #byte_size,D6
         JSR         print_string_op_nn  *print the opcode
+        MOVE.W      D0,D1               *reload the opcode into D1
         JSR         LSD_sub
         JSR         print_ea
         BRA         LSRR_END
@@ -708,6 +729,7 @@ LSRR_W  CMP.W       #m_size_W_shfts,D1
         LEA         opcode_LSRW,A1
         MOVE.B      #word_size,D6
         JSR         print_string_op_nn  *print the opcode
+        MOVE.W      D0,D1               *reload the opcode into D1
         JSR         LSD_sub
         JSR         print_ea
         BRA         LSRR_END
@@ -718,6 +740,7 @@ LSRR_L  CMP.W       #m_size_L_shfts,D1
         LEA         opcode_LSRL,A1
         MOVE.B      #long_size,D6
         JSR         print_string_op_nn  *print the opcode
+        MOVE.W      D0,D1               *reload the opcode into D1
         JSR         LSD_sub
         JSR         print_ea
         BRA         LSRR_END
@@ -740,6 +763,7 @@ lsr_m_size:
         LEA         opcode_LSRW,A1
         MOVE.B      #word_size,D6
         JSR         print_string_op_nn  *print the opcode
+        MOVE.W      D0,D1               *reload the opcode into D1
         JSR         LSD_sub
         JSR         print_ea
         BRA         LSRM_END
@@ -764,6 +788,7 @@ asl_r_size:
         LEA         opcode_ASLB,A1    *move the value for printing
         MOVE.B      #byte_size,D6
         JSR         print_string_op_nn  *print the opcode
+        MOVE.W      D0,D1               *reload the opcode into D1
         JSR         ASD_sub
         JSR         print_ea
         BRA         ASLR_END
@@ -774,6 +799,7 @@ ASLR_W  CMP.W       #m_size_W_shfts,D1
         LEA         opcode_ASLW,A1
         MOVE.B      #word_size,D6
         JSR         print_string_op_nn  *print the opcode
+        MOVE.W      D0,D1               *reload the opcode into D1
         JSR         ASD_sub
         JSR         print_ea
         BRA         ASLR_END
@@ -784,6 +810,7 @@ ASLR_L  CMP.W       #m_size_L_shfts,D1
         LEA         opcode_ASLL,A1
         MOVE.B      #long_size,D6
         JSR         print_string_op_nn  *print the opcode
+        MOVE.W      D0,D1               *reload the opcode into D1
         JSR         ASD_sub
         JSR         print_ea
         BRA         ASLR_END
@@ -806,6 +833,7 @@ asl_m_size:
         LEA         opcode_ASLW,A1
         MOVE.B      #word_size,D6
         JSR         print_string_op_nn  *print the opcode
+        MOVE.W      D0,D1               *reload the opcode into D1
         JSR         ASD_sub
         JSR         print_ea
         BRA         ASLM_END
@@ -831,6 +859,7 @@ asr_r_size:
         LEA         opcode_ASRB,A1    *move the value for printing
         MOVE.B      #byte_size,D6
         JSR         print_string_op_nn  *print the opcode
+        MOVE.W      D0,D1               *reload the opcode into D1
         JSR         ASD_sub
         JSR         print_ea
         BRA         ASRR_END
@@ -841,6 +870,7 @@ ASRR_W  CMP.W       #m_size_W_shfts,D1
         LEA         opcode_ASRW,A1
         MOVE.B      #word_size,D6
         JSR         print_string_op_nn  *print the opcode
+        MOVE.W      D0,D1               *reload the opcode into D1
         JSR         ASD_sub
         JSR         print_ea
         BRA         ASRR_END
@@ -851,6 +881,7 @@ ASRR_L  CMP.W       #m_size_L_shfts,D1
         LEA         opcode_ASRL,A1
         MOVE.B      #long_size,D6
         JSR         print_string_op_nn  *print the opcode
+        MOVE.W      D0,D1               *reload the opcode into D1
         JSR         ASD_sub
         JSR         print_ea
         BRA         ASRR_END
@@ -873,6 +904,7 @@ asr_m_size:
         LEA         opcode_ASRW,A1
         MOVE.B      #word_size,D6
         JSR         print_string_op_nn  *print the opcode
+        MOVE.W      D0,D1               *reload the opcode into D1
         JSR         ASD_sub
         JSR         print_ea
         BRA         ASRM_END
@@ -898,6 +930,7 @@ rol_r_size:
         LEA         opcode_ROLB,A1    *move the value for printing
         MOVE.B      #byte_size,D6
         JSR         print_string_op_nn  *print the opcode
+        MOVE.W      D0,D1               *reload the opcode into D1
         JSR         ROD_sub
         JSR         print_ea
         BRA         ROLR_END
@@ -908,6 +941,7 @@ ROLR_W  CMP.W       #m_size_W_shfts,D1
         LEA         opcode_ROLW,A1
         MOVE.B      #word_size,D6
         JSR         print_string_op_nn  *print the opcode
+        MOVE.W      D0,D1               *reload the opcode into D1
         JSR         ROD_sub
         JSR         print_ea
         BRA         ROLR_END
@@ -918,6 +952,7 @@ ROLR_L  CMP.W       #m_size_L_shfts,D1
         LEA         opcode_ROLL,A1
         MOVE.B      #long_size,D6
         JSR         print_string_op_nn  *print the opcode
+        MOVE.W      D0,D1               *reload the opcode into D1
         JSR         ROD_sub
         JSR         print_ea
         BRA         ROLR_END
@@ -940,6 +975,7 @@ rol_m_size:
         LEA         opcode_ROLW,A1
         MOVE.B      #word_size,D6
         JSR         print_string_op_nn  *print the opcode
+        MOVE.W      D0,D1               *reload the opcode into D1
         JSR         ROD_sub
         JSR         print_ea
         BRA         ROLM_END
@@ -965,6 +1001,7 @@ ror_r_size:
         LEA         opcode_RORB,A1    *move the value for printing
         MOVE.B      #byte_size,D6
         JSR         print_string_op_nn  *print the opcode
+        MOVE.W      D0,D1               *reload the opcode into D1
         JSR         ROD_sub
         JSR         print_ea
         BRA         RORR_END
@@ -975,6 +1012,7 @@ RORR_W  CMP.W       #m_size_W_shfts,D1
         LEA         opcode_RORW,A1
         MOVE.B      #word_size,D6
         JSR         print_string_op_nn  *print the opcode
+        MOVE.W      D0,D1               *reload the opcode into D1
         JSR         ROD_sub
         JSR         print_ea
         BRA         RORR_END
@@ -985,6 +1023,7 @@ RORR_L  CMP.W       #m_size_L_shfts,D1
         LEA         opcode_RORL,A1
         MOVE.B      #long_size,D6
         JSR         print_string_op_nn  *print the opcode
+        MOVE.W      D0,D1               *reload the opcode into D1
         JSR         ROD_sub
         JSR         print_ea
         BRA         RORR_END
@@ -1007,6 +1046,7 @@ ror_m_size:
         LEA         opcode_RORW,A1
         MOVE.B      #word_size,D6
         JSR         print_string_op_nn  *print the opcode
+        MOVE.W      D0,D1               *reload the opcode into D1
         JSR         ROD_sub
         JSR         print_ea
         BRA         RORM_END
@@ -1032,6 +1072,7 @@ addq_size:
         LEA         opcode_ADDQB,A1    *move the value for printing
         MOVE.B      #byte_size,D6
         JSR         print_string_op_nn  *print the opcode
+        MOVE.W      D0,D1               *reload the opcode into D1
         JSR         ADDQ_sub
         JSR         print_ea
         BRA         ADDQ_END
@@ -1042,6 +1083,7 @@ ADDQ_W  CMP.W       #m_size_W_ADD,D1
         LEA         opcode_ADDQW,A1
         MOVE.B      #word_size,D6
         JSR         print_string_op_nn  *print the opcode
+        MOVE.W      D0,D1               *reload the opcode into D1
         JSR         ADDQ_sub
         JSR         print_ea
         BRA         ADDQ_END
@@ -1052,6 +1094,7 @@ ADDQ_L  CMP.W       #m_size_L_ADD,D1
         LEA         opcode_ADDQL,A1
         MOVE.B      #long_size,D6
         JSR         print_string_op_nn  *print the opcode
+        MOVE.W      D0,D1               *reload the opcode into D1
         JSR         ADDQ_sub
         JSR         print_ea
         BRA         ADDQ_END
@@ -1079,6 +1122,7 @@ sub_size:
         LEA         opcode_SUBB,A1    *move the value for printing
         MOVE.B      #byte_size,D6
         JSR         print_string_op_nn  *print the opcode
+        MOVE.W      D0,D1               *reload the opcode into D1
         JSR         SUB_sub
         JSR         print_ea
         BRA         SUB_END
@@ -1089,6 +1133,7 @@ SUB_W   CMP.W       #m_size_W_SUB,D1
         LEA         opcode_SUBW,A1
         MOVE.B      #word_size,D6
         JSR         print_string_op_nn  *print the opcode
+        MOVE.W      D0,D1               *reload the opcode into D1
         JSR         SUB_sub
         JSR         print_ea
         BRA         SUB_END
@@ -1099,6 +1144,7 @@ SUB_L   CMP.W       #m_size_L_SUB,D1
         LEA         opcode_SUBL,A1
         MOVE.B      #long_size,D6
         JSR         print_string_op_nn  *print the opcode
+        MOVE.W      D0,D1               *reload the opcode into D1
         JSR         SUB_sub
         JSR         print_ea
         BRA         SUB_END
@@ -1125,6 +1171,7 @@ and_size:
         LEA         opcode_ANDB,A1    *move the value for printing
         MOVE.B      #byte_size,D6
         JSR         print_string_op_nn  *print the opcode
+        MOVE.W      D0,D1               *reload the opcode into D1
         JSR         AND_sub
         JSR         print_ea
         BRA         AND_END
@@ -1135,6 +1182,7 @@ AND_W   CMP.W       #m_size_W_logic,D1
         LEA         opcode_ANDW,A1
         MOVE.B      #word_size,D6
         JSR         print_string_op_nn  *print the opcode
+        MOVE.W      D0,D1               *reload the opcode into D1
         JSR         AND_sub
         JSR         print_ea
         BRA         AND_END
@@ -1145,6 +1193,7 @@ AND_L   CMP.W       #m_size_L_logic,D1
         LEA         opcode_ANDL,A1
         MOVE.B      #long_size,D6
         JSR         print_string_op_nn  *print the opcode
+        MOVE.W      D0,D1               *reload the opcode into D1
         JSR         AND_sub
         JSR         print_ea
         BRA         AND_END
@@ -1171,6 +1220,7 @@ or_size:
         LEA         opcode_ORB,A1    *move the value for printing
         MOVE.B      #byte_size,D6
         JSR         print_string_op_nn  *print the opcode
+        MOVE.W      D0,D1               *reload the opcode into D1
         JSR         OR_sub
         JSR         print_ea
         BRA         OR_END
@@ -1181,6 +1231,7 @@ OR_W    CMP.W       #m_size_W_logic,D1
         LEA         opcode_ORW,A1
         MOVE.B      #word_size,D6
         JSR         print_string_op_nn  *print the opcode
+        MOVE.W      D0,D1               *reload the opcode into D1
         JSR         OR_sub
         JSR         print_ea
         BRA         OR_END
@@ -1191,6 +1242,7 @@ OR_L    CMP.W       #m_size_L_logic,D1
         LEA         opcode_ORL,A1
         MOVE.B      #long_size,D6
         JSR         print_string_op_nn  *print the opcode
+        MOVE.W      D0,D1               *reload the opcode into D1
         JSR         OR_sub
         JSR         print_ea
         BRA         OR_END
@@ -1217,6 +1269,7 @@ moveq_size:
         LEA         opcode_MOVEQ,A1    *move the value for printing
         MOVE.B      #long_size,D6
         JSR         print_string_op_nn  *print the opcode
+        MOVE.W      D0,D1               *reload the opcode into D1
         JSR         MOVEQ_sub
         JSR         print_ea
         BRA         MOVEQ_END
@@ -1227,6 +1280,7 @@ MOVEQ_FAIL
 MOVEQ_END 
         MOVEM.L     (SP)+, D0-D5/D7/A0-A6
         RTS
+
 
 
 
