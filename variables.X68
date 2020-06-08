@@ -238,6 +238,8 @@ match_ADDQ_reg5							EQU			$0A00
 match_ADDQ_reg6							EQU			$0C00
 match_ADDQ_reg7							EQU			$0E00
 
+*ADD EA
+
 
 
 

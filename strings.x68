@@ -106,6 +106,15 @@ ea_A5                       DC.B        'A5',0
 ea_A6			            DC.B        'A6',0
 ea_A7                       DC.B        'A7',0
 
+ea_val0                     DC.B        '8',0
+ea_val1                     DC.B        '1',0
+ea_val2                     DC.B        '2',0
+ea_val3                     DC.B        '3',0
+ea_val4                     DC.B        '4',0
+ea_val5                     DC.B        '5',0
+ea_val6                     DC.B        '6',0
+ea_val7                     DC.B        '7',0
+
 ea_indir_A0		    		DC.B		'(A0)',0
 ea_indir_A1		    		DC.B		'(A1)',0
 ea_indir_A2		    		DC.B		'(A2)',0
@@ -148,6 +157,7 @@ ea_data4                    DC.B      '#4',0
 ea_data5                    DC.B      '#5',0
 ea_data6                    DC.B      '#6',0
 ea_data7                    DC.B      '#7',0
+
 
 
 

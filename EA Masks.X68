@@ -25,14 +25,12 @@ mask_MOVEM_size			    EQU		$0040
 ;using predecrement bits go from 15-0 15 = D0, 0 = A7
 ;using post increment bits ggo from 15-0, 15 = A7, 0 = D0
 ;the low order bit is the register transfered first
-mask_MOVEM_ea_mode		    EQU		$0038
 mask_MOVEM_ea_reg		    EQU		$0007
 
 *----------ADD masks-----------------
 mask_ADD_EA					EQU		$0FFF
 mask_ADD_reg				EQU		$0E00
 mask_ADD_opmode				EQU		$01C0
-mask_ADD_ea_mode			EQU		$003F
 mask_ADD_ea_reg				EQU		$0007
 
 *----------ADDA masks----------------
@@ -187,6 +185,8 @@ mask_JSR_ea_reg				EQU		$0007
 
 *-------------------BRA masks------------------------
 mask_BRA_EA					EQU		$00FF
+
+
 *~Font name~Courier New~
 *~Font size~10~
 *~Tab type~1~

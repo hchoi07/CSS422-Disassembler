@@ -203,7 +203,7 @@ op_ADDA:
         JSR         adda_size
         MOVE.W      D0,D1
         *JSR         ADDA_sub
-        JSR         print_ea
+        *JSR         print_ea
         BRA         end_G2
 
 op_ADD:
@@ -376,9 +376,6 @@ op_ADDQ:
         MOVEM.L     D0-D7/A0-A6, -(SP)
         *MOVE.W      D0,D1       *refresh the entire opcode into D1
         JSR         addq_size
-        MOVE.W      D0,D1
-        JSR         ADDQ_sub
-        JSR         print_ea
         
 end_AQ  MOVEM.L     (SP)+, D0-D7/A0-A6
         RTS
@@ -465,6 +462,8 @@ op_DATA:
         
 end_DATA MOVEM.L     (SP)+, D0-D7/A0-A6
         RTS
+
+
 
 
 

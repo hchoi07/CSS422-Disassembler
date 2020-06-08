@@ -75,15 +75,6 @@ print_string_op_nl:
     MOVE.L      A2,A1
     MOVE.B      #14,D0              *move number 14 into d0 for string
     TRAP        #15                 *print the data
-    *print a tab
-    LEA         TAB,A1
-    MOVE.B      #14,D0              *move number 14 into d0 for string
-    TRAP        #15                 *print the data
-    *print opcode
-    MOVE.W      D3,D1
-    MOVE.B      #15,D0
-    MOVE.B      #16,D2          *display in base 16 (hex)
-    TRAP        #15
     *print new line
     LEA         SPACE,A1
     MOVE.B      #14,D0              *move number 14 into d0 for string
@@ -326,6 +317,7 @@ opWd_loop   CMP.B       D4,D5           *loop 4 time for a word of info
             
 opWd_done   MOVEM.L     (SP)+, D0-D7/A0-A6
             RTS
+
 
 
 

@@ -48,6 +48,9 @@ move_size:
         LEA         opcode_MOVEB,A1    *move the value for printing
         MOVE.B      #byte_size,D6
         JSR         print_string_op_nn  *print the opcode
+        MOVE.W      D0,D1               *reload full address
+        JSR         MOVE_MOVE
+        JSR         print_ea
         BRA         M_END
         
         *test for word size
@@ -56,6 +59,9 @@ M_W     CMP.W       #m_size_W_MOVES,D1
         LEA         opcode_MOVEW,A1
         MOVE.B      #word_size,D6
         JSR         print_string_op_nn  *print the opcode
+        MOVE.W      D0,D1               *reload full address
+        JSR         MOVE_MOVE
+        JSR         print_ea
         BRA         M_END
         
         *test for long size
@@ -64,6 +70,9 @@ M_L     CMP.W       #m_size_L_MOVES,D1
         LEA         opcode_MOVEL,A1
         MOVE.B      #long_size,D6
         JSR         print_string_op_nn  *print the opcode
+        MOVE.W      D0,D1               *reload full address
+        JSR         MOVE_MOVE
+        JSR         print_ea
         BRA         M_END
         
 M_FAIL  JSR         op_DATA
@@ -88,6 +97,8 @@ movem_rm_size:
         LEA         opcode_MOVEMW,A1    *move the value for printing
         MOVE.B      #word_size,D6
         JSR         print_string_op_nn  *print the opcode
+        JSR         MOVEM_sub
+        JSR         print_ea
         BRA         MOVEM_rm_END
         
         *test for long size
@@ -97,6 +108,8 @@ MOVEM_rm_L
         LEA         opcode_MOVEML,A1
         MOVE.B      #long_size,D6
         JSR         print_string_op_nn  *print the opcode
+        JSR         MOVEM_sub
+        JSR         print_ea
         BRA         MOVEM_rm_END
         
 MOVEM_rm_FAIL 
@@ -179,6 +192,8 @@ lea_size:
         LEA         opcode_LEA,A1
         MOVE.B      #long_size,D6
         JSR         print_string_op_nn  *print the opcode
+        JSR         LEA_sub
+        JSR         print_ea
         MOVEM.L     (SP)+, D0-D5/D7/A0-A6
         RTS
         
@@ -192,6 +207,8 @@ jsr_size:
         LEA         opcode_JSR,A1
         MOVE.B      #no_size,D6
         JSR         print_string_op_nn  *print the opcode
+        JSR         JSR_sub
+        JSR         print_ea
         MOVEM.L     (SP)+, D0-D5/D7/A0-A6
         RTS
         
@@ -254,6 +271,8 @@ adda_size:
         LEA         opcode_ADDAW,A1    *move the value for printing
         MOVE.B      #word_size,D6
         JSR         print_string_op_nn  *print the opcode
+        JSR         ADDA_sub
+        JSR         print_ea
         BRA         ADDA_END
         
         *test for long size
@@ -262,6 +281,8 @@ ADDA_L  CMP.W       #m_size_L_ADDA,D1
         LEA         opcode_ADDAL,A1
         MOVE.B      #long_size,D6
         JSR         print_string_op_nn  *print the opcode
+        JSR         ADDA_sub
+        JSR         print_ea
         BRA         ADDA_END
         
 ADDA_FAIL JSR         op_DATA
@@ -286,6 +307,8 @@ add_size:
         LEA         opcode_ADDB,A1    *move the value for printing
         MOVE.B      #byte_size,D6
         JSR         print_string_op_nn  *print the opcode
+        JSR         ADD_ADD             *calculate ea and print
+        JSR         print_ea
         BRA         ADD_END
         
         *test for word size
@@ -294,6 +317,8 @@ ADD_W   CMP.W       #m_size_W_ADD,D1
         LEA         opcode_ADDW,A1
         MOVE.B      #word_size,D6
         JSR         print_string_op_nn  *print the opcode
+        JSR         ADD_ADD             *calculate ea and print
+        JSR         print_ea
         BRA         ADD_END
         
         *test for long size
@@ -302,6 +327,8 @@ ADD_L   CMP.W       #m_size_L_ADD,D1
         LEA         opcode_ADDL,A1
         MOVE.B      #long_size,D6
         JSR         print_string_op_nn  *print the opcode
+        JSR         ADD_ADD             *calculate ea and print
+        JSR         print_ea
         BRA         ADD_END
         
 ADD_FAIL JSR         op_DATA
@@ -707,6 +734,8 @@ asl_r_size:
         LEA         opcode_ASLB,A1    *move the value for printing
         MOVE.B      #byte_size,D6
         JSR         print_string_op_nn  *print the opcode
+        JSR         ASD_sub
+        JSR         print_ea
         BRA         ASLR_END
         
         *test for word size
@@ -715,6 +744,8 @@ ASLR_W  CMP.W       #m_size_W_shfts,D1
         LEA         opcode_ASLW,A1
         MOVE.B      #word_size,D6
         JSR         print_string_op_nn  *print the opcode
+        JSR         ASD_sub
+        JSR         print_ea
         BRA         ASLR_END
         
         *test for long size
@@ -723,6 +754,8 @@ ASLR_L  CMP.W       #m_size_L_shfts,D1
         LEA         opcode_ASLL,A1
         MOVE.B      #long_size,D6
         JSR         print_string_op_nn  *print the opcode
+        JSR         ASD_sub
+        JSR         print_ea
         BRA         ASLR_END
        
 ASLR_FAIL JSR         op_DATA
@@ -743,6 +776,8 @@ asl_m_size:
         LEA         opcode_ASLW,A1
         MOVE.B      #word_size,D6
         JSR         print_string_op_nn  *print the opcode
+        JSR         ASD_sub
+        JSR         print_ea
         BRA         ASLM_END
         
 ASLM_END MOVEM.L     (SP)+, D0-D5/D7/A0-A6
@@ -766,6 +801,8 @@ asr_r_size:
         LEA         opcode_ASRB,A1    *move the value for printing
         MOVE.B      #byte_size,D6
         JSR         print_string_op_nn  *print the opcode
+        JSR         ASD_sub
+        JSR         print_ea
         BRA         ASRR_END
         
         *test for word size
@@ -774,6 +811,8 @@ ASRR_W  CMP.W       #m_size_W_shfts,D1
         LEA         opcode_ASRW,A1
         MOVE.B      #word_size,D6
         JSR         print_string_op_nn  *print the opcode
+        JSR         ASD_sub
+        JSR         print_ea
         BRA         ASRR_END
         
         *test for long size
@@ -782,6 +821,8 @@ ASRR_L  CMP.W       #m_size_L_shfts,D1
         LEA         opcode_ASRL,A1
         MOVE.B      #long_size,D6
         JSR         print_string_op_nn  *print the opcode
+        JSR         ASD_sub
+        JSR         print_ea
         BRA         ASRR_END
         
 ASRR_FAIL JSR         op_DATA
@@ -802,6 +843,8 @@ asr_m_size:
         LEA         opcode_ASRW,A1
         MOVE.B      #word_size,D6
         JSR         print_string_op_nn  *print the opcode
+        JSR         ASD_sub
+        JSR         print_ea
         BRA         ASRM_END
         
 ASRM_END MOVEM.L     (SP)+, D0-D5/D7/A0-A6
@@ -943,6 +986,8 @@ addq_size:
         LEA         opcode_ADDQB,A1    *move the value for printing
         MOVE.B      #byte_size,D6
         JSR         print_string_op_nn  *print the opcode
+        JSR         ADDQ_sub
+        JSR         print_ea
         BRA         ADDQ_END
         
         *test for word size
@@ -951,6 +996,8 @@ ADDQ_W  CMP.W       #m_size_W_ADD,D1
         LEA         opcode_ADDQW,A1
         MOVE.B      #word_size,D6
         JSR         print_string_op_nn  *print the opcode
+        JSR         ADDQ_sub
+        JSR         print_ea
         BRA         ADDQ_END
         
         *test for long size
@@ -959,6 +1006,8 @@ ADDQ_L  CMP.W       #m_size_L_ADD,D1
         LEA         opcode_ADDQL,A1
         MOVE.B      #long_size,D6
         JSR         print_string_op_nn  *print the opcode
+        JSR         ADDQ_sub
+        JSR         print_ea
         BRA         ADDQ_END
         
 ADDQ_FAIL JSR         op_DATA
@@ -984,6 +1033,8 @@ sub_size:
         LEA         opcode_SUBB,A1    *move the value for printing
         MOVE.B      #byte_size,D6
         JSR         print_string_op_nn  *print the opcode
+        JSR         SUB_sub
+        JSR         print_ea
         BRA         SUB_END
         
         *test for word size
@@ -992,6 +1043,8 @@ SUB_W   CMP.W       #m_size_W_SUB,D1
         LEA         opcode_SUBW,A1
         MOVE.B      #word_size,D6
         JSR         print_string_op_nn  *print the opcode
+        JSR         SUB_sub
+        JSR         print_ea
         BRA         SUB_END
         
         *test for long size
@@ -1000,6 +1053,8 @@ SUB_L   CMP.W       #m_size_L_SUB,D1
         LEA         opcode_SUBL,A1
         MOVE.B      #long_size,D6
         JSR         print_string_op_nn  *print the opcode
+        JSR         SUB_sub
+        JSR         print_ea
         BRA         SUB_END
         
 SUB_FAIL JSR         op_DATA
@@ -1024,6 +1079,8 @@ and_size:
         LEA         opcode_ANDB,A1    *move the value for printing
         MOVE.B      #byte_size,D6
         JSR         print_string_op_nn  *print the opcode
+        JSR         AND_sub
+        JSR         print_ea
         BRA         AND_END
         
         *test for word size
@@ -1032,6 +1089,8 @@ AND_W   CMP.W       #m_size_W_logic,D1
         LEA         opcode_ANDW,A1
         MOVE.B      #word_size,D6
         JSR         print_string_op_nn  *print the opcode
+        JSR         AND_sub
+        JSR         print_ea
         BRA         AND_END
         
         *test for long size
@@ -1040,6 +1099,8 @@ AND_L   CMP.W       #m_size_L_logic,D1
         LEA         opcode_ANDL,A1
         MOVE.B      #long_size,D6
         JSR         print_string_op_nn  *print the opcode
+        JSR         AND_sub
+        JSR         print_ea
         BRA         AND_END
         
 AND_FAIL JSR         op_DATA
@@ -1112,6 +1173,13 @@ MOVEQ_FAIL
 MOVEQ_END 
         MOVEM.L     (SP)+, D0-D5/D7/A0-A6
         RTS
+
+
+
+
+
+
+
 
 
 

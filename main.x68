@@ -16,8 +16,16 @@ run_prog    JSR     io_subroutine
             INCLUDE 'output.x68'
             INCLUDE 'opcode_size.X68'
             INCLUDE 'opcode_subroutine.x68'
-            *INCLUDE 'ADDA Subroutine.x68'
+            INCLUDE 'ADD Subroutine.x68'
+            INCLUDE 'AND Subroutine.x68'
+            INCLUDE 'ADDA Subroutine.x68'
             INCLUDE 'ADDQ Subroutine.x68'
+            INCLUDE 'ASD Subroutine.x68'
+            INCLUDE 'JSR Subroutine.x68'
+            INCLUDE 'LEA Subroutine.x68'
+            INCLUDE 'MOVE Subroutine.x68'
+            INCLUDE 'MOVEM Subroutine.x68'
+            INCLUDE 'SUB Subroutine.x68'
             INCLUDE 'EA Masks.x68'
             INCLUDE 'variables.X68'
             INCLUDE 'strings.x68'
@@ -25,6 +33,12 @@ run_prog    JSR     io_subroutine
 
 STOP:
     END    MAIN
+
+
+
+
+
+
 
 
 
