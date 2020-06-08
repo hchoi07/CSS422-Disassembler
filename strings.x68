@@ -73,10 +73,10 @@ HT          EQU     $09 *ASCII code for horizontal tab
 QT          EQU     $71 *ascii for lowercase q
 RT          EQU     $72 *ascii for lowercase r
 
-LOAD_MESSAGE	DC.B	'Welcome to The Disassemblers CSS 422 projectA',CR,LF,'Select "demo_test.s68" in File->Open Data for test data',CR,LF,0
-LOAD2_MESSAGE   DC.B    'If you got to this page without loading the test file,',CR,LF,'please exit and follow the directions above.',CR,LF,0
-START_REQUEST	DC.B	'Input starting memory location between $00007000 and $000073BA',CR,LF,'in the format "########": ',0
-END_REQUEST	    DC.B	'Input ending memory location between $00007000 and $000073BA',CR,LF,'in the format "########": ',0
+LOAD_MESSAGE	DC.B	'Welcome to The Disassemblers CSS 422 project',CR,LF,'Select "demo_test.s68" or another file in File->Open Data for test data',CR,LF,0
+LOAD2_MESSAGE   DC.B    'If you got to this page without loading a test file,',CR,LF,'please exit and follow the directions above.',CR,LF,0
+START_REQUEST	DC.B	'Input starting hexadecimal memory location in the format ',CR,LF,'"########" Ex 00007000: ',0
+END_REQUEST	    DC.B	'Input ending hexadecimal memory location in the format ',CR,LF,'"########" Ex. Ex 000073BA: ',0
 NOT_HEX_MSG	    DC.B    'Input was not in the hexadecimal range 0-F',0
 BAD_RANGE       DC.B    'Input is not in the range between $00007000 and $000073BA',CR,LF,0
 BAD_END         DC.B    'Ending location is less than the starting location, please switch the inputs.',CR,LF,0
@@ -158,6 +158,8 @@ ea_data4                    DC.B      '#4',0
 ea_data5                    DC.B      '#5',0
 ea_data6                    DC.B      '#6',0
 ea_data7                    DC.B      '#7',0
+
+
 
 
 
