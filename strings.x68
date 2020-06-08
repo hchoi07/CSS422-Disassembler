@@ -148,6 +148,7 @@ ea_paren_closed		    	DC.B		')',0
 ea_abs_word_string	    	DC.B		'.W',0
 ea_abs_long_string	    	DC.B		'.L',0
 ea_$				    	DC.B		'$',0
+ea_lb                       DC.B            '#',0   
 
 ea_data0                    DC.B      '#0',0
 ea_data1                    DC.B      '#1',0
@@ -157,6 +158,7 @@ ea_data4                    DC.B      '#4',0
 ea_data5                    DC.B      '#5',0
 ea_data6                    DC.B      '#6',0
 ea_data7                    DC.B      '#7',0
+
 
 
 
