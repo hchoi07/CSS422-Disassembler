@@ -5,7 +5,7 @@
 * D2 will be loaded with the mask for the EA mode and register to be compared with matchs of the dettermined mode and register
 * A1 will point to the location of the string constants
 *-----------------------------------------------------------
-START               ORG         $1000
+
 
 NOT_sub                          MOVEM.L           D1-D5/D7/A0-A6, -(A7)                     ;preserve the registers,\ 
                                  AND.L             #mask_NOT_ea_mode,D1                      ;move the mask to D1
@@ -283,12 +283,7 @@ NOT_abs_add_long_out    				 MOVE.L      (A0)+,D5                           ;pul
                                          MOVE.L      #ea_$,(A1)+                         ;load $ for hex and increment A1
                                          MOVE.L      D5,(A1)+                           ;load address                  
                                          RTS                                            :return to subroutine                                            
-;----------------------Error Handling----------------------------------------
-ERROR                                           LEA     ERROR_MESSAGE,A1                                          ;load error messge into A3
-												RTS
 												
-												
-ERROR_MESSAGE                   DC.B            'Incorrect EA Format',0
 mask_NOT_ea_mode							EQU				$0038              ;masks bits 5-3 to determine ea mode
 mask_NOT_ea_reg_and_mode					EQU				$003F              ;masks bits 5-0 to determine the register with the given mode
 mask_NOT_ea_mode_abs_add					EQU				$003F
@@ -382,7 +377,7 @@ ea_abs_word_string	    	DC.B		'.W',0
 ea_abs_long_string	    	DC.B		'.L',0
 ea_$				    	DC.B		'$',0
 
-                            END                     START
+
 
 
 
