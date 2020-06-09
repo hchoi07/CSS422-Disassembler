@@ -5,7 +5,7 @@
 * D2 will be loaded with the mask for the EA mode and register to be compared with matchs of the dettermined mode and register
 * A1 will point to the location of the string constants
 *-----------------------------------------------------------    
-START                       ORG             $1000
+
 
 SUB_sub                                MOVEM.L           D1-D5/D7/A0-A6, -(SP)                        ;preserve the registers, 
 ;-----------------------------ea,Dn-----------------------------------------------------------------------------------------------------
@@ -751,12 +751,7 @@ SUB_Dn_ea_imm_add_l                   MOVE.L        (A0)+,D5                    
  
                                      MOVE.L        D5,A1                          ;move to A1
                                       RTS
-ERROR                                   LEA             ERROR_MESSAGE,A1
-                                        RTS
 
-
-
-ERROR_MESSAGE           DC.B        'Invalid EA',0
 ea_D0				DC.B		'D0',0
 ea_D1			    	DC.B		'D1',0
 ea_D2			    	DC.B		'D2',0
@@ -893,8 +888,6 @@ match_SUB_reg5			EQU		$0A00
 match_SUB_reg6			EQU		$0C00
 match_SUB_reg7			EQU		$0E00
 
-
-                            END                         START
 
 *~Font name~Courier New~
 *~Font size~10~
