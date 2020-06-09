@@ -11,7 +11,7 @@
 * the count/register is added to the print register (A0)
 * after that the data register is decoded and added to the print register
 *-----------------------------------------------------------
-START               ORG         $1000
+
 
 ROD_sub                          MOVEM.L           D1-D5/D7/A0-A6, -(A7)                     ;preserve the registers,\ 
                                  
@@ -236,10 +236,7 @@ ROD_abs_add_word_out     				 MOVE.L      #ea_$,(A1)+                        ;lo
 ROD_abs_add_long_out    				 MOVE.L      (A0)+,D5                           ;pull the next long instruction that holds the address
                                          MOVE.L      #ea_$,(A1)+                         ;load $ for hex and increment A1
                                          MOVE.L      D5,(A1)+                           ;load address                  
-                                         RTS                                            :return to subroutine                                            
-;----------------------Error Handling----------------------------------------
-ERROR                                    LEA     ERROR_MESSAGE,A1                       ;load error messge into A3
-										 RTS                                            ;return to subroutine
+                                         RTS                                            :return to subroutine
 												
 ;-----------------------------------------------------------------Register Shift-----------------------------------------------------------
 ; determine if the shift is a data register or a immediate value
@@ -327,53 +324,68 @@ ROD_count_val7                      CMP.L       #match_ROD_count_val7,D1        
 ;-----------------------------------Count Shift Immedite Value Output---------------------------
 ROD_count_val0_out            MOVE.L			#ea_val0,A1			;load string constant into A1
 						      JSR               ROD_Dn0	                ;jump to subroutine to determine the second operand
+						      RTS
 						      
 ROD_count_val1_out            MOVE.L			#ea_val1,A1			;load string constant into A1
 						      JSR               ROD_Dn0	                ;jump to subroutine to determine the second operand
+						      RTS						      
 
 ROD_count_val2_out            MOVE.L			#ea_val2,A1			;load string constant into A1
 						      JSR               ROD_Dn0	                ;jump to subroutine to determine the second operand
-
+						      RTS
+						      
 ROD_count_val3_out            MOVE.L			#ea_val3,A1			;load string constant into A1
 						      JSR               ROD_Dn0	                ;jump to subroutine to determine the second operand
-
+						      RTS
+						      
 ROD_count_val4_out            MOVE.L			#ea_val4,A1			;load string constant into A1
 						      JSR               ROD_Dn0	                ;jump to subroutine to determine the second operand
-
+						      RTS
+						      
 ROD_count_val5_out            MOVE.L			#ea_val5,A1			;load string constant into A1
 						      JSR               ROD_Dn0	                ;jump to subroutine to determine the second operand
-
+						      RTS
+						      
 ROD_count_val6_out            MOVE.L			#ea_val6,A1			;load string constant into A1
 						      JSR               ROD_Dn0	                ;jump to subroutine to determine the second operand
-
+						      RTS
+						      
 ROD_count_val7_out            MOVE.L			#ea_val7,A1			;load string constant into A1
 						      JSR               ROD_Dn0	                ;jump to subroutine to determine the second operand
-
+						      RTS
+						      
 ;-------------------------Count Shift Output (Dn)-----------------------------------------
 ROD_count_reg0_out            MOVE.L			#ea_D0,A1			;load string constant into A1
 						      JSR               ROD_Dn0	                ;jump to subroutine to determine the second operand
+						      RTS
 						      
 ROD_count_reg1_out            MOVE.L			#ea_D1,A1			;load string constant into A1
 						      JSR               ROD_Dn0	                ;jump to subroutine to determine the second operand
+						      RTS
 						      
 ROD_count_reg2_out            MOVE.L			#ea_D2,A1			;load string constant into A1
 						      JSR               ROD_Dn0	                ;jump to subroutine to determine the second operand
+						      RTS
 						      
 ROD_count_reg3_out            MOVE.L			#ea_D3,A1			;load string constant into A1
 						      JSR               ROD_Dn0	                ;jump to subroutine to determine the second operand
+						      RTS
 						      
 ROD_count_reg4_out            MOVE.L			#ea_D4,A1			;load string constant into A1
 						      JSR               ROD_Dn0	                ;jump to subroutine to determine the second operand
+						      RTS
 						      
 ROD_count_reg5_out            MOVE.L			#ea_D5,A1			;load string constant into A1
 						      JSR               ROD_Dn0	                ;jump to subroutine to determine the second operand
+						      RTS
 						      
 ROD_count_reg6_out            MOVE.L			#ea_D6,A1			;load string constant into A1
 						      JSR               ROD_Dn0	                ;jump to subroutine to determine the second operand
+						      RTS
 						      
 ROD_count_reg7_out            MOVE.L			#ea_D7,A1			;load string constant into A1
 						      JSR               ROD_Dn0	                ;jump to subroutine to determine the second operand                                    
-                                    
+						      RTS                                    
                                     
 ;----------------------------------------------Determine Second Operand Data Register-----------------------------------------------------
 ROD_Dn0                         CLR             D1                  ;clear D1
@@ -578,7 +590,6 @@ ea_abs_word_string	    	DC.B		'.W',0
 ea_abs_long_string	    	DC.B		'.L',0
 ea_$				    	DC.B		'$',0
 
-                            END                     START
 
 
 
