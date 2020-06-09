@@ -66,9 +66,10 @@ AND_ea_Dn_abs_add_long               CMP.L             #match_AND_abs_add_long,D
 
 ;--------------------Determine EFFECTIVE ADDRESS Register----------------------------------------------------------------------------------------
                                  
-                                 AND.L              #mask_AND_ea_reg_and_mode,D2             ;load the mask into D2 for the mode and the register
+                                 
 ;-----------------------------------Data Register Direct--------------------------------
-AND_ea_Dn_Dn_reg                 CMP.L              #match_AND_D0,D2                         ;check to see in the register is 0
+AND_ea_Dn_Dn_reg                 AND.L              #mask_AND_ea_reg_and_mode,D2             ;load the mask into D2 for the mode and the register
+                                 CMP.L              #match_AND_D0,D2                         ;check to see in the register is 0
                                  BNE                AND_ea_Dn_rD1                            ;if not go check register 1
                                  BEQ                AND_ea_Dn_D0_out                         ;if equal go to output ANDroutine
 
@@ -102,28 +103,36 @@ AND_ea_Dn_rD7                    CMP.L              #match_AND_D7,D2            
 ;--------------------Data Register Direct Output-----------------------
 AND_ea_Dn_D0_out                MOVE.L          #ea_D0,A1							;load string constant into A1
                                 JSR             AND_determine_second_op                 ;jump to ANDroutine to determine second operand
-
+                                RTS
+                                
 AND_ea_Dn_D1_out                MOVE.L          #ea_D1,A1							;load string constant into A1
                                 JSR             AND_determine_second_op                 ;jump to ANDroutine to determine second operand
-
+                                RTS
+                                
 AND_ea_Dn_D2_out                MOVE.L          #ea_D2,A1							;load string constant into A1
                                 JSR             AND_determine_second_op                 ;jump to ANDroutine to determine second operand
-
+                                RTS
+                                
 AND_ea_Dn_D3_out                MOVE.L			#ea_D3,A1							;load string constant into A1
                                 JSR             AND_determine_second_op                 ;jump to ANDroutine to determine second operand
-
+                                RTS
+                                
 AND_ea_Dn_D4_out                MOVE.L			#ea_D4,A1							;load string constant into A1
                                 JSR             AND_determine_second_op                 ;jump to ANDroutine to determine second operand
-
+                                RTS
+                                
 AND_ea_Dn_D5_out                MOVE.L			#ea_D5,A1							;load string constant into A1
                                 JSR             AND_determine_second_op                 ;jump to ANDroutine to determine second operand
-
+                                RTS
+                                
 AND_ea_Dn_D6_out                MOVE.L			#ea_D6,A1							;load string constant into A1
                                 JSR             AND_determine_second_op                 ;jump to ANDroutine to determine second operand
-
+                                RTS
+                                
 AND_ea_Dn_D7_out                MOVE.L			#ea_D7,A1							;load string constant into A1
                                 JSR             AND_determine_second_op                 ;jump to ANDroutine to determine second operand
-
+                                RTS
+                                
 ;------------------Address Register Direct-----------------------
 AND_ea_Dn_An_reg                 CMP.L           #match_AND_A0,D2                        ;check reg is equal to 0
                                  BNE             AND_ea_Dn_rA1                           ;if not try reg 1
@@ -160,28 +169,36 @@ AND_ea_Dn_rA7                    CMP.L           #match_AND_A7,D2               
 ;--------------------Address Register Direct Output-----------------------
 AND_ea_Dn_A0_out                MOVE.L			#ea_A0,A1							    ;load string constant into A1
                                 JSR             AND_determine_second_op                 ;jump to ANDroutine to determine second operand
+                                RTS
         						
 AND_ea_Dn_A1_out                MOVE.L			#ea_A1,A1							    ;load string constant into A1
                                 JSR             AND_determine_second_op                 ;jump to ANDroutine to determine second operand
+                                RTS
         						
 AND_ea_Dn_A2_out                MOVE.L			#ea_A2,A1						        ;load string constant into A1
                                 JSR             AND_determine_second_op                 ;jump to ANDroutine to determine second operand
+                                RTS
         						
 AND_ea_Dn_A3_out                MOVE.L			#ea_A3,A1					    	    ;load string constant into A1
                                 JSR             AND_determine_second_op                 ;jump to ANDroutine to determine second operand
-
+                                RTS
+                                
 AND_ea_Dn_A4_out                MOVE.L			#ea_A4,A1				    		    ;load string constant into A1
                                 JSR             AND_determine_second_op                 ;jump to ANDroutine to determine second operand
-
+                                RTS
+                                
 AND_ea_Dn_A5_out                MOVE.L			#ea_A5,A1			    			    ;load string constant into A1
                                 JSR             AND_determine_second_op                 ;jump to ANDroutine to determine second operand
-
+                                RTS
+                                
 AND_ea_Dn_A6_out                MOVE.L			#ea_A6,A1		    				    ;load string constant into A1
                                 JSR             AND_determine_second_op                 ;jump to ANDroutine to determine second operand
-
+                                RTS
+                                
 AND_ea_Dn_A7_out                MOVE.L			#ea_A7,A1	    					    ;load string constant into A1
                                 JSR             AND_determine_second_op                 ;jump to ANDroutine to determine second operand
-
+                                RTS
+                                
 ;------------------Address Register Indirect-----------------------
 AND_ea_Dn_An_indir_reg           CMP.L          #match_AND_An_indir_r0,D2              ;check reg is equal to 0
                                  BNE             AND_ea_Dn_An_indir_reg1               ;if not try reg 1
@@ -218,28 +235,36 @@ AND_ea_Dn_An_indir_reg7          CMP.L           #match_AND_An_indir_r7,D2      
 ;--------------------Address Register Indirect Output-----------------------
 AND_ea_Dn_An_indir_reg0_out			        MOVE.L			#ea_indir_A0,A1		    	          ;load string constant into A1
                                             JSR             AND_determine_second_op                 ;jump to ANDroutine to determine second operand
-
+                                            RTS
+                                            
 AND_ea_Dn_An_indir_reg1_out			        MOVE.L			#ea_indir_A1,A1		    		    ;load string constant into A1
                                             JSR             AND_determine_second_op                 ;jump to ANDroutine to determine second operand
-
+                                            RTS
+                                            
 AND_ea_Dn_An_indir_reg2_out			        MOVE.L			#ea_indir_A2,A1		    		    ;load string constant into A1
                                             JSR             AND_determine_second_op                 ;jump to ANDroutine to determine second operand
-
+                                            RTS
+                                            
 AND_ea_Dn_An_indir_reg3_out			        MOVE.L			#ea_indir_A3,A1		    		    ;load string constant into A1
                                             JSR             AND_determine_second_op                 ;jump to ANDroutine to determine second operand
-
+                                            RTS
+                                            
 AND_ea_Dn_An_indir_reg4_out			        MOVE.L			#ea_indir_A4,A1		    		    ;load string constant into A1
                                             JSR             AND_determine_second_op                 ;jump to ANDroutine to determine second operand
-
+                                            RTS
+                                            
 AND_ea_Dn_An_indir_reg5_out			        MOVE.L			#ea_indir_A5,A1		    		    ;load string constant into A1
                                             JSR             AND_determine_second_op                 ;jump to ANDroutine to determine second operand
-
+                                            RTS
+                                            
 AND_ea_Dn_An_indir_reg6_out			        MOVE.L			#ea_indir_A6,A1		    		    ;load string constant into A1
                                             JSR             AND_determine_second_op                 ;jump to ANDroutine to determine second operand
+                                            RTS
 								        
 AND_ea_Dn_An_indir_reg7_out			        MOVE.L			#ea_indir_A7,A1		    		    ;load string constant into A1
                                             JSR             AND_determine_second_op                 ;jump to ANDroutine to determine second operand
-
+                                            RTS
+                                            
 ;------------------Address Register Indirect with Post Increment-----------------------
 AND_ea_Dn_An_indir_pinc_reg                 CMP.L      #match_AND_An_indir_postinc_r0,D2                    ;check reg is equal to 0
                                             BNE        AND_ea_Dn_An_indir_pinc_r1                      ;if not try reg 1
@@ -276,29 +301,36 @@ AND_ea_Dn_An_indir_pinc_r7                  CMP.L      #match_AND_An_indir_posti
 ;--------------------Address Register Indirect with Post Increment Output-----------------------
 AND_ea_Dn_An_indir_pinc_r0_out			    MOVE.L			#ea_indir_postinc_A0,A1		    	  ;load string constant into A1
                                             JSR             AND_determine_second_op                 ;jump to ANDroutine to determine second operand
-
+                                            RTS
+                                            
 AND_ea_Dn_An_indir_pinc_r1_out			    MOVE.L			#ea_indir_postinc_A1,A1		    	  ;load string constant into A1
                                             JSR             AND_determine_second_op                 ;jump to ANDroutine to determine second operand
-
+                                            RTS
+                                            
 AND_ea_Dn_An_indir_pinc_r2_out			    MOVE.L			#ea_indir_postinc_A2,A1		    	  ;load string constant into A1
                                             JSR             AND_determine_second_op                 ;jump to ANDroutine to determine second operand
-
+                                            RTS
+                                            
 AND_ea_Dn_An_indir_pinc_r3_out			    MOVE.L			#ea_indir_postinc_A3,A1		    	  ;load string constant into A1
                                             JSR             AND_determine_second_op                 ;jump to ANDroutine to determine second operand
-
+                                            RTS
+                                            
 AND_ea_Dn_An_indir_pinc_r4_out			    MOVE.L			#ea_indir_postinc_A4,A1		    	  ;load string constant into A1
                                             JSR             AND_determine_second_op                 ;jump to ANDroutine to determine second operand
-
+                                            RTS
+                                            
 AND_ea_Dn_An_indir_pinc_r5_out			    MOVE.L			#ea_indir_postinc_A5,A1		    	  ;load string constant into A1
                                             JSR             AND_determine_second_op                 ;jump to ANDroutine to determine second operand
-
+                                            RTS
+                                            
 AND_ea_Dn_An_indir_pinc_r6_out			    MOVE.L			#ea_indir_postinc_A6,A1		    	  ;load string constant into A1
                                             JSR             AND_determine_second_op                 ;jump to ANDroutine to determine second operand
-
+                                            RTS
+                                            
 AND_ea_Dn_An_indir_pinc_r7_out			    MOVE.L			#ea_indir_postinc_A7,A1		    	  ;load string constant into A1
                                             JSR             AND_determine_second_op                 ;jump to ANDroutine to determine second operand
-
-
+                                            RTS
+                                            
 ;------------------Address Register Indirect with Pre Decrement-----------------------
 AND_ea_Dn_An_indir_predec                       CMP.L      #match_AND_An_indir_predec_reg0,D2               ;check reg is equal to 0
                                                 BNE        AND_ea_Dn_An_indir_pdec_r1                   ;if not try reg 1
@@ -335,39 +367,46 @@ AND_ea_Dn_An_indir_pdec_r7                      CMP.L      #match_AND_An_indir_p
 ;--------------------Address Register Indirect with Pre Decrement Output-----------------------
 AND_ea_Dn_An_indir_pdec_r0_out			        MOVE.L			#ea_indir_predec_A0,A1			 ;load string constant into A1
                                                 JSR             AND_determine_second_op                  ;jump to ANDroutine to determine second operand
-											
+                                                RTS											
+                                                
 AND_ea_Dn_An_indir_pdec_r1_out			        MOVE.L			#ea_indir_predec_A1,A1			 ;load string constant into A1
                                                 JSR             AND_determine_second_op                  ;jump to ANDroutine to determine second operand
-
+                                                RTS											
+                                                
 AND_ea_Dn_An_indir_pdec_r2_out			        MOVE.L			#ea_indir_predec_A2,A1			 ;load string constant into A1
                                                 JSR             AND_determine_second_op                  ;jump to ANDroutine to determine second operand
-
+                                                RTS											
+                                                
 AND_ea_Dn_An_indir_pdec_r3_out			        MOVE.L			#ea_indir_predec_A3,A1			 ;load string constant into A1
                                                 JSR             AND_determine_second_op                  ;jump to ANDroutine to determine second operand
-
+                                                RTS											
+                                            
 AND_ea_Dn_An_indir_pdec_r4_out			        MOVE.L			#ea_indir_predec_A4,A1			 ;load string constant into A1
                                                 JSR             AND_determine_second_op                  ;jump to ANDroutine to determine second operand
-
+                                                RTS											
+                                                
 AND_ea_Dn_An_indir_pdec_r5_out			        MOVE.L			#ea_indir_predec_A5,A1			 ;load string constant into A1
                                                 JSR             AND_determine_second_op                  ;jump to ANDroutine to determine second operand
-
+                                                RTS											
+                                                
 AND_ea_Dn_An_indir_pdec_r6_out			        MOVE.L			#ea_indir_predec_A6,A1			 ;load string constant into A1
                                                 JSR             AND_determine_second_op                  ;jump to ANDroutine to determine second operand
-
+                                                RTS											
+                                                
 AND_ea_Dn_An_indir_pdec_r7_out			        MOVE.L			#ea_indir_predec_A7,A1			 ;load string constant into A1
                                                 JSR             AND_determine_second_op                 ;jump to ANDroutine to determine second operand
-        
+                                                RTS											
 ;------------------Absolute Addressing Output-----------------------
 AND_ea_Dn_abs_add_word_out			      MOVE.L      #ea_$,(A1)+                       ;load $ for hex and increment A1
                                           MOVE.L      D5,(A1)+                          ;load address                  
                                           JSR         AND_determine_second_op           ;jump to ANDroutine to determine second operand
-                                           
+                                          RTS											                                           
 
 AND_ea_Dn_abs_add_long_out      	     MOVE.L      (A0)+,D5                           ;pull the next long instruction that holds the address
                                          MOVE.L      #ea_$,(A1)+                        ;load $ for hex and increment A1
                                          MOVE.L      D5,(A1)+                           ;load address                  
                                          JSR         AND_determine_second_op            ;jump to ANDroutine to determine second operand
-
+                                         RTS											
 ;---------------Immediate Addresing---------------------------
 AND_ea_Dn_immediate_add_out         MOVE.L		(A0)+,D5                           ;capture the immediate address
 									CMP.L       #match_AND_imm_add_word,D6         ;check to see if need to pull word
@@ -378,12 +417,14 @@ AND_ea_Dn_immediate_add_out         MOVE.L		(A0)+,D5                           ;
 AND_ea_Dn_imm_add_w                 MOVE.L     #ea_$,(A1)+                         ;load the $
                                     MOVE.W     D5,(A1)+                            ;load the word address                           
                                     JSR        AND_determine_second_op             ;jump to ANDroutine to determine second operand
-                                         
+                                    RTS
+											                                         
 AND_ea_Dn_imm_add_l                 MOVE.L     (A0)+,D5                            ;pull the long and increase the pointer
                                     MOVE.L     #ea_$,(A1)+                         ;load the $
                                     MOVE.L     D5,A1                               ;move to A1
                                     JSR        AND_determine_second_op             ;jump to ANDroutine to determine second operand
-
+                                    RTS											
+                                                
 ;---------------------------------Determine Register----------------------------------------------------------------------------------------
 AND_determine_second_op							CLR.L		D2							;clear D2 
 												AND.L		#mask_AND_An_reg,D2		      ;load the mask for the register into D2, masks bit 11-9
@@ -524,30 +565,37 @@ Dn_ea_AND_reg7								    CMP.L		#match_AND_reg7,D2		            ;check to see i
 ;--------------------Data Output-----------------------
 Dn_ea_AND_reg0_out		         MOVE.L			#ea_D0,A1					                       ;load string constant into A1
                                  JSR            AND_determine_second_operand                 ;jump to ANDroutine to determine second operand
-											
+                                 RTS
+																						
 Dn_ea_AND_reg1_out		         MOVE.L			#ea_D1,A1				                		;load string constant into A1
                                  JSR            AND_determine_second_operand                 ;jump to ANDroutine to determine second operand
+                                 RTS
                                             
 Dn_ea_AND_reg2_out		         MOVE.L			#ea_D2,A1				                		;load string constant into A1
                                  JSR            AND_determine_second_operand                 ;jump to ANDroutine to determine second operand
+                                 RTS
                                             
 Dn_ea_AND_reg3_out		         MOVE.L			#ea_D3,A1				                        	;load string constant into A1
                                  JSR            AND_determine_second_operand                 ;jump to ANDroutine to determine second operand
+                                 RTS
                                             
 Dn_ea_AND_reg4_out		         MOVE.L			#ea_D4,A1				                    		;load string constant into A1
                                  JSR            AND_determine_second_operand                 ;jump to ANDroutine to determine second operand
+                                 RTS
                                             
 Dn_ea_AND_reg5_out		         MOVE.L			#ea_D5,A1					                     	;load string constant into A1
                                  JSR            AND_determine_second_operand                 ;jump to ANDroutine to determine second operand
+                                 RTS
                                             
 Dn_ea_AND_reg6_out		         MOVE.L			#ea_D6,A1					                    	;load string constant into A1
                                  JSR            AND_determine_second_operand                 ;jump to ANDroutine to determine second operand
+                                 RTS
                                             
 Dn_ea_AND_reg7_out    	         MOVE.L		    #ea_D7,A1					                    	;load string constant into A1
                                  JSR            AND_determine_second_operand                 ;jump to ANDroutine to determine second operand
-                                            
+                                 RTS                                            
 ;------------------------------------------------------Determine Second Operand----------------------------------------------------------------
-AND_determine_second_operand         CLR               D1                                            ;clear D1 to load new mask                                
+AND_determine_second_operand      CLR               D1                                            ;clear D1 to load new mask                                
                                  AND.L             #mask_AND_ea_mode,D1                        ;move the mask to D1
 ;--------------Determine EFFECTIVE ADDRESS Mode-----------------------------------                
 Dn_ea_add_reg_indir              CMP.L             #match_AND_An_indir,D1                      ;check to see if mode is add reg indir
@@ -575,9 +623,10 @@ Dn_ea_abs_add_long               CMP.L             #match_AND_abs_add_long,D2   
 
 ;--------------------Determine EFFECTIVE ADDRESS Register----------------------------------------------------------------------------------------
                                  
-                                 AND.L              #mask_AND_ea_reg_and_mode,D2         ;load the mask into D2 for the mode and the register
+                                 
 ;------------------Address Register Indirect-----------------------
-Dn_ea_An_indir_reg               CMP.L          #match_AND_An_indir_r0,D2              ;check reg is equal to 0
+Dn_ea_An_indir_reg               AND.L              #mask_AND_ea_reg_and_mode,D2         ;load the mask into D2 for the mode and the register
+                                 CMP.L          #match_AND_An_indir_r0,D2              ;check reg is equal to 0
                                  BNE             Dn_ea_An_indir_reg1                           ;if not try reg 1
                                  BEQ             Dn_ea_An_indir_reg0_out                       ;if equal go to output ANDroutine
 
@@ -751,7 +800,7 @@ Dn_ea_An_indir_predec_reg7_out			   MOVE.L			#ea_indir_predec_A7,A1						;load s
                                             RTS
                                             
 ;------------------Absolute Addressing Output-----------------------
-Dn_ea_abs_add_word_out						 MOVE.L      #ea_$,(A1)+                         ;load $ for hex and increment A1
+Dn_ea_abs_add_word_out			      MOVE.L      #ea_$,(A1)+                         ;load $ for hex and increment A1
                                       MOVE.L      D5,(A1)+                           ;load address                  
                                       RTS                                            :return to ANDroutine
                                            
@@ -902,6 +951,7 @@ match_AND_reg6							EQU			$0C00
 match_AND_reg7							EQU			$0E00
 
     END    START        ; last line of source
+
 
 
 
