@@ -47,9 +47,10 @@ ADDA_immediate_add               CMP.L             #match_ADDA_imm_add,D1       
 
 ;--------------------Determine EFFECTIVE ADDRESS Register----------------------------------------------------------------------------------------
                                  
-                                 AND.L              #mask_ADDA_ea_reg_and_mode,D2                ;load the mask into D2 for the mode and the register
+                                 
 ;-----------------------------------Data Register Direct--------------------------------
-ADDA_Dn_reg                      CMP.L              #match_ADDA_D0,D2                            ;check to see in the register is 0
+ADDA_Dn_reg                      AND.L              #mask_ADDA_ea_reg_and_mode,D2                ;load the mask into D2 for the mode and the register
+                                 CMP.L              #match_ADDA_D0,D2                            ;check to see in the register is 0
                                  BNE                ADDA_rD1                                     ;if not go check register 1
                                  BEQ                ADDA_D0_out                                  ;if equal go to output subroutine
 
@@ -83,36 +84,38 @@ ADDA_rD7                         CMP.L              #match_ADDA_D7,D2           
 
 
 ;--------------------Data Register Direct Output-----------------------
-ADDA_D0_out                     MOVE.L              #ea_D0,A1					 ;load string constant into A1
+ADDA_D0_out                     MOVE.L              #ea_D0,A1					                 ;load string constant into A1
+                                JSR                 ADDA_determine_second_op                                
+                                RTS
+
+ADDA_D1_out                     MOVE.L              #ea_D1,A1					                 ;load string constant into A1
                                 JSR                 ADDA_determine_second_op                     ;jump to subroutine to determine second operand
-
-ADDA_D1_out                     MOVE.L              #ea_D1,A1					 ;load string constant into A1
+                                RTS
+                                
+ADDA_D2_out                     MOVE.L              #ea_D2,A1					                 ;load string constant into A1
                                 JSR                 ADDA_determine_second_op                     ;jump to subroutine to determine second operand
-
-
-ADDA_D2_out                     MOVE.L              #ea_D2,A1					 ;load string constant into A1
+                                RTS
+                                
+ADDA_D3_out                     MOVE.L	 	        #ea_D3,A1					                 ;load string constant into A1
                                 JSR                 ADDA_determine_second_op                     ;jump to subroutine to determine second operand
-
-ADDA_D3_out                     MOVE.L	 	    #ea_D3,A1					 ;load string constant into A1
+                                RTS
+                                
+ADDA_D4_out                     MOVE.L		        #ea_D4,A1				       	             ;load string constant into A1
                                 JSR                 ADDA_determine_second_op                     ;jump to subroutine to determine second operand
-
-
-ADDA_D4_out                     MOVE.L		    #ea_D4,A1				       	 ;load string constant into A1
-                                JSR                 ADDA_determine_second_op                     ;jump to subroutine to determine second operand
-
-
-ADDA_D5_out                     MOVE.L	   	    #ea_D5,A1					 ;load string constant into A1
+                                RTS
+                                
+ADDA_D5_out                     MOVE.L	   	        #ea_D5,A1					                 ;load string constant into A1
                                 JSR            	    ADDA_determine_second_op                     ;jump to subroutine to determine second operand
+                                RTS
 
-
-ADDA_D6_out                     MOVE.L		    #ea_D6,A1					 ;load string constant into A1
+ADDA_D6_out                     MOVE.L		        #ea_D6,A1		            			 ;load string constant into A1
                                 JSR                 ADDA_determine_second_op                     ;jump to subroutine to determine second operand
-
-
-ADDA_D7_out                     MOVE.L		    #ea_D7,A1					 ;load string constant into A1
+                                RTS
+                                
+ADDA_D7_out                     MOVE.L		        #ea_D7,A1					                 ;load string constant into A1
                                 JSR                 ADDA_determine_second_op                     ;jump to subroutine to determine second operand
-
-
+                                RTS
+                                
 ;------------------Address Register Direct-----------------------
 ADDA_An_reg                      CMP.L           #match_ADDA_A0,D2                               ;check reg is equal to 0
                                  BNE             ADDA_rA1                                        ;if not try reg 1
@@ -150,28 +153,35 @@ ADDA_rA7                         CMP.L           #match_ADDA_A7,D2              
 ;--------------------Address Register Direct Output-----------------------
 ADDA_A0_out                      MOVE.L		         #ea_A0,A1					                     ;load string constant into A1
                                  JSR                ADDA_determine_second_op                         ;jump to subroutine to determine second operand
-        						
+                                 RTS        						
+                                 
 ADDA_A1_out                      MOVE.L	            #ea_A1,A1					                 ;load string constant into A1
                                  JSR                ADDA_determine_second_op                     ;jump to subroutine to determine second operand
+                                 RTS
         						
 ADDA_A2_out                      MOVE.L	 	        #ea_A2,A1					                 ;load string constant into A1
                                  JSR                ADDA_determine_second_op                	 ;jump to subroutine to determine second operand
-        						
+                                 RTS
+       						
 ADDA_A3_out                      MOVE.L		        #ea_A3,A1					                 ;load string constant into A1
                                  JSR                ADDA_determine_second_op                     ;jump to subroutine to determine second operand
-
+                                 RTS
+                                
 ADDA_A4_out                      MOVE.L		        #ea_A4,A1					                 ;load string constant into A1
                                  JSR                ADDA_determine_second_op                 	 ;jump to subroutine to determine second operand
-
+                                 RTS
+                                
 ADDA_A5_out                      MOVE.L		        #ea_A5,A1					                  ;load string constant into A1
                                  JSR                ADDA_determine_second_op                 	 ;jump to subroutine to determine second operand
-
+                                 RTS
+                                
 ADDA_A6_out                      MOVE.L		        #ea_A6,A1					                 ;load string constant into A1
                                  JSR                ADDA_determine_second_op                     ;jump to subroutine to determine second operand
-
+                                 RTS
+                                
 ADDA_A7_out                      MOVE.L		        #ea_A7,A1					                 ;load string constant into A1
                                  JSR                ADDA_determine_second_op                     ;jump to subroutine to determine second operand
-
+                                 RTS
 
 ;------------------Address Register Indirect-----------------------
 ADDA_An_indir_reg                CMP.L              #match_ADDA_An_indir_r0,D2                   ;check reg is equal to 0
@@ -210,28 +220,35 @@ ADDA_An_indir_reg7               CMP.L              #match_ADDA_An_indir_r7,D2  
 ;--------------------Address Register Indirect Output-----------------------
 ADDA_An_indir_reg0_out		     MOVE.L		    #ea_indir_A0,A1		    	                ;load string constant into A1
                                  JSR            ADDA_determine_second_op                    ;jump to subroutine to determine second operand
-
+                                 RTS
+                                
 ADDA_An_indir_reg1_out	         MOVE.L		    #ea_indir_A1,A1		    		            ;load string constant into A1
                                  JSR            ADDA_determine_second_op                    ;jump to subroutine to determine second operand
-
+                                 RTS
+                                
 ADDA_An_indir_reg2_out	         MOVE.L		    #ea_indir_A2,A1		    	                 ;load string constant into A1
                                  JSR            ADDA_determine_second_op                     ;jump to subroutine to determine second operand
-
+                                 RTS
+                                
 ADDA_An_indir_reg3_out		     MOVE.L		    #ea_indir_A3,A1		    		             ;load string constant into A1
                                  JSR            ADDA_determine_second_op                     ;jump to subroutine to determine second operand
-
+                                 RTS
+                                
 ADDA_An_indir_reg4_out		     MOVE.L		    #ea_indir_A4,A1		            		   ;load string constant into A1
                                  JSR            ADDA_determine_second_op                     ;jump to subroutine to determine second operand
-
+                                 RTS
+                                
 ADDA_An_indir_reg5_out	         MOVE.L		    #ea_indir_A5,A1         	    		    ;load string constant into A1
                                  JSR            ADDA_determine_second_op                      ;jump to subroutine to determine second operand
-
-ADDA_An_indir_reg6_out		    MOVE.L		    #ea_indir_A6,A1		            		    ;load string constant into A1
+                                 RTS
+                                
+ADDA_An_indir_reg6_out		     MOVE.L		    #ea_indir_A6,A1		            		    ;load string constant into A1
                                  JSR            ADDA_determine_second_op                      ;jump to subroutine to determine second operand
+                                 RTS
 								        
 ADDA_An_indir_reg7_out	         MOVE.L		    #ea_indir_A7,A1          	    		    ;load string constant into A1
                                  JSR            ADDA_determine_second_op                      ;jump to subroutine to determine second operand
-
+                                 RTS
 
 ;------------------Address Register Indirect with Post Increment-----------------------
 ADDA_An_indir_postinc_reg        CMP.L              #match_ADDA_An_indir_postinc_reg0,D2         ;check reg is equal to 0
@@ -270,28 +287,35 @@ ADDA_An_indir_postinc_reg7       CMP.L     	    #match_ADDA_An_indir_postinc_reg
 ;--------------------Address Register Indirect with Post Increment Output-----------------------
 ADDA_An_indir_postinc_reg0_out	      MOVE.L		    #ea_indir_postinc_A0,A1		         ;load string constant into A1
                                       JSR               ADDA_determine_second_op                 ;jump to subroutine to determine second operand
-
+                                      RTS
+                                      
 ADDA_An_indir_postinc_reg1_out	      MOVE.L		    #ea_indir_postinc_A1,A1		    	 ;load string constant into A1
                                       JSR               ADDA_determine_second_op                 ;jump to subroutine to determine second operand
-
+                                      RTS
+                                      
 ADDA_An_indir_postinc_reg2_out	      MOVE.L		    #ea_indir_postinc_A2,A1		    	 ;load string constant into A1
                                       JSR               ADDA_determine_second_op                 ;jump to subroutine to determine second operand
-
+                                      RTS
+                                      
 ADDA_An_indir_postinc_reg3_out	      MOVE.L		    #ea_indir_postinc_A3,A1		    	 ;load string constant into A1
                                       JSR               ADDA_determine_second_op                 ;jump to subroutine to determine second operand
-
+                                      RTS
+                                      
 ADDA_An_indir_postinc_reg4_out	      MOVE.L		    #ea_indir_postinc_A4,A1		 	 ;load string constant into A1
                                       JSR               ADDA_determine_second_op                 ;jump to subroutine to determine second operand
-
+                                      RTS
+                                      
 ADDA_An_indir_postinc_reg5_out	      MOVE.L		    #ea_indir_postinc_A5,A1		    	 ;load string constant into A1
                                       JSR               ADDA_determine_second_op                 ;jump to subroutine to determine second operand
-
+                                      RTS
+                                      
 ADDA_An_indir_postinc_reg6_out	      MOVE.L		    #ea_indir_postinc_A6,A1		    	 ;load string constant into A1
                                       JSR               ADDA_determine_second_op                 ;jump to subroutine to determine second operand
-
+                                      RTS
+                                      
 ADDA_An_indir_postinc_reg7_out	      MOVE.L		    #ea_indir_postinc_A7,A1		    	 ;load string constant into A1
                                       JSR               ADDA_determine_second_op                 ;jump to subroutine to determine second operand
-
+                                      RTS
 
 ;------------------Address Register Indirect with Pre Decrement-----------------------
 ADDA_An_indir_predec                  CMP.L             #match_ADDA_An_indir_predec_reg0,D2        ;check reg is equal to 0
@@ -330,39 +354,47 @@ ADDA_An_indir_predec_reg7             CMP.L             #match_ADDA_An_indir_pre
 ;--------------------Address Register Indirect with Pre Decrement Output-----------------------
 ADDA_An_indir_predec_reg0_out	      MOVE.L		#ea_indir_predec_A0,A1			   ;load string constant into A1
                                       JSR               ADDA_determine_second_op                   ;jump to subroutine to determine second operand
+                                      RTS
 											
 ADDA_An_indir_predec_reg1_out	      MOVE.L		#ea_indir_predec_A1,A1			   ;load string constant into A1
                                       JSR               ADDA_determine_second_op                   ;jump to subroutine to determine second operand
-
+                                      RTS
+                                      
 ADDA_An_indir_predec_reg2_out	      MOVE.L		#ea_indir_predec_A2,A1			   ;load string constant into A1
                                       JSR               ADDA_determine_second_op                   ;jump to subroutine to determine second operand
-
+                                      RTS
+                                      
 ADDA_An_indir_predec_reg3_out	      MOVE.L		#ea_indir_predec_A3,A1			   ;load string constant into A1
                                       JSR               ADDA_determine_second_op                   ;jump to subroutine to determine second operand
-
+                                      RTS
+                                      
 ADDA_An_indir_predec_reg4_out	      MOVE.L		#ea_indir_predec_A4,A1			   ;load string constant into A1
                                       JSR               ADDA_determine_second_op                   ;jump to subroutine to determine second operand
-
+                                      RTS
+                                      
 ADDA_An_indir_predec_reg5_out         MOVE.L		#ea_indir_predec_A5,A1			   ;load string constant into A1
                                       JSR               ADDA_determine_second_op                   ;jump to subroutine to determine second operand
-
+                                      RTS
+                                      
 ADDA_An_indir_predec_reg6_out	      MOVE.L		#ea_indir_predec_A6,A1			   ;load string constant into A1
                                       JSR               ADDA_determine_second_op                   ;jump to subroutine to determine second operand
-
+                                      RTS
+                                      
 ADDA_An_indir_predec_reg7_out	      MOVE.L		#ea_indir_predec_A7,A1			   ;load string constant into A1
                                       JSR               ADDA_determine_second_op                   ;jump to subroutine to determine second operand
-        
+                                      RTS        
 
 ;------------------Absolute Addressing Output-----------------------
 ADDA_abs_add_word_out			         MOVE.L      #ea_$,(A1)+                        ;load $ for hex and increment A1
                                          MOVE.L      D5,(A1)+                           ;load address                  
-                                         RTS                                            :return to subroutine
-                                           
+                                         JSR         ADDA_determine_second_op           ;jump to subroutine to determine second operand
+                                         RTS                                           
 
 ADDA_abs_add_long_out    		         MOVE.L      (A0)+,D5                           ;pull the next long instruction that holds the address
                                          MOVE.L      #ea_$,(A1)+                        ;load $ for hex and increment A1
                                          MOVE.L      D5,(A1)+                           ;load address                  
-                                         RTS                                            :return to subroutine                                            
+                                         JSR         ADDA_determine_second_op           ;jump to subroutine to determine second operand
+                                         RTS                                            
 ;---------------Immediate Addresing---------------------------
 ADDA_immediate_add_out                  MOVE.L	     (A0)+,D5                           ;capture the immediate address
 					                    CMP.L       #match_ADDA_imm_add_word,D6             ;check to see if need to pull word
@@ -373,42 +405,45 @@ ADDA_immediate_add_out                  MOVE.L	     (A0)+,D5                    
 ADDA_imm_add_w                           MOVE.L      #ea_$,(A1)+                        ;load the $
                                          MOVE.W      D5,(A1)+                           ;load the word address                           
                                          JSR         ADDA_determine_second_op           ;jump to subroutine to determine second operand
+                                         RTS
                                          
 ADDA_imm_add_l                           MOVE.L      (A0)+,D5                           ;pull the long and increase the pointer
                                          MOVE.L      #ea_$,(A1)+                        ;load the $
                                          MOVE.L      D5,A1                              ;move to A1
                                          JSR         ADDA_determine_second_op           ;jump to subroutine to determine second operand
+                                         RTS                                              
+                                              
                                               
 ;---------------------------------Determine Register----------------------------------------------------------------------------------------
-ADDA_determine_second_op		CLR.L		D2				;clear D2 
+ADDA_determine_second_op		CLR.L		D2				            ;clear D2 
 					            AND.L		#mask_ADDA_An_reg,D2		;load the mask for the register into D2, masks bit 11-9
 												
 ADDA_reg0				        CMP.L		#match_ADDA_reg0,D2		;check to see if reg equal 0
-					            BNE		    ADDA_reg1			;if not equal got check reg 1
+					            BNE		    ADDA_reg1			    ;if not equal got check reg 1
 					            BEQ		    ADDA_reg0_out			;if equal go to output
 												
 ADDA_reg1				        CMP.L		#match_ADDA_reg1,D2		;check to see if reg equal 1
-					            BNE		    ADDA_reg2			;if not equal got check reg 2
+					            BNE		    ADDA_reg2			    ;if not equal got check reg 2
 					            BEQ		    ADDA_reg1_out			;if equal go to output
 
 ADDA_reg2				        CMP.L		#match_ADDA_reg2,D2		;check to see if reg equal 2
-					            BNE		    ADDA_reg3			;if not equal got check reg 3
+					            BNE		    ADDA_reg3			    ;if not equal got check reg 3
 					            BEQ 	    ADDA_reg2_out			;if equal go to output
 
 ADDA_reg3       				CMP.L		#match_ADDA_reg3,D2		;check to see if reg equal 3
-				            	BNE		    ADDA_reg4			;if not equal got check reg 4
+				            	BNE		    ADDA_reg4			    ;if not equal got check reg 4
 					            BEQ		    ADDA_reg3_out			;if equal go to output
 												
 ADDA_reg4				        CMP.L		#match_ADDA_reg4,D2		;check to see if reg equal 4
-					            BNE		    ADDA_reg5			;if not equal got check reg 5
+					            BNE		    ADDA_reg5			    ;if not equal got check reg 5
 					            BEQ		    ADDA_reg4_out			;if equal go to output
 
 ADDA_reg5				        CMP.L		#match_ADDA_reg5,D2		;check to see if reg equal 5
-					            BNE		    ADDA_reg6			;if not equal got check reg 6
+					            BNE		    ADDA_reg6			    ;if not equal got check reg 6
 					            BEQ		    ADDA_reg5_out			;if equal go to output
 
 ADDA_reg6				        CMP.L		#match_ADDA_reg6,D2		;check to see if reg equal 6
-					            BNE		    ADDA_reg7			;if not equal got check reg 7
+					            BNE		    ADDA_reg7			    ;if not equal got check reg 7
 					            BEQ		    ADDA_reg6_out			;if equal go to output			
 
 ADDA_reg7				        CMP.L		#match_ADDA_reg7,D2		;check to see if reg equal 7
@@ -443,7 +478,7 @@ ADDA_reg7_out			        MOVE.L		#ea_A7,A1			;load string constant into A1
                                 
 
 ;----------------------Error Handling----------------------------------------
-ERROR                                   LEA             ERROR_MESSAGE,A3                 ;load error messge into A3
+ERROR                                   LEA             ERROR_MESSAGE,A1                 ;load error messge into A3
 				        RTS
 					                            
 					                            
@@ -572,6 +607,7 @@ match_ADDA_reg6				EQU			$0C00
 match_ADDA_reg7				EQU			$0E00
 
     END    START        ; last line of source
+
 
 
 
