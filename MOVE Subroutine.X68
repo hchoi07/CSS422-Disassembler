@@ -4,10 +4,8 @@
 * Date       :
 * Description:
 *-----------------------------------------------------------
-    ORG    $1000
-START:                  ; first instruction of program
-
-MOVE_MOVE                                MOVEM.L           D1-D5/D7/A0-A6, -(SP)                        ;preserve the registers, 
+  
+MOVE_sub                                MOVEM.L           D1-D5/D7/A0-A6, -(SP)                        ;preserve the registers, 
 
 *-----------------------------------------------------------------------------------------------------------------------------------
 * 
@@ -81,33 +79,35 @@ MOVE_rD7                        CMP.L              #match_MOVE_src_D7,D2        
 ;--------------------Data Register Direct Output-----------------------
 MOVE_D0_out                    MOVE.L          #ea_D0,A1							;load string constant into A1
                                 JSR             MOVE_determine_second_op                 ;jump to MOVEroutine to determine second operand
-
+                                RTS
+                                
 MOVE_D1_out                    MOVE.L          #ea_D1,A1							;load string constant into A1
                                 JSR             MOVE_determine_second_op                 ;jump to MOVEroutine to determine second operand
-
+                                RTS
 
 MOVE_D2_out                    MOVE.L          #ea_D2,A1							;load string constant into A1
                                 JSR             MOVE_determine_second_op                 ;jump to MOVEroutine to determine second operand
-
+                                RTS
+                                
 MOVE_D3_out                    MOVE.L			#ea_D3,A1							;load string constant into A1
                                 JSR             MOVE_determine_second_op                 ;jump to MOVEroutine to determine second operand
-
+                                RTS
 
 MOVE_D4_out                    MOVE.L			#ea_D4,A1							;load string constant into A1
                                 JSR             MOVE_determine_second_op                 ;jump to MOVEroutine to determine second operand
-
+                                RTS
 
 MOVE_D5_out                    MOVE.L			#ea_D5,A1							;load string constant into A1
                                 JSR             MOVE_determine_second_op                 ;jump to MOVEroutine to determine second operand
-
+                                RTS
 
 MOVE_D6_out                    MOVE.L			#ea_D6,A1							;load string constant into A1
                                 JSR             MOVE_determine_second_op                 ;jump to MOVEroutine to determine second operand
-
+                                RTS
 
 MOVE_D7_out                    MOVE.L			#ea_D7,A1							;load string constant into A1
                                 JSR             MOVE_determine_second_op                 ;jump to MOVEroutine to determine second operand
-
+                                RTS
 ;------------------Address Register Indirect-----------------------
 MOVE_An_indir_reg               CMP.L          #match_MOVE_src_An_indir_r0,D2              ;check reg is equal to 0
                                  BNE             MOVE_An_indir_reg1                           ;if not try reg 1
@@ -144,28 +144,35 @@ MOVE_An_indir_reg7              CMP.L           #match_MOVE_src_An_indir_r7,D2  
 ;--------------------Address Register Indirect Output-----------------------
 MOVE_An_indir_reg0_out			       MOVE.L			#ea_indir_A0,A1		    	        ;load string constant into A1
                                         JSR             MOVE_determine_second_op                 ;jump to MOVEroutine to determine second operand
-
+                                        RTS
+                                        
 MOVE_An_indir_reg1_out			       MOVE.L			#ea_indir_A1,A1		    		  ;load string constant into A1
                                         JSR             MOVE_determine_second_op                 ;jump to MOVEroutine to determine second operand
-
+                                        RTS
+                                        
 MOVE_An_indir_reg2_out			       MOVE.L			#ea_indir_A2,A1		    		  ;load string constant into A1
                                         JSR             MOVE_determine_second_op                 ;jump to MOVEroutine to determine second operand
-
+                                        RTS
+                                        
 MOVE_An_indir_reg3_out			       MOVE.L			#ea_indir_A3,A1		    		  ;load string constant into A1
                                         JSR             MOVE_determine_second_op                 ;jump to MOVEroutine to determine second operand
-
+                                        RTS
+                                        
 MOVE_An_indir_reg4_out			       MOVE.L			#ea_indir_A4,A1		    		  ;load string constant into A1
                                         JSR             MOVE_determine_second_op                 ;jump to MOVEroutine to determine second operand
-
+                                        RTS
+                                        
 MOVE_An_indir_reg5_out			       MOVE.L			#ea_indir_A5,A1		    		  ;load string constant into A1
                                         JSR             MOVE_determine_second_op                 ;jump to MOVEroutine to determine second operand
-
+                                        RTS
+                                        
 MOVE_An_indir_reg6_out			       MOVE.L			#ea_indir_A6,A1		    		  ;load string constant into A1
                                         JSR             MOVE_determine_second_op                 ;jump to MOVEroutine to determine second operand
+                                        RTS
 								        
 MOVE_An_indir_reg7_out			       MOVE.L			#ea_indir_A7,A1		    		  ;load string constant into A1
                                         JSR             MOVE_determine_second_op                 ;jump to MOVEroutine to determine second operand
-
+                                        RTS
 ;------------------Address Register Indirect with Post Increment-----------------------
 MOVE_An_indir_postinc_reg                  CMP.L      #match_MOVE_src_An_indir_pinc_r0,D2        ;check reg is equal to 0
                                             BNE        MOVE_An_indir_postinc_reg1                      ;if not try reg 1
@@ -202,28 +209,36 @@ MOVE_An_indir_postinc_reg7                 CMP.L      #match_MOVE_src_An_indir_p
 ;--------------------Address Register Indirect with Post Increment Output-----------------------
 MOVE_An_indir_postinc_reg0_out			    MOVE.L			#ea_indir_postinc_A0,A1		    			      ;load string constant into A1
                                              JSR             MOVE_determine_second_op                 ;jump to MOVEroutine to determine second operand
-
+                                             RTS
+                                             
 MOVE_An_indir_postinc_reg1_out			    MOVE.L			#ea_indir_postinc_A1,A1		    			      ;load string constant into A1
                                              JSR             MOVE_determine_second_op                 ;jump to MOVEroutine to determine second operand
-
+                                             RTS
+                                             
 MOVE_An_indir_postinc_reg2_out			    MOVE.L			#ea_indir_postinc_A2,A1		    			      ;load string constant into A1
                                              JSR             MOVE_determine_second_op                 ;jump to MOVEroutine to determine second operand
-
+                                             RTS
+                                             
 MOVE_An_indir_postinc_reg3_out			    MOVE.L			#ea_indir_postinc_A3,A1		    			      ;load string constant into A1
                                              JSR             MOVE_determine_second_op                 ;jump to MOVEroutine to determine second operand
-
+                                             RTS
+                                             
 MOVE_An_indir_postinc_reg4_out			    MOVE.L			#ea_indir_postinc_A4,A1		    			      ;load string constant into A1
                                              JSR             MOVE_determine_second_op                 ;jump to MOVEroutine to determine second operand
-
+                                             RTS
+                                             
 MOVE_An_indir_postinc_reg5_out			    MOVE.L			#ea_indir_postinc_A5,A1		    			      ;load string constant into A1
                                              JSR             MOVE_determine_second_op                 ;jump to MOVEroutine to determine second operand
-
+                                             RTS
+                                             
 MOVE_An_indir_postinc_reg6_out			    MOVE.L			#ea_indir_postinc_A6,A1		    			      ;load string constant into A1
                                              JSR             MOVE_determine_second_op                 ;jump to MOVEroutine to determine second operand
-
+                                             RTS
+                                             
 MOVE_An_indir_postinc_reg7_out			    MOVE.L			#ea_indir_postinc_A7,A1		    			      ;load string constant into A1
                                              JSR             MOVE_determine_second_op                 ;jump to MOVEroutine to determine second operand
-
+                                             RTS
+                                             
 ;------------------Address Register Indirect with Pre Decrement-----------------------
 MOVE_An_indir_predec                   	   CMP.L      #match_MOVE_src_An_indir_prede_r0,D2       ;check reg is equal to 0
                                             BNE        MOVE_An_indir_predec_reg1                      ;if not try reg 1
@@ -260,28 +275,35 @@ MOVE_An_indir_predec_reg7                  CMP.L      #match_MOVE_src_An_indir_p
 ;--------------------Address Register Indirect with Pre Decrement Output-----------------------
 MOVE_An_indir_predec_reg0_out			   MOVE.L			#ea_indir_predec_A0,A1					      ;load string constant into A1
                                             JSR             MOVE_determine_second_op                 ;jump to MOVEroutine to determine second operand
+                                             RTS
 											
 MOVE_An_indir_predec_reg1_out			   MOVE.L			#ea_indir_predec_A1,A1						;load string constant into A1
                                             JSR             MOVE_determine_second_op                 ;jump to MOVEroutine to determine second operand
-
+                                             RTS
+                                             
 MOVE_An_indir_predec_reg2_out			   MOVE.L			#ea_indir_predec_A2,A1						;load string constant into A1
                                             JSR             MOVE_determine_second_op                 ;jump to MOVEroutine to determine second operand
-
+                                             RTS
+                                             
 MOVE_An_indir_predec_reg3_out			   MOVE.L			#ea_indir_predec_A3,A1						;load string constant into A1
                                             JSR             MOVE_determine_second_op                 ;jump to MOVEroutine to determine second operand
-
+                                             RTS
+                                             
 MOVE_An_indir_predec_reg4_out			   MOVE.L			#ea_indir_predec_A4,A1						;load string constant into A1
                                             JSR             MOVE_determine_second_op                 ;jump to MOVEroutine to determine second operand
-
+                                             RTS
+                                             
 MOVE_An_indir_predec_reg5_out			   MOVE.L			#ea_indir_predec_A5,A1						;load string constant into A1
                                             JSR             MOVE_determine_second_op                 ;jump to MOVEroutine to determine second operand
-
+                                             RTS
+                                             
 MOVE_An_indir_predec_reg6_out			   MOVE.L			#ea_indir_predec_A6,A1						;load string constant into A1
                                             JSR             MOVE_determine_second_op                 ;jump to MOVEroutine to determine second operand
-
+                                             RTS
+                                             
 MOVE_An_indir_predec_reg7_out			   MOVE.L			#ea_indir_predec_A7,A1						;load string constant into A1
                                             JSR             MOVE_determine_second_op                 ;jump to MOVEroutine to determine second operand
-        
+                                            RTS
 ;------------------Absolute Addressing Output-----------------------
 MOVE_abs_add_word_out				 MOVE.L      #ea_$,(A1)+                         ;load $ for hex and increment A1
                                       MOVE.L      D5,(A1)+                           ;load address                  
@@ -653,14 +675,9 @@ MOVE_dest_imm_add_l                       MOVE.L     (A0)+,D5                   
                                          MOVE.L      D5,A1                               ;move to A1
                                          RTS
 
-
-;----------------------Error Handling----------------------------------------
-ERROR                                           LEA     ERROR_MESSAGE,A3                                          ;load error messge into A3
-					                            RTS
     SIMHALT             ; halt simulator
 					                            
 					                            
-ERROR_MESSAGE                   DC.B            'Incorrect EA Format',0
 
 ea_D0				    	DC.B		'D0',0
 ea_D1			    		DC.B		'D1',0
@@ -849,7 +866,7 @@ match_MOVE_dest_imm_add                           EQU         $01C0
 match_MOVE_dest_imm_add_word                      EQU         $01C0
 match_MOVE_dest_imm_add_long                      EQU         $09C0
 
-    END    START        ; last line of source
+
 
 *~Font name~Courier New~
 *~Font size~10~
