@@ -5,7 +5,7 @@
 * D2 will be loaded with the mask for the EA mode and register to be compared with matchs of the dettermined mode and register
 * A1 will point to the location of the string constants
 *-----------------------------------------------------------
-START               ORG         $1000
+
 
 MOVEQ_sub                        MOVEM.L           D1-D5/D7/A0-A6, -(A7)                     ;preserve the registers 
                                  
@@ -75,7 +75,8 @@ MOVEQ_D6_output				MOVE.L			#ea_D6,A1						;load string constant into A1
 									
 MOVEQ_D7_output				MOVE.L			#ea_D7,A1						;load string constant into A1
 				    		RTS												;return to subroutine
-									
+
+
 *---------------------------------------------------------------------------------------------------------------------------
 *                                   Variables
 *---------------------------------------------------------------------------------------------------------------------------
@@ -101,10 +102,6 @@ ea_D5			    		DC.B	    	'D5',0
 ea_D6				    	DC.B	    	'D6',0
 ea_D7			   	    	DC.B	    	'D7',0
 ea_lb                       DC.B            '#',0     
-
-
-
-
 
 
 
