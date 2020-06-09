@@ -5,6 +5,7 @@
 * D2 will be loaded with the mask for the EA mode and register to be compared with matchs of the dettermined mode and register
 * A1 will point to the location of the string constants
 *-----------------------------------------------------------    
+START                       ORG             $1000
 
 SUB_sub                                MOVEM.L           D1-D5/D7/A0-A6, -(SP)                        ;preserve the registers, 
 ;-----------------------------ea,Dn-----------------------------------------------------------------------------------------------------
@@ -68,18 +69,19 @@ SUB_ea_Dn_abs_add_word             AND.L           #mask_SUB_abs_add,D2         
   
 SUB_ea_Dn_abs_add_long             CMP.L           #match_SUB_abs_add_long,D2             ;check to see if abs add long
                                    BEQ             SUB_ea_Dn_abs_add_long_out             ;if equal go to output
-				   BNE	           SUB_ea_Dn_immediate_add
+				                     BNE	           SUB_ea_Dn_immediate_add
                                  
 SUB_ea_Dn_immediate_add            CMP.L           #match_SUB_imm_add,D1                  ;check if immediate address
                                    BEQ             SUB_ea_Dn_immediate_add_out            ;if equal go to immediate add sub routine
-   				   BNE             ERROR                                  ;if not equal go to error mesage sub routine
+   				                     BNE             ERROR                                  ;if not equal go to error mesage sub routine
 
 
 ;--------------------Determine EFFECTIVE ADDRESS Register----------------------------------------------------------------------------------------
                                  
-                                 AND.L           #mask_SUB_ea_reg_and_mode,D2         ;load the mask into D2 for the mode and the register
+                                 
 ;-----------------------------------Data Register Direct--------------------------------
-SUB_ea_Dn_Dn_reg             CMP.L              #match_SUB_D0,D2               ;check to see in the register is 0
+SUB_ea_Dn_Dn_reg             AND.L           #mask_SUB_ea_reg_and_mode,D2         ;load the mask into D2 for the mode and the register
+                             CMP.L              #match_SUB_D0,D2               ;check to see in the register is 0
                              BNE                SUB_ea_Dn_rD1                  ;if not go check register 1
                              BEQ                SUB_ea_Dn_D0_out               ;if equal go to output subroutine
 
@@ -115,32 +117,35 @@ SUB_ea_Dn_rD7                CMP.L              #match_SUB_D7,D2               ;
 ;--------------------Data Register Direct Output-----------------------
 SUB_ea_Dn_D0_out             MOVE.L          #ea_D0,A1				;load string constant into A1
                              JSR             SUB_determine_second_op            ;jump to subroutine to determine second operand
-
+                             RTS
+                             
 SUB_ea_Dn_D1_out             MOVE.L          #ea_D1,A1				;load string constant into A1
                              JSR             SUB_determine_second_op            ;jump to subroutine to determine second operand
-
+                             RTS
+                             
 SUB_ea_Dn_D2_out             MOVE.L          #ea_D2,A1				;load string constant into A1
                              JSR             SUB_determine_second_op            ;jump to subroutine to determine second operand
-
-SUB_ea_Dn_D3_out             MOVE.L	     #ea_D3,A1				;load string constant into A1
+                             RTS
+                             
+SUB_ea_Dn_D3_out             MOVE.L	         #ea_D3,A1				;load string constant into A1
                              JSR             SUB_determine_second_op            ;jump to subroutine to determine second operand
+                             RTS
 
-
-SUB_ea_Dn_D4_out             MOVE.L	     #ea_D4,A1				;load string constant into A1
+SUB_ea_Dn_D4_out             MOVE.L	         #ea_D4,A1				;load string constant into A1
                              JSR             SUB_determine_second_op            ;jump to subroutine to determine second operand
+                             RTS
 
-
-SUB_ea_Dn_D5_out             MOVE.L	     #ea_D5,A1				;load string constant into A1
+SUB_ea_Dn_D5_out             MOVE.L	         #ea_D5,A1				;load string constant into A1
                              JSR             SUB_determine_second_op            ;jump to subroutine to determine second operand
+                             RTS
 
-
-SUB_ea_Dn_D6_out             MOVE.L	     #ea_D6,A1				;load string constant into A1
+SUB_ea_Dn_D6_out             MOVE.L	         #ea_D6,A1				;load string constant into A1
                              JSR             SUB_determine_second_op            ;jump to subroutine to determine second operand
-
+                             RTS
 
 SUB_ea_Dn_D7_out             MOVE.L  	     #ea_D7,A1				;load string constant into A1
                              JSR             SUB_determine_second_op            ;jump to subroutine to determine second operand
-
+                             RTS
 
 ;------------------Address Register Indirect-----------------------
 SUB_ea_Dn_An_indir_reg           CMP.L           #match_SUB_An_indir_r0,D2           ;check reg is equal to 0
@@ -179,28 +184,35 @@ SUB_ea_Dn_An_indir_reg7          CMP.L           #match_SUB_An_indir_r7,D2      
 ;--------------------Address Register Indirect Output-----------------------
 SUB_ea_Dn_An_indir_reg0_out	      MOVE.L	     #ea_indir_A0,A1		    ;load string constant into A1
                                   JSR            SUB_determine_second_op            ;jump to subroutine to determine second operand
-
+                                  RTS
+                                  
 SUB_ea_Dn_An_indir_reg1_out	      MOVE.L	     #ea_indir_A1,A1		    ;load string constant into A1
                                   JSR            SUB_determine_second_op            ;jump to subroutine to determine second operand
-
+                                  RTS
+                                  
 SUB_ea_Dn_An_indir_reg2_out	      MOVE.L	     #ea_indir_A2,A1		    ;load string constant into A1
                                   JSR            SUB_determine_second_op            ;jump to subroutine to determine second operand
-
+                                  RTS
+                                  
 SUB_ea_Dn_An_indir_reg3_out	      MOVE.L	     #ea_indir_A3,A1		    ;load string constant into A1
                                   JSR            SUB_determine_second_op            ;jump to subroutine to determine second operand
-
+                                  RTS
+                                  
 SUB_ea_Dn_An_indir_reg4_out	      MOVE.L	     #ea_indir_A4,A1		    ;load string constant into A1
                                   JSR            SUB_determine_second_op            ;jump to subroutine to determine second operand
-
+                                  RTS
+                                  
 SUB_ea_Dn_An_indir_reg5_out	      MOVE.L	     #ea_indir_A5,A1		    ;load string constant into A1
                                   JSR            SUB_determine_second_op            ;jump to subroutine to determine second operand
-
+                                  RTS
+                                  
 SUB_ea_Dn_An_indir_reg6_out	      MOVE.L	     #ea_indir_A6,A1		    ;load string constant into A1
                                   JSR            SUB_determine_second_op            ;jump to subroutine to determine second operand
+                                  RTS
 								        
 SUB_ea_Dn_An_indir_reg7_out	      MOVE.L	     #ea_indir_A7,A1		    ;load string constant into A1
                                   JSR            SUB_determine_second_op            ;jump to subroutine to determine second operand
-
+                                  RTS
 
 ;------------------Address Register Indirect with Post Increment-----------------------
 SUB_ea_Dn_An_indir_postinc_reg         CMP.L      #match_SUB_An_indir_postinc_r0,D2           ;check reg is equal to 0
@@ -239,28 +251,35 @@ SUB_ea_Dn_An_indir_pinc_r7             CMP.L      #match_SUB_An_indir_postinc_r7
 ;--------------------Address Register Indirect with Post Increment Output-----------------------
 SUB_ea_Dn_An_indir_pinc_r0_out	    MOVE.L	        #ea_indir_postinc_A0,A1	         ;load string constant into A1
                                     JSR             SUB_determine_second_op          ;jump to subroutine to determine second operand
-
+                                    RTS
+                                    
 SUB_ea_Dn_An_indir_pinc_r1_out	    MOVE.L	        #ea_indir_postinc_A1,A1	         ;load string constant into A1
                                     JSR             SUB_determine_second_op          ;jump to subroutine to determine second operand
-
+                                    RTS
+                                    
 SUB_ea_Dn_An_indir_pinc_r2_out	    MOVE.L	        #ea_indir_postinc_A2,A1	         ;load string constant into A1
                                     JSR             SUB_determine_second_op          ;jump to subroutine to determine second operand
-
+                                    RTS
+                                    
 SUB_ea_Dn_An_indir_pinc_r3_out	    MOVE.L	        #ea_indir_postinc_A3,A1	         ;load string constant into A1
                                     JSR             SUB_determine_second_op          ;jump to subroutine to determine second operand
-
+                                    RTS
+                                    
 SUB_ea_Dn_An_indir_pinc_r4_out	    MOVE.L	        #ea_indir_postinc_A4,A1	         ;load string constant into A1
                                     JSR             SUB_determine_second_op          ;jump to subroutine to determine second operand
-
+                                    RTS
+                                    
 SUB_ea_Dn_An_indir_pinc_r5_out	    MOVE.L	        #ea_indir_postinc_A5,A1          ;load string constant into A1
                                     JSR             SUB_determine_second_op          ;jump to subroutine to determine second operand
-
+                                    RTS
+                                    
 SUB_ea_Dn_An_indir_pinc_r6_out	    MOVE.L	        #ea_indir_postinc_A6,A1          ;load string constant into A1
                                     JSR             SUB_determine_second_op          ;jump to subroutine to determine second operand
-
+                                    RTS
+                                    
 SUB_ea_Dn_An_indir_pinc_r7_out	    MOVE.L	        #ea_indir_postinc_A7,A1	         ;load string constant into A1
                                     JSR             SUB_determine_second_op          ;jump to subroutine to determine second operand
-
+                                    RTS
 
 ;------------------Address Register Indirect with Pre Decrement-----------------------
 SUB_ea_Dn_An_indir_predec                CMP.L      #match_SUB_An_indir_predec_reg0,D2       ;check reg is equal to 0
@@ -299,117 +318,127 @@ SUB_ea_Dn_An_indir_pdec_r7               CMP.L      #match_SUB_An_indir_predec_r
 ;--------------------Address Register Indirect with Pre Decrement Output-----------------------
 SUB_ea_Dn_An_indir_pdec_r0_out	          MOVE.L	    #ea_indir_predec_A0,A1		    ;load string constant into A1
                                           JSR           SUB_determine_second_op         ;jump to subroutine to determine second operand
+                                          RTS
 											
 SUB_ea_Dn_An_indir_pdec_r1_out	          MOVE.L	    #ea_indir_predec_A1,A1		    ;load string constant into A1
                                           JSR           SUB_determine_second_op         ;jump to subroutine to determine second operand
-
+                                          RTS
+                                          
 SUB_ea_Dn_An_indir_pdec_r2_out	          MOVE.L	    #ea_indir_predec_A2,A1		    ;load string constant into A1
                                           JSR           SUB_determine_second_op         ;jump to subroutine to determine second operand
-
+                                          RTS
+                                          
 SUB_ea_Dn_An_indir_pdec_r3_out	          MOVE.L	    #ea_indir_predec_A3,A1		    ;load string constant into A1
                                           JSR           SUB_determine_second_op         ;jump to subroutine to determine second operand
-
+                                          RTS
+                                          
 SUB_ea_Dn_An_indir_pdec_r4_out	          MOVE.L	    #ea_indir_predec_A4,A1		    ;load string constant into A1
                                           JSR           SUB_determine_second_op         ;jump to subroutine to determine second operand
-
+                                          RTS
+                                          
 SUB_ea_Dn_An_indir_pdec_r5_out	          MOVE.L	    #ea_indir_predec_A5,A1		    ;load string constant into A1
                                           JSR           SUB_determine_second_op         ;jump to subroutine to determine second operand
-
+                                          RTS
+                                          
 SUB_ea_Dn_An_indir_pdec_r6_out	          MOVE.L	    #ea_indir_predec_A6,A1		    ;load string constant into A1
                                           JSR           SUB_determine_second_op         ;jump to subroutine to determine second operand
-
+                                          RTS
+                                          
 SUB_ea_Dn_An_indir_pdec_r7_out	          MOVE.L	    #ea_indir_predec_A7,A1		    ;load string constant into A1
                                           JSR           SUB_determine_second_op         ;jump to subroutine to determine second operand
-        
+                                          RTS
 
 ;------------------Absolute Addressing Output-----------------------
-SUB_ea_Dn_abs_add_word_out	      MOVE.L      #ea_$,(A1)+             ;load $ for hex and increment A1
+SUB_ea_Dn_abs_add_word_out	          MOVE.L      #ea_$,(A1)+             ;load $ for hex and increment A1
                                       MOVE.L      D5,(A1)+                ;load address                  
+                                      JSR           SUB_determine_second_op         ;jump to subroutine to determine second operand
                                       RTS                                 ;return to subroutine
                                            
 
 SUB_ea_Dn_abs_add_long_out    	      MOVE.L      (A0)+,D5                ;pull the next long instruction that holds the address
                                       MOVE.L      #ea_$,(A1)+             ;load $ for hex and increment A1
                                       MOVE.L      D5,(A1)+                ;load address                  
+                                      JSR           SUB_determine_second_op         ;jump to subroutine to determine second operand
                                       RTS                                 ;return to subroutine
 
                                             
 ;---------------Immediate Addresing---------------------------
 SUB_ea_Dn_immediate_add_out           MOVE.L	  (A0)+,D5                            ;capture the immediate address
-				      CMP.L       #match_SUB_imm_add_word,D6          ;check to see if need to pull word
-				      MOVE.L      (A0)+,D5                            ;pull the word
+				                      CMP.L       #match_SUB_imm_add_word,D6          ;check to see if need to pull word
+                				      MOVE.L      (A0)+,D5                            ;pull the word
                                       BEQ         SUB_ea_Dn_imm_add_w                 ;if equal go pull word    
-				      BNE         SUB_ea_Dn_imm_add_l                 ;if not equal, go check long
+				                      BNE         SUB_ea_Dn_imm_add_l                 ;if not equal, go check long
 										 
 SUB_ea_Dn_imm_add_w                   MOVE.L     #ea_$,(A1)+                          ;load the $
                                       MOVE.W     D5,(A1)+                             ;load the word address                           
                                       JSR        SUB_determine_second_op              ;jump to subroutine to determine second operand
-                                         
+                                      RTS
+   
 SUB_ea_Dn_imm_add_l                   MOVE.L     (A0)+,D5                             ;pull the long and increase the pointer
                                       MOVE.L     #ea_$,(A1)+                          ;load the $
                                       MOVE.L     D5,A1                                ;move to A1
                                       JSR        SUB_determine_second_op              ;jump to subroutine to determine second operand
-
+                                      RTS
 ;---------------------------------Determine Register----------------------------------------------------------------------------------------
 SUB_determine_second_op	        CLR.L		D2				;clear D2 
-				AND.L		#mask_SUB_An_reg,D2		;load the mask for the register into D2, masks bit 11-9
+				                AND.L		#mask_SUB_An_reg,D2		;load the mask for the register into D2, masks bit 11-9
 												
-ea_Dn_SUB_reg0			CMP.L		#match_SUB_reg0,D2		;check to see if reg equal 0
-				BNE		ea_Dn_SUB_reg1			;if not equal got check reg 1
-				BEQ		ea_Dn_SUB_reg0_out		;if equal go to output
+ea_Dn_SUB_reg0	                CMP.L		#match_SUB_reg0,D2		;check to see if reg equal 0
+                				BNE		ea_Dn_SUB_reg1			;if not equal got check reg 1
+                				BEQ		ea_Dn_SUB_reg0_out		;if equal go to output
 												
-ea_Dn_SUB_reg1			CMP.L		#match_SUB_reg1,D2		;check to see if reg equal 1
-				BNE		ea_Dn_SUB_reg2			;if not equal got check reg 2
-				BEQ		ea_Dn_SUB_reg1_out		;if equal go to output
+ea_Dn_SUB_reg1			        CMP.L		#match_SUB_reg1,D2		;check to see if reg equal 1
+				                BNE		ea_Dn_SUB_reg2			;if not equal got check reg 2
+                				BEQ		ea_Dn_SUB_reg1_out		;if equal go to output
 
-ea_Dn_SUB_reg2			CMP.L		#match_SUB_reg2,D2		;check to see if reg equal 2
-				BNE		ea_Dn_SUB_reg3			;if not equal got check reg 3
-				BEQ		ea_Dn_SUB_reg2_out		;if equal go to output
+ea_Dn_SUB_reg2			        CMP.L		#match_SUB_reg2,D2		;check to see if reg equal 2
+				                BNE		ea_Dn_SUB_reg3			;if not equal got check reg 3
+                				BEQ		ea_Dn_SUB_reg2_out		;if equal go to output
 
-ea_Dn_SUB_reg3			CMP.L		#match_SUB_reg3,D2		;check to see if reg equal 3
-				BNE		ea_Dn_SUB_reg4			;if not equal got check reg 4
-				BEQ		ea_Dn_SUB_reg3_out		;if equal go to output
+ea_Dn_SUB_reg3	        		CMP.L		#match_SUB_reg3,D2		;check to see if reg equal 3
+                				BNE		ea_Dn_SUB_reg4			;if not equal got check reg 4
+				                BEQ		ea_Dn_SUB_reg3_out		;if equal go to output
 												
-ea_Dn_SUB_reg4			CMP.L		#match_SUB_reg4,D2		;check to see if reg equal 4
-				BNE		ea_Dn_SUB_reg5			;if not equal got check reg 5
-				BEQ		ea_Dn_SUB_reg4_out		;if equal go to output
+ea_Dn_SUB_reg4			        CMP.L		#match_SUB_reg4,D2		;check to see if reg equal 4
+                    			BNE		ea_Dn_SUB_reg5			;if not equal got check reg 5
+                				BEQ		ea_Dn_SUB_reg4_out		;if equal go to output
 
-ea_Dn_SUB_reg5			CMP.L		#match_SUB_reg5,D2		;check to see if reg equal 5
-				BNE		ea_Dn_SUB_reg6			;if not equal got check reg 6
-				BEQ		ea_Dn_SUB_reg5_out		;if equal go to output
+ea_Dn_SUB_reg5	        		CMP.L		#match_SUB_reg5,D2		;check to see if reg equal 5
+                				BNE		ea_Dn_SUB_reg6			;if not equal got check reg 6
+				                BEQ		ea_Dn_SUB_reg5_out		;if equal go to output
 
-ea_Dn_SUB_reg6			CMP.L		#match_SUB_reg6,D2		;check to see if reg equal 6
-				BNE		ea_Dn_SUB_reg7			;if not equal got check reg 7
-				BEQ		ea_Dn_SUB_reg6_out		;if equal go to output			
+ea_Dn_SUB_reg6			        CMP.L		#match_SUB_reg6,D2		;check to see if reg equal 6
+                        		BNE		ea_Dn_SUB_reg7			;if not equal got check reg 7
+                				BEQ		ea_Dn_SUB_reg6_out		;if equal go to output			
 
-ea_Dn_SUB_reg7	    		CMP.L		#match_SUB_reg7,D2		;check to see if reg equal 7
-				BEQ		ea_Dn_SUB_reg7_out		;if equal go to output
-				BNE         	ERROR                           ;if not equal to an addresssing mode, pritn error
+ea_Dn_SUB_reg7	        		CMP.L		#match_SUB_reg7,D2		;check to see if reg equal 7
+                				BEQ		ea_Dn_SUB_reg7_out		;if equal go to output
+				                BNE         	ERROR                           ;if not equal to an addresssing mode, pritn error
 								
 
 ;--------------------Data Output-----------------------
-ea_Dn_SUB_reg0_out		MOVE.L		#ea_D0,A1	        ;load string constant into A1
+ea_Dn_SUB_reg0_out		        MOVE.L		#ea_D0,A1	        ;load string constant into A1
                                 RTS
 											
-ea_Dn_SUB_reg1_out		MOVE.L		#ea_D1,A1	        ;load string constant into A1
+ea_Dn_SUB_reg1_out		        MOVE.L		#ea_D1,A1	        ;load string constant into A1
                                 RTS
                                             
-ea_Dn_SUB_reg2_out		MOVE.L		#ea_D2,A1		;load string constant into A1
+ea_Dn_SUB_reg2_out		        MOVE.L		#ea_D2,A1		;load string constant into A1
                                 RTS
                                             
-ea_Dn_SUB_reg3_out		MOVE.L		#ea_D3,A1	     	;load string constant into A1
+ea_Dn_SUB_reg3_out		        MOVE.L		#ea_D3,A1	     	;load string constant into A1
                                 RTS
                                             
-ea_Dn_SUB_reg4_out		MOVE.L		#ea_D4,A1		;load string constant into A1
+ea_Dn_SUB_reg4_out		        MOVE.L		#ea_D4,A1		;load string constant into A1
                                 RTS
                                             
-ea_Dn_SUB_reg5_out		MOVE.L		#ea_D5,A1	      	;load string constant into A1
+ea_Dn_SUB_reg5_out		        MOVE.L		#ea_D5,A1	      	;load string constant into A1
                                 RTS
                                             
-ea_Dn_SUB_reg6_out		MOVE.L		#ea_D6,A1	     	;load string constant into A1
+ea_Dn_SUB_reg6_out		        MOVE.L		#ea_D6,A1	     	;load string constant into A1
                                 RTS
                                             
-ea_Dn_SUB_reg7_out		MOVE.L		#ea_D7,A1	     	;load string constant into A1
+ea_Dn_SUB_reg7_out		        MOVE.L		#ea_D7,A1	     	;load string constant into A1
                                 RTS				
                                                               
                       
@@ -421,61 +450,61 @@ ea_Dn_SUB_reg7_out		MOVE.L		#ea_D7,A1	     	;load string constant into A1
 ;------------------------------------------------------------------------------------------------------------------------------------------                                              
 ;---------------------------------Determine Register----------------------------------------------------------------------------------------
 SUB_Dn_ea           		CLR.L		D2				;clear D2 
-				AND.L		#mask_SUB_An_reg,D2		;load the mask for the register into D2, masks bit 11-9
+				            AND.L		#mask_SUB_An_reg,D2		;load the mask for the register into D2, masks bit 11-9
 												
-Dn_ea_SUB_reg0   		CMP.L		#match_SUB_reg0,D2		;check to see if reg equal 0
-				BNE		Dn_ea_SUB_reg1			;if not equal got check reg 1
-				BEQ		Dn_ea_SUB_reg0_out		;if equal go to output
+Dn_ea_SUB_reg0   		    CMP.L		#match_SUB_reg0,D2		;check to see if reg equal 0
+            				BNE		Dn_ea_SUB_reg1			;if not equal got check reg 1
+			            	BEQ		Dn_ea_SUB_reg0_out		;if equal go to output
 												
-Dn_ea_SUB_reg1			CMP.L		#match_SUB_reg1,D2		;check to see if reg equal 1
-				BNE		Dn_ea_SUB_reg2			;if not equal got check reg 2
-				BEQ		Dn_ea_SUB_reg1_out		;if equal go to output
+Dn_ea_SUB_reg1			    CMP.L		#match_SUB_reg1,D2		;check to see if reg equal 1
+            				BNE		Dn_ea_SUB_reg2			;if not equal got check reg 2
+			                BEQ		Dn_ea_SUB_reg1_out		;if equal go to output
 
-Dn_ea_SUB_reg2			CMP.L		#match_SUB_reg2,D2		;check to see if reg equal 2
-				BNE		Dn_ea_SUB_reg3			;if not equal got check reg 3
-				BEQ		Dn_ea_SUB_reg2_out		;if equal go to output
+Dn_ea_SUB_reg2			    CMP.L		#match_SUB_reg2,D2		;check to see if reg equal 2
+            				BNE		Dn_ea_SUB_reg3			;if not equal got check reg 3
+			            	BEQ		Dn_ea_SUB_reg2_out		;if equal go to output
 
-Dn_ea_SUB_reg3			CMP.L		#match_SUB_reg3,D2		;check to see if reg equal 3
-				BNE		Dn_ea_SUB_reg4			;if not equal got check reg 4
-				BEQ		Dn_ea_SUB_reg3_out		;if equal go to output
+Dn_ea_SUB_reg3			    CMP.L		#match_SUB_reg3,D2		;check to see if reg equal 3
+            				BNE		Dn_ea_SUB_reg4			;if not equal got check reg 4
+			            	BEQ		Dn_ea_SUB_reg3_out		;if equal go to output
 												
-Dn_ea_SUB_reg4			CMP.L		#match_SUB_reg4,D2		;check to see if reg equal 4
-				BNE		Dn_ea_SUB_reg5			;if not equal got check reg 5
-				BEQ		Dn_ea_SUB_reg4_out		;if equal go to output
+Dn_ea_SUB_reg4			    CMP.L		#match_SUB_reg4,D2		;check to see if reg equal 4
+            				BNE		Dn_ea_SUB_reg5			;if not equal got check reg 5
+			            	BEQ		Dn_ea_SUB_reg4_out		;if equal go to output
 
-Dn_ea_SUB_reg5			CMP.L		#match_SUB_reg5,D2		;check to see if reg equal 5
-				BNE		Dn_ea_SUB_reg6			;if not equal got check reg 6
-				BEQ		Dn_ea_SUB_reg5_out		;if equal go to output
+Dn_ea_SUB_reg5			    CMP.L		#match_SUB_reg5,D2		;check to see if reg equal 5
+            				BNE		Dn_ea_SUB_reg6			;if not equal got check reg 6
+			            	BEQ		Dn_ea_SUB_reg5_out		;if equal go to output
 
-Dn_ea_SUB_reg6			CMP.L		#match_SUB_reg6,D2		;check to see if reg equal 6
-				BNE		Dn_ea_SUB_reg7			;if not equal got check reg 7
-				BEQ		Dn_ea_SUB_reg6_out		;if equal go to output			
+Dn_ea_SUB_reg6			    CMP.L		#match_SUB_reg6,D2		;check to see if reg equal 6
+            				BNE		Dn_ea_SUB_reg7			;if not equal got check reg 7
+			            	BEQ		Dn_ea_SUB_reg6_out		;if equal go to output			
 
-Dn_ea_SUB_reg7			CMP.L		#match_SUB_reg7,D2		;check to see if reg equal 7
-				BEQ		Dn_ea_SUB_reg7_out		;if equal go to output
-				BNE          	ERROR                           ;if not equal to an addresssing mode, pritn error
+Dn_ea_SUB_reg7			    CMP.L		#match_SUB_reg7,D2		;check to see if reg equal 7
+            				BEQ		Dn_ea_SUB_reg7_out		;if equal go to output
+			            	BNE          	ERROR                           ;if not equal to an addresssing mode, pritn error
 								
 
 ;--------------------Data Output-----------------------
-Dn_ea_SUB_reg0_out	      MOVE.L	    #ea_D0,A1				;load string constant into A1
+Dn_ea_SUB_reg0_out	        MOVE.L	    #ea_D0,A1				;load string constant into A1
                               JSR           SUB_determine_second_operand        ;jump to subroutine to determine second operand
 											
-Dn_ea_SUB_reg1_out	      MOVE.L	    #ea_D1,A1				;load string constant into A1
+Dn_ea_SUB_reg1_out	           MOVE.L	    #ea_D1,A1				;load string constant into A1
                               JSR           SUB_determine_second_operand        ;jump to subroutine to determine second operand
                                             
-Dn_ea_SUB_reg2_out	      MOVE.L	    #ea_D2,A1				;load string constant into A1
+Dn_ea_SUB_reg2_out	          MOVE.L	    #ea_D2,A1				;load string constant into A1
                               JSR           SUB_determine_second_operand        ;jump to subroutine to determine second operand
                                             
-Dn_ea_SUB_reg3_out	      MOVE.L	    #ea_D3,A1				;load string constant into A1
+Dn_ea_SUB_reg3_out	          MOVE.L	    #ea_D3,A1				;load string constant into A1
                               JSR           SUB_determine_second_operand        ;jump to subroutine to determine second operand
                                             
-Dn_ea_SUB_reg4_out	      MOVE.L	    #ea_D4,A1				;load string constant into A1
+Dn_ea_SUB_reg4_out	          MOVE.L	    #ea_D4,A1				;load string constant into A1
                               JSR           SUB_determine_second_operand        ;jump to subroutine to determine second operand
                                             
-Dn_ea_SUB_reg5_out	      MOVE.L	    #ea_D5,A1				;load string constant into A1
+Dn_ea_SUB_reg5_out	          MOVE.L	    #ea_D5,A1				;load string constant into A1
                               JSR           SUB_determine_second_operand        ;jump to subroutine to determine second operand
                                             
-Dn_ea_SUB_reg6_out	      MOVE.L	    #ea_D6,A1				;load string constant into A1
+Dn_ea_SUB_reg6_out	            MOVE.L	    #ea_D6,A1				;load string constant into A1
                               JSR           SUB_determine_second_operand        ;jump to subroutine to determine second operand
                                             
 Dn_ea_SUB_reg7_out    	      MOVE.L        #ea_D7,A1				;load string constant into A1
@@ -513,9 +542,10 @@ SUB_Dn_ea_abs_add_long               CMP.L           #match_SUB_abs_add_long,D2 
 
 ;--------------------Determine EFFECTIVE ADDRESS Register----------------------------------------------------------------------------------------
                                  
-                                 AND.L            #mask_SUB_ea_reg_and_mode,D2         ;load the mask into D2 for the mode and the register
+                                 
 ;------------------Address Register Indirect-----------------------
-SUB_Dn_ea_An_indir_reg           CMP.L           #match_SUB_An_indir_r0,D2              ;check reg is equal to 0
+SUB_Dn_ea_An_indir_reg           AND.L            #mask_SUB_ea_reg_and_mode,D2         ;load the mask into D2 for the mode and the register
+                                 CMP.L           #match_SUB_An_indir_r0,D2              ;check reg is equal to 0
                                  BNE             SUB_Dn_ea_An_indir_reg1                ;if not try reg 1
                                  BEQ             SUB_Dn_ea_An_indir_reg0_out            ;if equal go to output subroutine
 
@@ -707,10 +737,10 @@ SUB_Dn_ea_abs_add_long_out    	      MOVE.L        (A0)+,D5                   ;p
                                           
 ;---------------Immediate Addresing--------------------------
 SUB_Dn_ea_immediate_add_out           MOVE.L	    (A0)+,D5                       ;capture the immediate address
-				      CMP.L         #match_SUB_imm_add_word,D6     ;check to see if need to pull word
-				      MOVE.L        (A0)+,D5                       ;pull the word
+				                      CMP.L         #match_SUB_imm_add_word,D6     ;check to see if need to pull word
+                				      MOVE.L        (A0)+,D5                       ;pull the word
                                       BEQ           SUB_Dn_ea_imm_add_w            ;if equal go pull word    
-				      BNE           SUB_Dn_ea_imm_add_l            ;if not equal, go check long
+				                      BNE           SUB_Dn_ea_imm_add_l            ;if not equal, go check long
 										 
 SUB_Dn_ea_imm_add_w                   MOVE.L        #ea_$,(A1)+                    ;load the $
                                       MOVE.W        D5,(A1)+                       ;load the word address                           
@@ -718,8 +748,15 @@ SUB_Dn_ea_imm_add_w                   MOVE.L        #ea_$,(A1)+                 
                                          
 SUB_Dn_ea_imm_add_l                   MOVE.L        (A0)+,D5                       ;pull the long and increase the pointer
                                       MOVE.L        #ea_$,(A1)+                    ;load the $
-                                      MOVE.L        D5,A1                          ;move to A1
+ 
+                                     MOVE.L        D5,A1                          ;move to A1
                                       RTS
+ERROR                                   LEA             ERROR_MESSAGE,A1
+                                        RTS
+
+
+
+ERROR_MESSAGE           DC.B        'Invalid EA',0
 ea_D0				DC.B		'D0',0
 ea_D1			    	DC.B		'D1',0
 ea_D2			    	DC.B		'D2',0
@@ -857,6 +894,7 @@ match_SUB_reg6			EQU		$0C00
 match_SUB_reg7			EQU		$0E00
 
 
+                            END                         START
 
 *~Font name~Courier New~
 *~Font size~10~
