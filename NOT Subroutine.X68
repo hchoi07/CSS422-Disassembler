@@ -285,25 +285,25 @@ NOT_abs_add_long_out    				 MOVE.L      (A0)+,D5                           ;pul
                                          RTS                                            :return to subroutine                                            
 
 												
-mask_NOT_ea_mode							EQU				$0038              ;masks bits 5-3 to determine ea mode
-mask_NOT_ea_reg_and_mode					EQU				$003F              ;masks bits 5-0 to determine the register with the given mode
-mask_NOT_ea_mode_abs_add					EQU				$003F
+mask_NOT_ea_mode			EQU				$0038              ;masks bits 5-3 to determine ea mode
+mask_NOT_ea_reg_and_mode		EQU				$003F              ;masks bits 5-0 to determine the register with the given mode
+mask_NOT_ea_mode_abs_add		EQU				$003F
 
-match_NOT_Dn								EQU				$0000              ;match for data reg dir
-match_NOT_An_indir							EQU				$0010              ;match for add reg indir
-match_NOT_An_indir_postinc			      	EQU				$0020              ;match for add reg indir with postinc
-match_NOT_An_indir_predec				    EQU				$0018              ;match for add reg indir with predec
-match_NOT_abs_add_word						EQU				$0039      		   ;match for word abs add 
-match_NOT_abs_add_long						EQU				$003C              ;match for long abs add
+match_NOT_Dn				EQU				$0000              ;match for data reg dir
+match_NOT_An_indir			EQU				$0010              ;match for add reg indir
+match_NOT_An_indir_postinc		EQU				$0020              ;match for add reg indir with postinc
+match_NOT_An_indir_predec		EQU				$0018              ;match for add reg indir with predec
+match_NOT_abs_add_word			EQU				$0039      		   ;match for word abs add 
+match_NOT_abs_add_long			EQU				$003C              ;match for long abs add
 
-match_NOT_D0								EQU				$0000              ;match for data reg dir with data reg 0
-match_NOT_D1								EQU				$0001              ;match for data reg dir with data reg 1
-match_NOT_D2								EQU				$0002              ;match for data reg dir with data reg 2
-match_NOT_D3								EQU				$0003              ;match for data reg dir with data reg 3
-match_NOT_D4								EQU				$0004              ;match for data reg dir with data reg 4
-match_NOT_D5								EQU				$0005              ;match for data reg dir with data reg 5
-match_NOT_D6								EQU				$0006              ;match for data reg dir with data reg 6
-match_NOT_D7								EQU				$0007              ;match for data reg dir with data reg 7
+match_NOT_D0				EQU				$0000              ;match for data reg dir with data reg 0
+match_NOT_D1				EQU				$0001              ;match for data reg dir with data reg 1
+match_NOT_D2				EQU				$0002              ;match for data reg dir with data reg 2
+match_NOT_D3				EQU				$0003              ;match for data reg dir with data reg 3
+match_NOT_D4				EQU				$0004              ;match for data reg dir with data reg 4
+match_NOT_D5				EQU				$0005              ;match for data reg dir with data reg 5
+match_NOT_D6				EQU				$0006              ;match for data reg dir with data reg 6
+match_NOT_D7				EQU				$0007              ;match for data reg dir with data reg 7
 
 match_NOT_An_indir_r0				        EQU				$0010              ;match for add reg indir with add reg 0
 match_NOT_An_indir_r1			        	EQU				$0011              ;match for add reg indir with add reg 1
