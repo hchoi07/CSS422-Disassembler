@@ -9,7 +9,7 @@
 *-----------------------------------------------------------    
 
    
-JSR_sub                          MOVEM.L           D1-D5/D7/A0-A6, -(SP)                                  ;preserve the registers, 
+JSR_sub                          CLR               D1
                                  AND.L             #mask_JSR_ea_mode,D1                                   ;move the mask to D1
 ;--------------Determine EFFECTIVE ADDRESS Mode-----------------------------------                
 JSR_add_reg_indir                CMP.L             #match_JSR_An_indir,D1                       ;check to see if mode is add reg indir
@@ -66,28 +66,28 @@ JSR_An_indir_reg7                CMP.L           #match_JSR_An_indir_r7,D2      
 
 ;--------------------Address Register Indirect Output-----------------------
 JSR_An_indir_reg0_out			            MOVE.L          #ea_indir_A0,A1		    		;load string constant into A1
-								            RTS								            		;return to subroutine
+                                            RTS								            		;return to subroutine
 
 JSR_An_indir_reg1_out			            MOVE.L          #ea_indir_A1,A1		    		;load string constant into A1
-							    	        RTS								            		;return to subroutine
+                                            RTS								            		;return to subroutine
 
 JSR_An_indir_reg2_out			            MOVE.L          #ea_indir_A2,A1		    		;load string constant into A1
-						    		        RTS								            		;return to subroutine
+                                            RTS								            		;return to subroutine
 
 JSR_An_indir_reg3_out			            MOVE.L			#ea_indir_A3,A1		    		;load string constant into A1
-					    			        RTS								            		;return to subroutine
+                                            RTS								            		;return to subroutine
 
 JSR_An_indir_reg4_out			            MOVE.L			#ea_indir_A4,A1		    		;load string constant into A1
-				    				        RTS								            		;return to subroutine
+                                            RTS								            		;return to subroutine
 
 JSR_An_indir_reg5_out			            MOVE.L			#ea_indir_A5,A1		    		;load string constant into A1
-			    					        RTS								            		;return to subroutine
+                                            RTS								            		;return to subroutine
 
 JSR_An_indir_reg6_out			            MOVE.L			#ea_indir_A6,A1		    		;load string constant into A1
-		    						        RTS								            		;return to subroutine
+                                            RTS								            		;return to subroutine
 								        
 JSR_An_indir_reg7_out			            MOVE.L			#ea_indir_A7,A1		    		;load string constant into A1
-	    							        RTS								            		;return to subroutine
+                                            RTS								            		;return to subroutine
 
 ;------------------Absolute Addressing Output-----------------------
 JSR_abs_add_word_out					 MOVE.L      #ea_$,(A1)+                        ;load $ for hex and increment A1
@@ -103,20 +103,6 @@ JSR_abs_add_long_out        			 MOVE.L      (A0)+,D5                           ;
 *                           Variables
 *-------------------------------------------------------------------------------------------------------------
 
-ea_indir_A0		    		        DC.B		'(A0)',0
-ea_indir_A1		    		        DC.B		'(A1)',0
-ea_indir_A2		    		        DC.B		'(A2)',0
-ea_indir_A3		    		        DC.B		'(A3)',0
-ea_indir_A4			    	            DC.B		'(A4)',0
-ea_indir_A5			    	            DC.B		'(A5)',0
-ea_indir_A6			                	DC.B		'(A6)',0
-ea_indir_A7               			DC.B    '(A7)',0
-
-ea_paren_open			            DC.B		'(',0
-ea_paren_closed		           	    DC.B		')',0
-ea_abs_word_string	    	            DC.B		'.W',0
-ea_abs_long_string	    	            DC.B		'.L',0
-ea_$				    	            DC.B		'$',0
 
 mask_JSR_ea_mode						EQU			$0038
 mask_JSR_abs_add						EQU			$003F
@@ -145,6 +131,8 @@ match_JSR_An_indir_r4				EQU			$0014
 match_JSR_An_indir_r5				EQU			$0015
 match_JSR_An_indir_r6				EQU			$0016
 match_JSR_An_indir_r7				EQU			$0017
+
+
 
 
 
