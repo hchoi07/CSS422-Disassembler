@@ -283,6 +283,7 @@ NOT_abs_add_long_out    				 MOVE.L      (A0)+,D5                           ;pul
                                          MOVE.L      #ea_$,(A1)+                         ;load $ for hex and increment A1
                                          MOVE.L      D5,(A1)+                           ;load address                  
                                          RTS                                            :return to subroutine                                            
+
 												
 mask_NOT_ea_mode							EQU				$0038              ;masks bits 5-3 to determine ea mode
 mask_NOT_ea_reg_and_mode					EQU				$003F              ;masks bits 5-0 to determine the register with the given mode
@@ -376,6 +377,7 @@ ea_paren_closed		    	DC.B		')',0
 ea_abs_word_string	    	DC.B		'.W',0
 ea_abs_long_string	    	DC.B		'.L',0
 ea_$				    	DC.B		'$',0
+
 
 
 
