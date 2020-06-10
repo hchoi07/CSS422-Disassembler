@@ -287,6 +287,24 @@ print_ea:
     TRAP        #15                 *print the data
     MOVEM.L     (SP)+, D0-D7/A0-A6
     RTS
+    
+*-----------------------------------------------------------
+* Subroutine Title: print_ea_end
+* Description: This subroutine prints the ea string in A1
+* appended with a new line. Used for the second ea.
+* A1 passes in the output
+*-----------------------------------------------------------
+print_first:
+    MOVEM.L     D0-D7/A0-A6, -(SP)
+    *print data
+    MOVE.B      #14,D0              *move number 14 into d0 for string
+    TRAP        #15                 *print the data in A1
+     *print comma
+    LEA         COMMA,A1
+    MOVE.B      #14,D0              *move number 14 into d0 for string
+    TRAP        #15                 *print the data
+    MOVEM.L     (SP)+, D0-D7/A0-A6
+    RTS
 
 *-----------------------------------------------------------
 * Subroutine Title: print_line_number
@@ -317,6 +335,8 @@ opWd_loop   CMP.B       D4,D5           *loop 4 time for a word of info
             
 opWd_done   MOVEM.L     (SP)+, D0-D7/A0-A6
             RTS
+
+
 
 
 

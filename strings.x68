@@ -85,6 +85,7 @@ SPACE           DC.B    CR,LF,0
 PRESS_ENTER     DC.B    'Press ENTER to continue.',CR,LF,0
 TAB             DC.B    HT,0
 RESTART_Q       DC.B    'Would you like to test again?',CR,LF,'Press r to restart or q to quit.',CR,LF,0
+COMMA           DC.B    ',',0
 
 *EA strings
 ERROR_MESSAGE                   DC.B            'Incorrect EA Format',0
@@ -158,6 +159,7 @@ ea_data4                    DC.B      '#4',0
 ea_data5                    DC.B      '#5',0
 ea_data6                    DC.B      '#6',0
 ea_data7                    DC.B      '#7',0
+
 
 
 
