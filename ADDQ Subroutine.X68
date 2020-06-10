@@ -8,10 +8,11 @@
 * A1 will point to the location of the string constants
 *-----------------------------------------------------------
 ADDQ_sub                                                       ;preserve the registers, 
-                                 AND.L             #mask_ADDQ_ea_mode,D1                                   ;move the mask to D1
+                                                                 ;move the mask to D1
                                  
 ;---------------------------------Determine Register----------------------------------------------------------------------------------------
 								CLR.L		D2												;clear D2 
+                                MOVE.W  D0,D2 
 								AND.L		#mask_ADDQ_reg,D2								;load the mask for the register into D2, masks bit 11-9
 												
 ADDQ_reg0						CMP.L		#match_ADDQ_reg0,D2								;check to see if reg equal 0
@@ -74,7 +75,7 @@ ADDQ_reg7_out			                    MOVE.L      #ea_data7,A1    						;load stri
 				
 
 ;--------------Determine EFFECTIVE ADDRESS Mode-----------------------------------                
-ADDQ_determine_second_operand
+ADDQ_determine_second_operand    AND.L             #mask_ADDQ_ea_mode,D1   
 ADDQ_data_reg_dir                CMP.L             #match_ADDQ_Dn,D1                             ;check to see if mode is data reg direct
                                  BNE               ADDQ_add_reg_dir                                   ;if not, go check add reg dir
                                  BEQ               ADDQ_Dn_reg                                        ;if equal go figure out the register
@@ -110,7 +111,9 @@ ADDQ_abs_add_long                CMP.L             #match_ADDQ_abs_add_long,D2  
                                  
                                  
 ;-----------------------------------Data Register Direct--------------------------------
-ADDQ_Dn_reg                      AND.L              #mask_ADDQ_ea_reg_and_mode,D2                       ;load the mask into D2 for the mode and the register
+ADDQ_Dn_reg                      CLR.L  D2
+                                 MOVE.W 
+                                 AND.L              #mask_ADDQ_ea_reg_and_mode,D2                       ;load the mask into D2 for the mode and the register
                                  CMP.L              #match_ADDQ_D0,D2                       ;check to see in the register is 0
                                  BNE                ADDQ_rD1                                     ;if not go check register 1
                                  BEQ                ADDQ_D0_out                              ;if equal go to output subroutine
@@ -144,7 +147,7 @@ ADDQ_rD7                         CMP.L              #match_ADDQ_D7,D2           
                                  BNE                ERROR                                   ;if not equal, got to error message
 ;--------------------Data Register Direct Output-----------------------
 ADDQ_D0_out                     MOVE.L              #ea_D0,A1							;load string constant into A1
-                                
+
                                 RTS								        				;return to subroutine
 
 ADDQ_D1_out                     MOVE.L              #ea_D1,A1							;load string constant into A1
@@ -181,7 +184,10 @@ ADDQ_D7_out                     MOVE.L              #ea_D7,A1							;load string
         						RTS					        							;return to subroutine
 
 ;------------------Address Register Direct-----------------------
-ADDQ_An_reg                      CMP.L           #match_ADDQ_A0,D2                           ;check reg is equal to 0
+ADDQ_An_reg                      CLR.L  D2
+                                 MOVE.W 
+                                 AND.L              #mask_ADDQ_ea_reg_and_mode,D2
+                                CMP.L           #match_ADDQ_A0,D2                           ;check reg is equal to 0
                                  BNE             ADDQ_rA1                                    ;if not try reg 1
                                  BEQ             ADDQ_An_indir_reg0_out                      ;if equal go to output subroutine
 
@@ -247,7 +253,10 @@ ADDQ_A7_out                          MOVE.L      #ea_A7,A1							;load string co
               						 RTS											;return to subroutine
 
 ;------------------Address Register Indirect-----------------------
-ADDQ_An_indir_reg                CMP.L           #match_ADDQ_An_indir_r0,D2              ;check reg is equal to 0
+ADDQ_An_indir_reg                CLR.L  D2
+                                 MOVE.W 
+                                 AND.L              #mask_ADDQ_ea_reg_and_mode,D2
+                                CMP.L           #match_ADDQ_An_indir_r0,D2              ;check reg is equal to 0
                                  BNE             ADDQ_An_indir_reg1                      ;if not try reg 1
                                  BEQ             ADDQ_An_indir_reg0_out                  ;if equal go to output subroutine
 
@@ -313,7 +322,10 @@ ADDQ_An_indir_reg7_out			            MOVE.L      #ea_indir_A7,A1		    			      ;
 								            RTS										            	;return to subroutine
 
 ;------------------Address Register Indirect with Post Increment-----------------------
-ADDQ_An_indir_pinc_reg                      CMP.L      #match_ADDQ_An_indir_postinc_reg0,D2            ;check reg is equal to 0
+ADDQ_An_indir_pinc_reg                      CLR.L  D2
+                                         MOVE.W 
+                                        AND.L              #mask_ADDQ_ea_reg_and_mode,D2
+                                            CMP.L      #match_ADDQ_An_indir_postinc_reg0,D2            ;check reg is equal to 0
                                             BNE        ADDQ_An_indir_pinc_r1                           ;if not try reg 1
                                             BEQ        ADDQ_An_indir_pinc_r0_out                       ;if equal go to output subroutine
 
@@ -379,7 +391,10 @@ ADDQ_An_indir_pinc_r7_out	    		        MOVE.L      #ea_indir_postinc_A7,A1		   
 								                RTS										            		;return to subroutine
 
 ;------------------Address Register Indirect with Pre Decrement-----------------------
-ADDQ_An_indir_predec                       	CMP.L      #match_ADDQ_An_indir_predec_reg0,D2           ;check reg is equal to 0
+ADDQ_An_indir_predec                       	CLR.L  D2
+                                         MOVE.W 
+                                         AND.L              #mask_ADDQ_ea_reg_and_mode,D2
+                                            CMP.L      #match_ADDQ_An_indir_predec_reg0,D2           ;check reg is equal to 0
                                             BNE        ADDQ_An_indir_pdec_r1                         ;if not try reg 1
                                             BEQ        ADDQ_An_indir_pdec_r0_out                     ;if equal go to output subroutine
 
@@ -526,6 +541,7 @@ match_ADDQ_reg4							EQU			$0800
 match_ADDQ_reg5							EQU			$0A00
 match_ADDQ_reg6							EQU			$0C00
 match_ADDQ_reg7							EQU			$0E00
+
 
 
 
