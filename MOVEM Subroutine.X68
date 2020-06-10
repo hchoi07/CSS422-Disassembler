@@ -4,11 +4,8 @@
 * Date       :
 * Description:
 *-----------------------------------------------------------
-    ORG    $1000
-START:                  ; first instruction of program
 
-MOVEM_sub                                MOVEM.L           D1-D5/D7/A0-A6, -(SP)                       ;preserve the registers, 
-                                         AND.L             #mask_MOVEM_dir,D1                          ;load the mask to determine the direction
+MOVEM_sub                                AND.L             #mask_MOVEM_dir,D1                          ;load the mask to determine the direction
                                          
                                          CMP.L             #match_MOVEM_reg_mem,D1                     ;check to see if it's reg to mem
                                          BEQ               MOVEM_reg_mem                               ;if equal go figure out list
@@ -17,7 +14,7 @@ MOVEM_sub                                MOVEM.L           D1-D5/D7/A0-A6, -(SP)
                                          
 MOVEM_mem_reg_match                     CMP.L              #match_MOVEM_mem_reg,D1                     ;check if mem to reg 
                                         BEQ                MOVEM_determine_second_op                   ;if equal go figure out the register
-                                        BNE                ERROR                                       ;if not equal go to error message
+                                        BNE                MOVEM_ERROR                                       ;if not equal go to error message
 *-----------------------------------------------------------------------------------------------------------------------------------
 * 
 *                                       Determine Register List, then Memory                            
@@ -207,7 +204,7 @@ MOVEM_abs_add_word               AND.L             #mask_MOVEM_abs_add,D2       
   
 MOVEM_abs_add_long               CMP.L             #match_MOVEM_abs_add_long,D2                  ;check to see if abs add long
                                  BEQ               MOVEM_abs_add_long_out                              ;if equal go to output
-                                 BNE               ERROR                                         ;if not equal go to error mesage MOVE routine
+                                 BNE               MOVEM_ERROR                                         ;if not equal go to error mesage MOVE routine
 
 ;--------------------Determine EFFECTIVE ADDRESS Register----------------------------------------------------------------------------------------
                                  
@@ -243,7 +240,7 @@ MOVEM_An_indir_r6                 CMP.L           #match_MOVEM_An_indir_r6,D2   
 
 MOVEM_An_indir_r7                 CMP.L           #match_MOVEM_An_indir_r7,D2              ;check reg is equal to 7
                                  BEQ             MOVEM_An_indir_r7_out                       ;if equal go to output MOVEroutine
-                                 BNE             ERROR                                   :if not equal to an addresssing mode, pritn error
+                                 BNE             MOVEM_ERROR                                   :if not equal to an addresssing mode, pritn error
 
 ;--------------------Address Register Indirect Output-----------------------
 MOVEM_An_indir_r0_out			       MOVE.L			#ea_indir_A0,A1		    	        ;load string constant into A1
@@ -301,7 +298,7 @@ MOVEM_An_indir_pdec_r6                      CMP.L      #match_MOVEM_An_indir_pde
 
 MOVEM_An_indir_pdec_r7                      CMP.L      #match_MOVEM_An_indir_pdec_r7,D2       ;check reg is equal to 7
                                             BEQ        MOVEM_An_indir_pdec_r7_out               ;if equal go to output MOVEroutine
-                                            BNE        ERROR                                    :if not equal to an addresssing mode, pritn error
+                                            BNE        MOVEM_ERROR                                    :if not equal to an addresssing mode, pritn error
 
 ;--------------------Address Register Indirect with Pre Decrement Output-----------------------
 MOVEM_An_indir_pdec_r0_out	    		   MOVE.L			#ea_indir_predec_A0,A1					      ;load string constant into A1
@@ -331,13 +328,16 @@ MOVEM_An_indir_pdec_r7_out			       MOVE.L			#ea_indir_predec_A7,A1						;load s
 ;------------------Absolute Addressing Output-----------------------
 MOVEM_abs_add_word_out				  MOVE.L      #ea_$,(A1)+                         ;load $ for hex and increment A1
                                       MOVE.L      D5,(A1)+                           ;load address                  
+                                      MOVEM.L           (SP)+, D1-D5/D7/A2-A6                                      
                                       RTS                                            :return to MOVEroutine
                                            
 
 MOVEM_abs_add_long_out    			  MOVE.L      (A0)+,D5                           ;pull the next long instruction that holds the address
                                       MOVE.L      #ea_$,(A1)+                         ;load $ for hex and increment A1
                                       MOVE.L      D5,(A1)+                           ;load address                  
-                                      RTS                                            :return to MOVEroutine                                            
+                                      MOVEM.L           (SP)+, D1-D5/D7/A2-A6                                      
+                                      RTS                                            :return to MOVEroutine
+                                            ;return to MOVEroutine                                            
 
 *-----------------------------------------------------------------------------------------------------------------------------------------------
 * 
@@ -365,7 +365,7 @@ MOVEM_m2r_abs_add_word           AND.L             #mask_MOVEM_abs_add,D2       
   
 MOVEM_m2r_abs_add_long           CMP.L             #match_MOVEM_abs_add_long,D2                  ;check to see if abs add long
                                  BEQ               MOVEM_m2r_abs_add_long_out                              ;if equal go to output
-                                 BNE               ERROR                                         ;if not equal go to error mesage MOVE routine
+                                 BNE               MOVEM_ERROR                                         ;if not equal go to error mesage MOVE routine
 
 ;--------------------Determine EFFECTIVE ADDRESS Register----------------------------------------------------------------------------------------
                                  
@@ -401,7 +401,7 @@ MOVEM_m2r_An_indir_r6           CMP.L           #match_MOVEM_An_indir_r6,D2     
 
 MOVEM_m2r_An_indir_r7           CMP.L           #match_MOVEM_An_indir_r7,D2              ;check reg is equal to 7
                                  BEQ             MOVEM_m2r_An_indir_r7_out                       ;if equal go to output MOVEroutine
-                                 BNE             ERROR                                   :if not equal to an addresssing mode, pritn error
+                                 BNE             MOVEM_ERROR                                   :if not equal to an addresssing mode, pritn error
 
 ;--------------------Address Register Indirect Output-----------------------
 MOVEM_m2r_An_indir_r0_out			       MOVE.L			#ea_indir_A0,A1		    	        ;load string constant into A1
@@ -459,7 +459,7 @@ MOVEM_m2r_An_indir_pinc_r6                  CMP.L      #match_MOVEM_An_indir_pin
 
 MOVEM_m2r_An_indir_pinc_r7                  CMP.L      #match_MOVEM_An_indir_pinc_r7,D2         ;check reg is equal to 7
                                             BEQ        MOVEM_m2r_An_indir_pinc_r7_out                    ;if equal go to output MOVEroutine
-                                            BNE        ERROR                                        :if not equal to an addresssing mode, pritn error
+                                            BNE        MOVEM_ERROR                                        :if not equal to an addresssing mode, pritn error
 
 ;--------------------Address Register Indirect with Post Increment Output-----------------------
 MOVEM_m2r_An_indir_pinc_r0_out  		    MOVE.L			#ea_indir_postinc_A0,A1		    			      ;load string constant into A1
@@ -517,7 +517,7 @@ MOVEM_m2r_An_indir_pdec_r6                  CMP.L      #match_MOVEM_An_indir_pde
 
 MOVEM_m2r_An_indir_pdec_r7                  CMP.L      #match_MOVEM_An_indir_pdec_r7,D2       ;check reg is equal to 7
                                             BEQ        MOVEM_m2r_An_indir_pdec_r7_out               ;if equal go to output MOVEroutine
-                                            BNE        ERROR                                    :if not equal to an addresssing mode, pritn error
+                                            BNE        MOVEM_ERROR                                    :if not equal to an addresssing mode, pritn error
 
 ;--------------------Address Register Indirect with Pre Decrement Output-----------------------
 MOVEM_m2r_An_indir_pdec_r0_out		      	    MOVE.L			#ea_indir_predec_A0,A1					      ;load string constant into A1
@@ -547,13 +547,17 @@ MOVEM_m2r_An_indir_pdec_r7_out  			    MOVE.L			#ea_indir_predec_A7,A1						;loa
 ;------------------Absolute Addressing Output-----------------------
 MOVEM_m2r_abs_add_word_out			  MOVE.L      #ea_$,(A1)+                         ;load $ for hex and increment A1
                                       MOVE.L      D5,(A1)+                           ;load address                  
+                                      MOVEM.L           (SP)+, D1-D5/D7/A2-A6                                      
                                       RTS                                            :return to MOVEroutine
+                                            ;return to MOVEroutine
                                            
 
 MOVEM_m2r_abs_add_long_out            MOVE.L      (A0)+,D5                           ;pull the next long instruction that holds the address
                                       MOVE.L      #ea_$,(A1)+                         ;load $ for hex and increment A1
                                       MOVE.L      D5,(A1)+                           ;load address                  
-                                      RTS                                            :return to MOVEroutine                                            
+                                      MOVEM.L           (SP)+, D1-D5/D7/A2-A6                                      
+                                      RTS                                            :return to MOVEroutine
+                                            ;return to MOVEroutine                                            
 
 *----------------------------------------------------Determine Register List----------------------------------------------------------------
 MOVEM_second_operand                     CLR            D1   
@@ -718,16 +722,18 @@ MOVEM_m2r_A6_reg_list_out               MOVE.L          #ea_A6,(A1)+            
                                         JSR             MOVEM_reg_mem_A7            ;go check D7
 
 MOVEM_m2r_A7_reg_list_out               MOVE.L          #ea_A7,(A1)+                ;load the register into A1
-                                        RTS
+                                        MOVEM.L           (SP)+, D1-D5/D7/A2-A6                                      
+                                      RTS                                            :return to MOVEroutine
+
 
 
 ;----------------------Error Handling----------------------------------------
-ERROR                                           LEA     ERROR_MESSAGE,A3                                          ;load error messge into A3
-					                            RTS
-    SIMHALT             ; halt simulator
+MOVEM_ERROR                                     LEA     ERROR_MESSAGE,A1                                          ;load error messge into A3
+					                            MOVEM.L           (SP)+, D1-D5/D7/A2-A6                                      
+                                                RTS                                            :return to MOVEroutine
+
 					                            
-					                            
-ERROR_MESSAGE                   DC.B            'Incorrect EA Format',0
+					                           
 
 mask_MOVEM_dir         EQU         $0400
 
@@ -773,63 +779,6 @@ mask_MOVEM_mem_reg_D3        EQU         $0800
 mask_MOVEM_mem_reg_D2        EQU         $0400
 mask_MOVEM_mem_reg_D1        EQU         $0200
 mask_MOVEM_mem_reg_D0        EQU         $0100
-
-*----------------------------------------------------------------------------
-*
-*							EA String Constants
-*
-*----------------------------------------------------------------------------
-ea_D0				    	DC.B		'D0',0
-ea_D1			    		DC.B		'D1',0
-ea_D2			    		DC.B		'D2',0
-ea_D3				    	DC.B		'D3',0
-ea_D4			    		DC.B		'D4',0
-ea_D5			    		DC.B		'D5',0
-ea_D6				    	DC.B		'D6',0
-ea_D7			   	    	DC.B		'D7',0
-
-ea_A0                 		DC.B        'A0',0
-ea_A1                       DC.B        'A1',0
-ea_A2                       DC.B        'A2',0
-ea_A3                       DC.B        'A3',0
-ea_A4                       DC.B        'A4',0
-ea_A5                       DC.B        'A5',0
-ea_A6			            DC.B        'A6',0
-ea_A7                       DC.B        'A7',0
-
-ea_indir_A0		    		DC.B		'(A0)',0
-ea_indir_A1		    		DC.B		'(A1)',0
-ea_indir_A2		    		DC.B		'(A2)',0
-ea_indir_A3		    		DC.B		'(A3)',0
-ea_indir_A4			    	DC.B		'(A4)',0
-ea_indir_A5			    	DC.B		'(A5)',0
-ea_indir_A6			    	DC.B		'(A6)',0
-ea_indir_A7                 DC.B         '(A7)',0
-
-ea_indir_postinc_A0			DC.B		'(A0)+',0
-ea_indir_postinc_A1			DC.B		'(A1)+',0
-ea_indir_postinc_A2			DC.B		'(A2)+',0
-ea_indir_postinc_A3			DC.B		'(A3)+',0
-ea_indir_postinc_A4			DC.B		'(A4)+',0
-ea_indir_postinc_A5			DC.B		'(A5)+',0
-ea_indir_postinc_A6			DC.B		'(A6)+',0
-ea_indir_postinc_A7			DC.B		'(A7)+',0
-
-
-ea_indir_predec_A0			DC.B		'-(A0)',0
-ea_indir_predec_A1			DC.B		'-(A1)',0
-ea_indir_predec_A2			DC.B		'-(A2)',0
-ea_indir_predec_A3			DC.B		'-(A3)',0
-ea_indir_predec_A4			DC.B		'-(A4)',0
-ea_indir_predec_A5			DC.B		'-(A5)',0
-ea_indir_predec_A6			DC.B		'-(A6)',0
-ea_indir_predec_A7			DC.B		'-(A7)',0
-
-ea_paren_open			    DC.B		'(',0
-ea_paren_closed		    	DC.B		')',0
-ea_abs_word_string	    	DC.B		'.W',0
-ea_abs_long_string	    	DC.B		'.L',0
-ea_$				    	DC.B		'$',0
 
 
 *----------------------------------------------------------------------------
@@ -935,7 +884,10 @@ match_MOVEM_mem_reg_D3        EQU         $0800
 match_MOVEM_mem_reg_D2        EQU         $0400
 match_MOVEM_mem_reg_D1        EQU         $0200
 match_MOVEM_mem_reg_D0        EQU         $0100
-    END    START        ; last line of source
+
+
+
+
 
 *~Font name~Courier New~
 *~Font size~10~
