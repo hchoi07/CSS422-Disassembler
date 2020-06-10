@@ -1,6 +1,10 @@
 *-----------------------------------------------------------
 * Subroutine Title: main_loop
-* Description: 
+* Description: Main loop to run through each opcode and call
+* the code subroutine. Tests the starting address through the
+* ending address, once the ending address is met, it asks for
+* quit or restart. The loop will run 29 times per enter pressed
+* so that the user may see all of the data.
 * D3 passes in the starting address and D2 passes in the
 * ending address.
 *-----------------------------------------------------------
@@ -22,7 +26,7 @@ loopM       CMP.L       A0,A2
             *pause till enter inputted
             *display the prompt message to the user
 entr_lp     LEA	        PRESS_ENTER, A1
-	        MOVE.B	    #13, D0
+	        MOVE.B	    #14, D0
 	        TRAP	    #15
 	        *look for enter key
 	        MOVE.B      #5,D0           *Trap task 5: read a character from keyboard into D1.L
@@ -39,8 +43,29 @@ loopM_Cont  MOVE.W      (A0),D0 *move the opcode into D0 for testing
             ADDQ        #2,A0   *move the pointer one word
             ADDQ        #1,D4   *add one to the output counter
             BRA         loopM   
-                
-loopM_done  RTS
+              
+            *ask if the user wants to test again  
+loopM_done  LEA	        RESTART_Q, A1
+	        MOVE.B	    #13, D0
+	        TRAP	    #15
+	        *look for q or r key
+	        MOVE.B      #5,D0           *Trap task 5: read a character from keyboard into D1.L
+            TRAP        #15
+            CMP.L       #RT,D1          
+            BEQ         run_again       *r pressed, restart
+            CMP.L       #QT,D1
+            BEQ         exit_loop       *q pressed, exit
+            BRA         loopM_done      *neither, ask again
+           
+run_again   *print new line
+            LEA         SPACE,A1
+            MOVE.B      #14,D0              *move number 14 into d0 for string
+            TRAP        #15                 *print the data
+            JSR         run_prog   *go back for input
+	        
+exit_loop   RTS
+
+
 
 
 *~Font name~Courier New~

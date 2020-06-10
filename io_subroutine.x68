@@ -1,7 +1,13 @@
-*----------------------------
-* io_subroutine
-* prompts user for input
-*----------------------------
+*-----------------------------------------------------------
+* Subroutine Title: io_subroutine
+* Description: This subroutine asks the user for two sets of 
+* 8 ascii characters and tests a couple conditions, if the
+* ending address is greater than the starter address, if
+* the input is in the given range, if only hex digits are given
+* and if the input is on a word boundary.
+* A2 passes the starting address
+* A3 passes the ending address
+*-----------------------------------------------------------
 
 io_subroutine:
             MOVEM.L      D0-D1/D4-D7/A0-A6,-(SP)
@@ -52,24 +58,6 @@ ipt_done    *provide a new line
             
 input1pass  MOVE.L      D7,D3   *move the hex value to D3
      
-range_check1:
-            *test if input is less than lowest address
-            CMP.L       #start_Adr,D3
-            BLT         wrong_range1
-            *test if the input is greater than lowest address
-            CMP.L       #end_Adr,D3
-            BGT         wrong_range1
-            *noting wrong, continue
-            BRA         INPUT2
-
-wrong_range1:
-            *not in correct range
-            LEA	        BAD_RANGE, A1
-	        MOVE.B	    #13, D0
-	        TRAP	    #15
-	        *return to input
-	        BRA         INPUT1
-
 boundary1:
             *test if input is on the word boundary
             MOVE.L      D3,D4
@@ -124,25 +112,7 @@ ipt_done2   *provide a new line
 	        BRA         INPUT2
             
 input2pass  MOVE.L      D7,D2   *move the hex value to D2
-	        
-range_check2:
-            *test if input is less than lowest address
-            CMP.L       #start_Adr,D2
-            BLT         wrong_range2
-            *test if the input is greater than lowest address
-            CMP.L       #end_Adr,D2
-            BGT         wrong_range2
-            *noting wrong, continue
-            BRA         test_ends
-
-wrong_range2:
-            *not in correct range
-            LEA	        BAD_RANGE, A1
-	        MOVE.B	    #13, D0
-	        TRAP	    #15
-	        *get input 2 again
-	        BRA         INPUT2
-	        
+	        	        
 boundary2:
             *test if input is on the word boundary
             MOVE.L      D2,D4
@@ -175,6 +145,9 @@ end_bad:
             BRA         INPUT1  
 
     
+
+
+
 
 *~Font name~Courier New~
 *~Font size~10~

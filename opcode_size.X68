@@ -1,7 +1,7 @@
 *-----------------------------------------------------------
 * Subroutine Title: movea_size
-* Description: 
-* 
+* Description: Test the size bits of movea to determine
+* the size and print the opcode string.
 * D0 is used to pass in the machine code word.
 *-----------------------------------------------------------
 movea_size:
@@ -15,6 +15,9 @@ MA_W    CMP.W       #m_size_W_MOVES,D1
         LEA         opcode_MOVEAW,A1
         MOVE.B      #word_size,D6
         JSR         print_string_op_nn  *print the opcode
+        MOVE.W      D0,D1               *reload the opcode into D1
+        JSR         MOVEA_sub
+        JSR         print_ea
         BRA         MA_END
         
         *test for long size
@@ -23,6 +26,9 @@ MA_L    CMP.W       #m_size_L_MOVES,D1
         LEA         opcode_MOVEAL,A1
         MOVE.B      #long_size,D6
         JSR         print_string_op_nn  *print the opcode
+        MOVE.W      D0,D1               *reload the opcode into D1
+        JSR         MOVEA_sub
+        JSR         print_ea
         BRA         MA_END
         
         *did not match, its data
@@ -33,8 +39,8 @@ MA_END  MOVEM.L     (SP)+, D0-D5/D7/A0-A6
 
 *-----------------------------------------------------------
 * Subroutine Title: move_size
-* Description: 
-* 
+* Description: Test the size bits of move to determine
+* the size and print the opcode string.
 * D0 is used to pass in the machine code word.
 *-----------------------------------------------------------
 move_size:
@@ -48,6 +54,9 @@ move_size:
         LEA         opcode_MOVEB,A1    *move the value for printing
         MOVE.B      #byte_size,D6
         JSR         print_string_op_nn  *print the opcode
+        MOVE.W      D0,D1               *reload full address
+        JSR         MOVE_sub
+        JSR         print_ea
         BRA         M_END
         
         *test for word size
@@ -56,6 +65,9 @@ M_W     CMP.W       #m_size_W_MOVES,D1
         LEA         opcode_MOVEW,A1
         MOVE.B      #word_size,D6
         JSR         print_string_op_nn  *print the opcode
+        MOVE.W      D0,D1               *reload full address
+        JSR         MOVE_sub
+        JSR         print_ea
         BRA         M_END
         
         *test for long size
@@ -64,6 +76,9 @@ M_L     CMP.W       #m_size_L_MOVES,D1
         LEA         opcode_MOVEL,A1
         MOVE.B      #long_size,D6
         JSR         print_string_op_nn  *print the opcode
+        MOVE.W      D0,D1               *reload full address
+        JSR         MOVE_sub
+        JSR         print_ea
         BRA         M_END
         
 M_FAIL  JSR         op_DATA
@@ -72,9 +87,9 @@ M_END   MOVEM.L     (SP)+, D0-D5/D7/A0-A6
         RTS
         
 *-----------------------------------------------------------
-* Subroutine Title: move_size
-* Description: 
-* 
+* Subroutine Title: movem_rm_size
+* Description: Test the size bits of movem from register
+* to memory and determine the size and print the opcode string.
 * D0 is used to pass in the machine code word.
 *-----------------------------------------------------------
 movem_rm_size:
@@ -88,6 +103,9 @@ movem_rm_size:
         LEA         opcode_MOVEMW,A1    *move the value for printing
         MOVE.B      #word_size,D6
         JSR         print_string_op_nn  *print the opcode
+        MOVE.W      D0,D1               *reload the opcode into D1
+        JSR         MOVEM_sub
+        JSR         print_ea
         BRA         MOVEM_rm_END
         
         *test for long size
@@ -97,6 +115,9 @@ MOVEM_rm_L
         LEA         opcode_MOVEML,A1
         MOVE.B      #long_size,D6
         JSR         print_string_op_nn  *print the opcode
+        MOVE.W      D0,D1               *reload the opcode into D1
+        JSR         MOVEM_sub
+        JSR         print_ea
         BRA         MOVEM_rm_END
         
 MOVEM_rm_FAIL 
@@ -107,9 +128,9 @@ MOVEM_rm_END
         RTS
 
 *-----------------------------------------------------------
-* Subroutine Title: move_size
-* Description: 
-* 
+* Subroutine Title: movem_mr_size
+* Description: Test the size bits of movem from memory
+* to register and determine the size and print the opcode string.
 * D0 is used to pass in the machine code word.
 *-----------------------------------------------------------
 movem_mr_size:
@@ -123,6 +144,9 @@ movem_mr_size:
         LEA         opcode_MOVEMW,A1    *move the value for printing
         MOVE.B      #word_size,D6
         JSR         print_string_op_nn  *print the opcode
+        MOVE.W      D0,D1               *reload the opcode into D1
+        JSR         MOVEM_sub
+        JSR         print_ea
         BRA         MOVEM_mr_END
         
         *test for long size
@@ -132,6 +156,9 @@ MOVEM_mr_L
         LEA         opcode_MOVEML,A1
         MOVE.B      #long_size,D6
         JSR         print_string_op_nn  *print the opcode
+        MOVE.W      D0,D1               *reload the opcode into D1
+        JSR         MOVEM_sub
+        JSR         print_ea
         BRA         MOVEM_mr_END
         
 MOVEM_mr_FAIL 
@@ -143,9 +170,8 @@ MOVEM_mr_END
 
         
 *-----------------------------------------------------------
-* Subroutine Title: move_size
-* Description: 
-* 
+* Subroutine Title: nop_size
+* Description: Print the opcode string of NOP.
 * D0 is used to pass in the machine code word.
 *-----------------------------------------------------------
 nop_size:
@@ -157,9 +183,8 @@ nop_size:
         RTS
         
 *-----------------------------------------------------------
-* Subroutine Title: move_size
-* Description: 
-* 
+* Subroutine Title: rts_size
+* Description: Print the opcode string for rts.
 * D0 is used to pass in the machine code word.
 *-----------------------------------------------------------
 rts_size:
@@ -172,9 +197,8 @@ rts_size:
         
         
 *-----------------------------------------------------------
-* Subroutine Title: move_size
-* Description: 
-* 
+* Subroutine Title: lea_size
+* Description: Print the opcode string for rts.
 * D0 is used to pass in the machine code word.
 *-----------------------------------------------------------
 lea_size:
@@ -182,13 +206,15 @@ lea_size:
         LEA         opcode_LEA,A1
         MOVE.B      #long_size,D6
         JSR         print_string_op_nn  *print the opcode
+        MOVE.W      D0,D1               *reload the opcode into D1
+        JSR         LEA_sub
+        JSR         print_ea
         MOVEM.L     (SP)+, D0-D5/D7/A0-A6
         RTS
         
 *-----------------------------------------------------------
-* Subroutine Title: move_size
-* Description: 
-* 
+* Subroutine Title: jsr_size
+* Description: Print the opcode for jsr.
 * D0 is used to pass in the machine code word.
 *-----------------------------------------------------------
 jsr_size:
@@ -196,13 +222,16 @@ jsr_size:
         LEA         opcode_JSR,A1
         MOVE.B      #no_size,D6
         JSR         print_string_op_nn  *print the opcode
+        MOVE.W      D0,D1               *reload the opcode into D1
+        JSR         JSR_sub
+        JSR         print_ea
         MOVEM.L     (SP)+, D0-D5/D7/A0-A6
         RTS
         
 *-----------------------------------------------------------
-* Subroutine Title: move_size
-* Description: 
-* 
+* Subroutine Title: not_size
+* Description: Test the size bits of not to determine
+* the size and print the opcode string.
 * D0 is used to pass in the machine code word.
 *-----------------------------------------------------------
 not_size:
@@ -216,6 +245,9 @@ not_size:
         LEA         opcode_NOTB,A1    *move the value for printing
         MOVE.B      #byte_size,D6
         JSR         print_string_op_nn  *print the opcode
+        MOVE.W      D0,D1               *reload the opcode into D1
+        JSR         NOT_sub
+        JSR         print_ea
         BRA         NOT_END
         
         *test for word size
@@ -224,6 +256,9 @@ NOT_W   CMP.W       #m_size_W_NOT,D1
         LEA         opcode_NOTW,A1
         MOVE.B      #word_size,D6
         JSR         print_string_op_nn  *print the opcode
+        MOVE.W      D0,D1               *reload the opcode into D1
+        JSR         NOT_sub
+        JSR         print_ea
         BRA         NOT_END
         
         *test for long size
@@ -232,6 +267,9 @@ NOT_L   CMP.W       #m_size_L_NOT,D1
         LEA         opcode_NOTL,A1
         MOVE.B      #long_size,D6
         JSR         print_string_op_nn  *print the opcode
+        MOVE.W      D0,D1               *reload the opcode into D1
+        JSR         NOT_sub
+        JSR         print_ea
         BRA         NOT_END
         
         *does not match any
@@ -242,9 +280,9 @@ NOT_END MOVEM.L     (SP)+, D0-D5/D7/A0-A6
 
 
 *-----------------------------------------------------------
-* Subroutine Title: move_size
-* Description: 
-* 
+* Subroutine Title: adda_size
+* Description: Test the size bits of adda to determine
+* the size and print the opcode string.
 * D0 is used to pass in the machine code word.
 *-----------------------------------------------------------
 adda_size:
@@ -258,6 +296,9 @@ adda_size:
         LEA         opcode_ADDAW,A1    *move the value for printing
         MOVE.B      #word_size,D6
         JSR         print_string_op_nn  *print the opcode
+        MOVE.W      D0,D1               *reload the opcode into D1
+        JSR         ADDA_sub
+        JSR         print_ea
         BRA         ADDA_END
         
         *test for long size
@@ -266,6 +307,9 @@ ADDA_L  CMP.W       #m_size_L_ADDA,D1
         LEA         opcode_ADDAL,A1
         MOVE.B      #long_size,D6
         JSR         print_string_op_nn  *print the opcode
+        MOVE.W      D0,D1               *reload the opcode into D1
+        JSR         ADDA_sub
+        JSR         print_ea
         BRA         ADDA_END
         
 ADDA_FAIL JSR         op_DATA
@@ -274,9 +318,9 @@ ADDA_END MOVEM.L     (SP)+, D0-D5/D7/A0-A6
         RTS
         
 *-----------------------------------------------------------
-* Subroutine Title: move_size
-* Description: 
-* 
+* Subroutine Title: add_size
+* Description: Test the size bits of add to determine
+* the size and print the opcode string.
 * D0 is used to pass in the machine code word.
 *-----------------------------------------------------------
 add_size:
@@ -290,6 +334,9 @@ add_size:
         LEA         opcode_ADDB,A1    *move the value for printing
         MOVE.B      #byte_size,D6
         JSR         print_string_op_nn  *print the opcode
+        MOVE.W      D0,D1               *reload the opcode into D1
+        JSR         ADD_ADD             *calculate ea and print
+        JSR         print_ea
         BRA         ADD_END
         
         *test for word size
@@ -298,6 +345,9 @@ ADD_W   CMP.W       #m_size_W_ADD,D1
         LEA         opcode_ADDW,A1
         MOVE.B      #word_size,D6
         JSR         print_string_op_nn  *print the opcode
+        MOVE.W      D0,D1               *reload the opcode into D1
+        JSR         ADD_ADD             *calculate ea and print
+        JSR         print_ea
         BRA         ADD_END
         
         *test for long size
@@ -306,6 +356,9 @@ ADD_L   CMP.W       #m_size_L_ADD,D1
         LEA         opcode_ADDL,A1
         MOVE.B      #long_size,D6
         JSR         print_string_op_nn  *print the opcode
+        MOVE.W      D0,D1               *reload the opcode into D1
+        JSR         ADD_ADD             *calculate ea and print
+        JSR         print_ea
         BRA         ADD_END
         
 ADD_FAIL JSR         op_DATA
@@ -315,8 +368,10 @@ ADD_END MOVEM.L     (SP)+, D0-D5/D7/A0-A6
 
 *-----------------------------------------------------------
 * Subroutine Title: bcc_size
-* Description: 
-* 
+* Description: Test the size bits of the branch conditions
+* to determine the size and print the opcode string.
+* The pointer is incremented based on the size of the 
+* displacement.
 * D0 is used to pass in the machine code word.
 *-----------------------------------------------------------
 bcc_size:
@@ -351,66 +406,233 @@ BCC_END MOVEM.L     (SP)+, D0-D5/D7/A0-A6
 
 
 *-----------------------------------------------------------
-* Subroutine Title: move_size
-* Description: 
-* 
+* Subroutine Title: bgt_size
+* Description: Print bgt and go to bcc size
 * D0 is used to pass in the machine code word.
 *-----------------------------------------------------------
 bgt_size:
         MOVEM.L     D0-D5/D7/A0-A6, -(SP)
+        MOVE.W      D0,D1           *refresh the entire opcode into D1
+        AND.W       #mask_BCC_SIZE,D1  *look at only the last 2 bits
+        
+        *test for long displacement size
+BGT_L   CMP.W       #m_size_L_bcc,D1
+        BNE         BGT_W
         LEA         opcode_BGT,A1
-        JSR         bcc_size
-        *MOVE.B      #no_size,D6
-        MOVEM.L     (SP)+, D0-D5/D7/A0-A6
+        *grab the next 32 bits
+        ADDQ        #2,A0           *increment the pointer by 1 word
+        MOVE.L      (A0),D3         *move the data to D3
+        MOVE.L      A0,D2           *move the address location to D2
+        ADDQ        #2,A0           *increment the pointer by another 1 word
+        JSR         bcc_address
+        JSR         print_bcc       *print the output
+        BRA         BGT_END
+        
+        *test for word displacement size
+BGT_W   CMP.W       #m_size_W_bcc,D1
+        BNE         BGT_B
+        LEA         opcode_BGTW,A1
+        *grab the next 16 bits
+        ADDQ        #2,A0           *increment the pointer by 1 word
+        MOVE.W      (A0),D3         *move the data to D3
+        MOVE.L      A0,D2           *move the address location to D2
+        EXT.L       D3              *make the word into long
+        JSR         bcc_address
+        JSR         print_bcc       *print the output
+        BRA         BGT_END
+        
+        *neither so it is byte size, print byte
+BGT_B   LEA         opcode_BGTB,A1
+        MOVE.W      (A0),D3         *move the data to D3
+        LSL.W       #8,D3           *get rid of the first byte, rotate left then right
+        LSR.W       #8,D3
+        MOVE.L      A0,D2           *move the address location to D2
+        EXT.L       D3              *make the word into long
+        JSR         bcc_address
+        JSR         print_bcc       *print the output
+        BRA         BGT_END
+        
+BGT_END MOVEM.L     (SP)+, D0-D5/D7/A0-A6
         RTS
         
 *-----------------------------------------------------------
-* Subroutine Title: move_size
-* Description: 
-* 
+* Subroutine Title: beq_size
+* Description: Print beq and go to bcc size.
 * D0 is used to pass in the machine code word.
 *-----------------------------------------------------------
 beq_size:
         MOVEM.L     D0-D5/D7/A0-A6, -(SP)
+        MOVE.W      D0,D1           *refresh the entire opcode into D1
+        AND.W       #mask_BCC_SIZE,D1  *look at only the last 2 bits
+        
+        *test for long displacement size
+BEQ_L   CMP.W       #m_size_L_bcc,D1
+        BNE         BEQ_W
         LEA         opcode_BEQ,A1
-        JSR         bcc_size
-        *MOVE.B      #no_size,D6
-        MOVEM.L     (SP)+, D0-D5/D7/A0-A6
+        *grab the next 32 bits
+        ADDQ        #2,A0           *increment the pointer by 1 word
+        MOVE.L      (A0),D3         *move the data to D3
+        MOVE.L      A0,D2           *move the address location to D2
+        ADDQ        #2,A0           *increment the pointer by another 1 word
+        JSR         bcc_address
+        JSR         print_bcc       *print the output
+        BRA         BEQ_END
+        
+        *test for word displacement size
+BEQ_W   CMP.W       #m_size_W_bcc,D1
+        BNE         BEQ_B
+        LEA         opcode_BEQW,A1
+        *grab the next 16 bits
+        ADDQ        #2,A0           *increment the pointer by 1 word
+        MOVE.W      (A0),D3         *move the data to D3
+        MOVE.L      A0,D2           *move the address location to D2
+        EXT.L       D3              *make the word into long
+        JSR         bcc_address
+        JSR         print_bcc       *print the output
+        BRA         BEQ_END
+        
+        *neither so it is byte size, print byte
+BEQ_B   LEA         opcode_BEQB,A1
+        MOVE.W      (A0),D3         *move the data to D3
+        LSL.W       #8,D3           *get rid of the first byte, rotate left then right
+        LSR.W       #8,D3
+        MOVE.L      A0,D2           *move the address location to D2
+        EXT.L       D3              *make the word into long
+        JSR         bcc_address
+        JSR         print_bcc       *print the output
+        BRA         BEQ_END
+        
+BEQ_END MOVEM.L     (SP)+, D0-D5/D7/A0-A6
         RTS
         
 *-----------------------------------------------------------
-* Subroutine Title: move_size
-* Description: 
-* 
+* Subroutine Title: ble_size
+* Description: Print ble and go to bcc size.
 * D0 is used to pass in the machine code word.
 *-----------------------------------------------------------
 ble_size:
         MOVEM.L     D0-D5/D7/A0-A6, -(SP)
+        MOVE.W      D0,D1           *refresh the entire opcode into D1
+        AND.W       #mask_BCC_SIZE,D1  *look at only the last 2 bits
+        
+        *test for long displacement size
+BLE_L   CMP.W       #m_size_L_bcc,D1
+        BNE         BLE_W
         LEA         opcode_BLE,A1
-        JSR         bcc_size
-        *MOVE.B      #no_size,D6
-        MOVEM.L     (SP)+, D0-D5/D7/A0-A6
+        *grab the next 32 bits
+        ADDQ        #2,A0           *increment the pointer by 1 word
+        MOVE.L      (A0),D3         *move the data to D3
+        MOVE.L      A0,D2           *move the address location to D2
+        ADDQ        #2,A0           *increment the pointer by another 1 word
+        JSR         bcc_address
+        JSR         print_bcc       *print the output
+        BRA         BLE_END
+        
+        *test for word displacement size
+BLE_W   CMP.W       #m_size_W_bcc,D1
+        BNE         BLE_B
+        LEA         opcode_BLEW,A1
+        *grab the next 16 bits
+        ADDQ        #2,A0           *increment the pointer by 1 word
+        MOVE.W      (A0),D3         *move the data to D3
+        MOVE.L      A0,D2           *move the address location to D2
+        EXT.L       D3              *make the word into long
+        JSR         bcc_address
+        JSR         print_bcc       *print the output
+        BRA         BLE_END
+        
+        *neither so it is byte size, print byte
+BLE_B   LEA         opcode_BLEB,A1
+        MOVE.W      (A0),D3         *move the data to D3
+        LSL.W       #8,D3           *get rid of the first byte, rotate left then right
+        LSR.W       #8,D3
+        MOVE.L      A0,D2           *move the address location to D2
+        EXT.L       D3              *make the word into long
+        JSR         bcc_address
+        JSR         print_bcc       *print the output
+        BRA         BLE_END
+        
+BLE_END MOVEM.L     (SP)+, D0-D5/D7/A0-A6
         RTS
+
 
         
 *-----------------------------------------------------------
-* Subroutine Title: move_size
-* Description: 
-* 
+* Subroutine Title: bra_size
+* Description: Print bra and go to bcc size.
 * D0 is used to pass in the machine code word.
 *-----------------------------------------------------------
 bra_size:
         MOVEM.L     D0-D5/D7/A0-A6, -(SP)
+        MOVE.W      D0,D1           *refresh the entire opcode into D1
+        AND.W       #mask_BCC_SIZE,D1  *look at only the last 2 bits
+        
+        *test for long displacement size
+BRA_L   CMP.W       #m_size_L_bcc,D1
+        BNE         BRA_W
         LEA         opcode_BRA,A1
-        JSR         bcc_size
-        *MOVE.B      #no_size,D6
-        MOVEM.L     (SP)+, D0-D5/D7/A0-A6
+        *grab the next 32 bits
+        ADDQ        #2,A0           *increment the pointer by 1 word
+        MOVE.L      (A0),D3         *move the data to D3
+        MOVE.L      A0,D2           *move the address location to D2
+        ADDQ        #2,A0           *increment the pointer by another 1 word
+        JSR         bcc_address
+        JSR         print_bcc       *print the output
+        BRA         BRA_END
+        
+        *test for word displacement size
+BRA_W   CMP.W       #m_size_W_bcc,D1
+        BNE         BRA_B
+        LEA         opcode_BRAW,A1
+        *grab the next 16 bits
+        ADDQ        #2,A0           *increment the pointer by 1 word
+        MOVE.W      (A0),D3         *move the data to D3
+        MOVE.L      A0,D2           *move the address location to D2
+        EXT.L       D3              *make the word into long
+        JSR         bcc_address
+        JSR         print_bcc       *print the output
+        BRA         BRA_END
+        
+        *neither so it is byte size, print byte
+BRA_B   LEA         opcode_BRAB,A1
+        MOVE.W      (A0),D3         *move the data to D3
+        LSL.W       #8,D3           *get rid of the first byte, rotate left then right
+        LSR.W       #8,D3
+        MOVE.L      A0,D2           *move the address location to D2
+        EXT.L       D3              *make the word into long
+        JSR         bcc_address
+        JSR         print_bcc       *print the output
+        BRA         BRA_END
+        
+BRA_END MOVEM.L     (SP)+, D0-D5/D7/A0-A6
+        RTS
+
+*-----------------------------------------------------------
+* Subroutine Title: bcc_address
+* Description: Calculate the displacement address of bcc opcodes.
+* D3 is used to pass in the data (A0)
+* D2 is used to pass in the address location (current + 2)
+*-----------------------------------------------------------
+bcc_address:
+        MOVEM.L     D0-D2/D4-D7/A0-A6, -(SP)
+        CMP.L       #0,D3           *compare against 0
+        BLT         bcc_negative    *branch if the value is negative
+        *else
+        ADD.L       D2,D3           *add address by displacement
+        BRA         bcc_add_end     *return for printing
+bcc_negative
+        MOVE.L      #0,D4
+        SUB.L       D3,D4           *flip the bits
+        SUB.L       D4,D2           *get the address of displacemnt
+        MOVE.L      D2,D3           *move back for printing
+bcc_add_end  
+        MOVEM.L     (SP)+, D0-D2/D4-D7/A0-A6
         RTS
                 
 *-----------------------------------------------------------
-* Subroutine Title: move_size
-* Description: 
-* 
+* Subroutine Title: lsl_r_size
+* Description: Test the size bits to determine
+* the size and print the opcode string.
 * D0 is used to pass in the machine code word.
 *-----------------------------------------------------------
 lsl_r_size:
@@ -424,6 +646,9 @@ lsl_r_size:
         LEA         opcode_LSLB,A1    *move the value for printing
         MOVE.B      #byte_size,D6
         JSR         print_string_op_nn  *print the opcode
+        MOVE.W      D0,D1               *reload the opcode into D1
+        JSR         LSD_sub
+        JSR         print_ea
         BRA         LSLR_END
         
         *test for word size
@@ -432,6 +657,9 @@ LSLR_W  CMP.W       #m_size_W_shfts,D1
         LEA         opcode_LSLW,A1
         MOVE.B      #word_size,D6
         JSR         print_string_op_nn  *print the opcode
+        MOVE.W      D0,D1               *reload the opcode into D1
+        JSR         LSD_sub
+        JSR         print_ea
         BRA         LSLR_END
         
         *test for long size
@@ -440,6 +668,9 @@ LSLR_L  CMP.W       #m_size_L_shfts,D1
         LEA         opcode_LSLL,A1
         MOVE.B      #long_size,D6
         JSR         print_string_op_nn  *print the opcode
+        MOVE.W      D0,D1               *reload the opcode into D1
+        JSR         LSD_sub
+        JSR         print_ea
         BRA         LSLR_END
         
         *did not match any
@@ -449,9 +680,9 @@ LSLR_END MOVEM.L     (SP)+, D0-D5/D7/A0-A6
         RTS
 
 *-----------------------------------------------------------
-* Subroutine Title: move_size
-* Description: 
-* 
+* Subroutine Title: lsl_m_size
+* Description: Test the size bits to determine
+* the size and print the opcode string.
 * D0 is used to pass in the machine code word.
 *-----------------------------------------------------------
 lsl_m_size:
@@ -461,6 +692,9 @@ lsl_m_size:
         LEA         opcode_LSLW,A1
         MOVE.B      #word_size,D6
         JSR         print_string_op_nn  *print the opcode
+        MOVE.W      D0,D1               *reload the opcode into D1
+        JSR         LSD_sub
+        JSR         print_ea
         BRA         LSLM_END
         
 LSLM_END MOVEM.L     (SP)+, D0-D5/D7/A0-A6
@@ -468,9 +702,9 @@ LSLM_END MOVEM.L     (SP)+, D0-D5/D7/A0-A6
 
 
 *-----------------------------------------------------------
-* Subroutine Title: move_size
-* Description: 
-* 
+* Subroutine Title: lsr_r_size
+* Description: Test the size bits to determine
+* the size and print the opcode string.
 * D0 is used to pass in the machine code word.
 *-----------------------------------------------------------
 lsr_r_size:
@@ -484,6 +718,9 @@ lsr_r_size:
         LEA         opcode_LSRB,A1    *move the value for printing
         MOVE.B      #byte_size,D6
         JSR         print_string_op_nn  *print the opcode
+        MOVE.W      D0,D1               *reload the opcode into D1
+        JSR         LSD_sub
+        JSR         print_ea
         BRA         LSRR_END
         
         *test for word size
@@ -492,6 +729,9 @@ LSRR_W  CMP.W       #m_size_W_shfts,D1
         LEA         opcode_LSRW,A1
         MOVE.B      #word_size,D6
         JSR         print_string_op_nn  *print the opcode
+        MOVE.W      D0,D1               *reload the opcode into D1
+        JSR         LSD_sub
+        JSR         print_ea
         BRA         LSRR_END
         
         *test for long size
@@ -500,6 +740,9 @@ LSRR_L  CMP.W       #m_size_L_shfts,D1
         LEA         opcode_LSRL,A1
         MOVE.B      #long_size,D6
         JSR         print_string_op_nn  *print the opcode
+        MOVE.W      D0,D1               *reload the opcode into D1
+        JSR         LSD_sub
+        JSR         print_ea
         BRA         LSRR_END
         
 LSRR_FAIL JSR         op_DATA
@@ -508,9 +751,9 @@ LSRR_END MOVEM.L     (SP)+, D0-D5/D7/A0-A6
         RTS
         
 *-----------------------------------------------------------
-* Subroutine Title: move_size
-* Description: 
-* 
+* Subroutine Title: lsr_m_size
+* Description: Test the size bits to determine
+* the size and print the opcode string.
 * D0 is used to pass in the machine code word.
 *-----------------------------------------------------------
 lsr_m_size:
@@ -520,15 +763,18 @@ lsr_m_size:
         LEA         opcode_LSRW,A1
         MOVE.B      #word_size,D6
         JSR         print_string_op_nn  *print the opcode
+        MOVE.W      D0,D1               *reload the opcode into D1
+        JSR         LSD_sub
+        JSR         print_ea
         BRA         LSRM_END
         
 LSRM_END MOVEM.L     (SP)+, D0-D5/D7/A0-A6
         RTS
 
 *-----------------------------------------------------------
-* Subroutine Title: move_size
-* Description: 
-* 
+* Subroutine Title: asl_r_size
+* Description: Test the size bits to determine
+* the size and print the opcode string.
 * D0 is used to pass in the machine code word.
 *-----------------------------------------------------------
 asl_r_size:
@@ -542,6 +788,9 @@ asl_r_size:
         LEA         opcode_ASLB,A1    *move the value for printing
         MOVE.B      #byte_size,D6
         JSR         print_string_op_nn  *print the opcode
+        MOVE.W      D0,D1               *reload the opcode into D1
+        JSR         ASD_sub
+        JSR         print_ea
         BRA         ASLR_END
         
         *test for word size
@@ -550,6 +799,9 @@ ASLR_W  CMP.W       #m_size_W_shfts,D1
         LEA         opcode_ASLW,A1
         MOVE.B      #word_size,D6
         JSR         print_string_op_nn  *print the opcode
+        MOVE.W      D0,D1               *reload the opcode into D1
+        JSR         ASD_sub
+        JSR         print_ea
         BRA         ASLR_END
         
         *test for long size
@@ -558,6 +810,9 @@ ASLR_L  CMP.W       #m_size_L_shfts,D1
         LEA         opcode_ASLL,A1
         MOVE.B      #long_size,D6
         JSR         print_string_op_nn  *print the opcode
+        MOVE.W      D0,D1               *reload the opcode into D1
+        JSR         ASD_sub
+        JSR         print_ea
         BRA         ASLR_END
        
 ASLR_FAIL JSR         op_DATA
@@ -566,9 +821,9 @@ ASLR_END MOVEM.L     (SP)+, D0-D5/D7/A0-A6
         RTS
         
 *-----------------------------------------------------------
-* Subroutine Title: move_size
-* Description: 
-* 
+* Subroutine Title: asl_m_size
+* Description: Test the size bits to determine
+* the size and print the opcode string.
 * D0 is used to pass in the machine code word.
 *-----------------------------------------------------------
 asl_m_size:
@@ -578,6 +833,9 @@ asl_m_size:
         LEA         opcode_ASLW,A1
         MOVE.B      #word_size,D6
         JSR         print_string_op_nn  *print the opcode
+        MOVE.W      D0,D1               *reload the opcode into D1
+        JSR         ASD_sub
+        JSR         print_ea
         BRA         ASLM_END
         
 ASLM_END MOVEM.L     (SP)+, D0-D5/D7/A0-A6
@@ -585,9 +843,9 @@ ASLM_END MOVEM.L     (SP)+, D0-D5/D7/A0-A6
         
 
 *-----------------------------------------------------------
-* Subroutine Title: move_size
-* Description: 
-* 
+* Subroutine Title: asr_r_size
+* Description: Test the size bits to determine
+* the size and print the opcode string.
 * D0 is used to pass in the machine code word.
 *-----------------------------------------------------------
 asr_r_size:
@@ -601,6 +859,9 @@ asr_r_size:
         LEA         opcode_ASRB,A1    *move the value for printing
         MOVE.B      #byte_size,D6
         JSR         print_string_op_nn  *print the opcode
+        MOVE.W      D0,D1               *reload the opcode into D1
+        JSR         ASD_sub
+        JSR         print_ea
         BRA         ASRR_END
         
         *test for word size
@@ -609,6 +870,9 @@ ASRR_W  CMP.W       #m_size_W_shfts,D1
         LEA         opcode_ASRW,A1
         MOVE.B      #word_size,D6
         JSR         print_string_op_nn  *print the opcode
+        MOVE.W      D0,D1               *reload the opcode into D1
+        JSR         ASD_sub
+        JSR         print_ea
         BRA         ASRR_END
         
         *test for long size
@@ -617,6 +881,9 @@ ASRR_L  CMP.W       #m_size_L_shfts,D1
         LEA         opcode_ASRL,A1
         MOVE.B      #long_size,D6
         JSR         print_string_op_nn  *print the opcode
+        MOVE.W      D0,D1               *reload the opcode into D1
+        JSR         ASD_sub
+        JSR         print_ea
         BRA         ASRR_END
         
 ASRR_FAIL JSR         op_DATA
@@ -625,9 +892,9 @@ ASRR_END MOVEM.L     (SP)+, D0-D5/D7/A0-A6
         RTS
 
 *-----------------------------------------------------------
-* Subroutine Title: move_size
-* Description: 
-* 
+* Subroutine Title: asr_m_size
+* Description: Test the size bits to determine
+* the size and print the opcode string.
 * D0 is used to pass in the machine code word.
 *-----------------------------------------------------------
 asr_m_size:
@@ -637,6 +904,9 @@ asr_m_size:
         LEA         opcode_ASRW,A1
         MOVE.B      #word_size,D6
         JSR         print_string_op_nn  *print the opcode
+        MOVE.W      D0,D1               *reload the opcode into D1
+        JSR         ASD_sub
+        JSR         print_ea
         BRA         ASRM_END
         
 ASRM_END MOVEM.L     (SP)+, D0-D5/D7/A0-A6
@@ -644,9 +914,9 @@ ASRM_END MOVEM.L     (SP)+, D0-D5/D7/A0-A6
         
 
 *-----------------------------------------------------------
-* Subroutine Title: move_size
-* Description: 
-* 
+* Subroutine Title: rol_r_size
+* Description: Test the size bits to determine
+* the size and print the opcode string.
 * D0 is used to pass in the machine code word.
 *-----------------------------------------------------------
 rol_r_size:
@@ -660,6 +930,9 @@ rol_r_size:
         LEA         opcode_ROLB,A1    *move the value for printing
         MOVE.B      #byte_size,D6
         JSR         print_string_op_nn  *print the opcode
+        MOVE.W      D0,D1               *reload the opcode into D1
+        JSR         ROD_sub
+        JSR         print_ea
         BRA         ROLR_END
         
         *test for word size
@@ -668,6 +941,9 @@ ROLR_W  CMP.W       #m_size_W_shfts,D1
         LEA         opcode_ROLW,A1
         MOVE.B      #word_size,D6
         JSR         print_string_op_nn  *print the opcode
+        MOVE.W      D0,D1               *reload the opcode into D1
+        JSR         ROD_sub
+        JSR         print_ea
         BRA         ROLR_END
         
         *test for long size
@@ -676,6 +952,9 @@ ROLR_L  CMP.W       #m_size_L_shfts,D1
         LEA         opcode_ROLL,A1
         MOVE.B      #long_size,D6
         JSR         print_string_op_nn  *print the opcode
+        MOVE.W      D0,D1               *reload the opcode into D1
+        JSR         ROD_sub
+        JSR         print_ea
         BRA         ROLR_END
         
 ROLR_FAIL JSR         op_DATA
@@ -684,9 +963,9 @@ ROLR_END MOVEM.L     (SP)+, D0-D5/D7/A0-A6
         RTS
 
 *-----------------------------------------------------------
-* Subroutine Title: move_size
-* Description: 
-* 
+* Subroutine Title: rol_m_size
+* Description: Test the size bits to determine
+* the size and print the opcode string.
 * D0 is used to pass in the machine code word.
 *-----------------------------------------------------------
 rol_m_size:
@@ -696,6 +975,9 @@ rol_m_size:
         LEA         opcode_ROLW,A1
         MOVE.B      #word_size,D6
         JSR         print_string_op_nn  *print the opcode
+        MOVE.W      D0,D1               *reload the opcode into D1
+        JSR         ROD_sub
+        JSR         print_ea
         BRA         ROLM_END
         
 ROLM_END MOVEM.L     (SP)+, D0-D5/D7/A0-A6
@@ -703,9 +985,9 @@ ROLM_END MOVEM.L     (SP)+, D0-D5/D7/A0-A6
         
 
 *-----------------------------------------------------------
-* Subroutine Title: move_size
-* Description: 
-* 
+* Subroutine Title: ror_r_size
+* Description: Test the size bits to determine
+* the size and print the opcode string.
 * D0 is used to pass in the machine code word.
 *-----------------------------------------------------------
 ror_r_size:
@@ -719,6 +1001,9 @@ ror_r_size:
         LEA         opcode_RORB,A1    *move the value for printing
         MOVE.B      #byte_size,D6
         JSR         print_string_op_nn  *print the opcode
+        MOVE.W      D0,D1               *reload the opcode into D1
+        JSR         ROD_sub
+        JSR         print_ea
         BRA         RORR_END
         
         *test for word size
@@ -727,6 +1012,9 @@ RORR_W  CMP.W       #m_size_W_shfts,D1
         LEA         opcode_RORW,A1
         MOVE.B      #word_size,D6
         JSR         print_string_op_nn  *print the opcode
+        MOVE.W      D0,D1               *reload the opcode into D1
+        JSR         ROD_sub
+        JSR         print_ea
         BRA         RORR_END
         
         *test for long size
@@ -735,6 +1023,9 @@ RORR_L  CMP.W       #m_size_L_shfts,D1
         LEA         opcode_RORL,A1
         MOVE.B      #long_size,D6
         JSR         print_string_op_nn  *print the opcode
+        MOVE.W      D0,D1               *reload the opcode into D1
+        JSR         ROD_sub
+        JSR         print_ea
         BRA         RORR_END
         
 RORR_FAIL JSR         op_DATA
@@ -743,9 +1034,9 @@ RORR_END MOVEM.L     (SP)+, D0-D5/D7/A0-A6
         RTS
 
 *-----------------------------------------------------------
-* Subroutine Title: move_size
-* Description: 
-* 
+* Subroutine Title: ror_m_size
+* Description: Test the size bits to determine
+* the size and print the opcode string.
 * D0 is used to pass in the machine code word.
 *-----------------------------------------------------------
 ror_m_size:
@@ -755,6 +1046,9 @@ ror_m_size:
         LEA         opcode_RORW,A1
         MOVE.B      #word_size,D6
         JSR         print_string_op_nn  *print the opcode
+        MOVE.W      D0,D1               *reload the opcode into D1
+        JSR         ROD_sub
+        JSR         print_ea
         BRA         RORM_END
         
 RORM_END MOVEM.L     (SP)+, D0-D5/D7/A0-A6
@@ -762,9 +1056,9 @@ RORM_END MOVEM.L     (SP)+, D0-D5/D7/A0-A6
         
 
 *-----------------------------------------------------------
-* Subroutine Title: move_size
-* Description: 
-* 
+* Subroutine Title: addq_size
+* Description: Test the size bits to determine
+* the size and print the opcode string.
 * D0 is used to pass in the machine code word.
 *-----------------------------------------------------------
 addq_size:
@@ -778,6 +1072,9 @@ addq_size:
         LEA         opcode_ADDQB,A1    *move the value for printing
         MOVE.B      #byte_size,D6
         JSR         print_string_op_nn  *print the opcode
+        MOVE.W      D0,D1               *reload the opcode into D1
+        JSR         ADDQ_sub
+        JSR         print_ea
         BRA         ADDQ_END
         
         *test for word size
@@ -786,6 +1083,9 @@ ADDQ_W  CMP.W       #m_size_W_ADD,D1
         LEA         opcode_ADDQW,A1
         MOVE.B      #word_size,D6
         JSR         print_string_op_nn  *print the opcode
+        MOVE.W      D0,D1               *reload the opcode into D1
+        JSR         ADDQ_sub
+        JSR         print_ea
         BRA         ADDQ_END
         
         *test for long size
@@ -794,6 +1094,9 @@ ADDQ_L  CMP.W       #m_size_L_ADD,D1
         LEA         opcode_ADDQL,A1
         MOVE.B      #long_size,D6
         JSR         print_string_op_nn  *print the opcode
+        MOVE.W      D0,D1               *reload the opcode into D1
+        JSR         ADDQ_sub
+        JSR         print_ea
         BRA         ADDQ_END
         
 ADDQ_FAIL JSR         op_DATA
@@ -803,9 +1106,9 @@ ADDQ_END MOVEM.L     (SP)+, D0-D5/D7/A0-A6
 
 
 *-----------------------------------------------------------
-* Subroutine Title: move_size
-* Description: 
-* 
+* Subroutine Title: sub_size
+* Description: Test the size bits to determine
+* the size and print the opcode string.
 * D0 is used to pass in the machine code word.
 *-----------------------------------------------------------
 sub_size:
@@ -819,6 +1122,9 @@ sub_size:
         LEA         opcode_SUBB,A1    *move the value for printing
         MOVE.B      #byte_size,D6
         JSR         print_string_op_nn  *print the opcode
+        MOVE.W      D0,D1               *reload the opcode into D1
+        JSR         SUB_sub
+        JSR         print_ea
         BRA         SUB_END
         
         *test for word size
@@ -827,6 +1133,9 @@ SUB_W   CMP.W       #m_size_W_SUB,D1
         LEA         opcode_SUBW,A1
         MOVE.B      #word_size,D6
         JSR         print_string_op_nn  *print the opcode
+        MOVE.W      D0,D1               *reload the opcode into D1
+        JSR         SUB_sub
+        JSR         print_ea
         BRA         SUB_END
         
         *test for long size
@@ -835,6 +1144,9 @@ SUB_L   CMP.W       #m_size_L_SUB,D1
         LEA         opcode_SUBL,A1
         MOVE.B      #long_size,D6
         JSR         print_string_op_nn  *print the opcode
+        MOVE.W      D0,D1               *reload the opcode into D1
+        JSR         SUB_sub
+        JSR         print_ea
         BRA         SUB_END
         
 SUB_FAIL JSR         op_DATA
@@ -843,9 +1155,9 @@ SUB_END MOVEM.L     (SP)+, D0-D5/D7/A0-A6
         RTS
 
 *-----------------------------------------------------------
-* Subroutine Title: move_size
-* Description: 
-* 
+* Subroutine Title: and_size
+* Description: Test the size bits to determine
+* the size and print the opcode string.
 * D0 is used to pass in the machine code word.
 *-----------------------------------------------------------
 and_size:
@@ -859,6 +1171,9 @@ and_size:
         LEA         opcode_ANDB,A1    *move the value for printing
         MOVE.B      #byte_size,D6
         JSR         print_string_op_nn  *print the opcode
+        MOVE.W      D0,D1               *reload the opcode into D1
+        JSR         AND_sub
+        JSR         print_ea
         BRA         AND_END
         
         *test for word size
@@ -867,6 +1182,9 @@ AND_W   CMP.W       #m_size_W_logic,D1
         LEA         opcode_ANDW,A1
         MOVE.B      #word_size,D6
         JSR         print_string_op_nn  *print the opcode
+        MOVE.W      D0,D1               *reload the opcode into D1
+        JSR         AND_sub
+        JSR         print_ea
         BRA         AND_END
         
         *test for long size
@@ -875,6 +1193,9 @@ AND_L   CMP.W       #m_size_L_logic,D1
         LEA         opcode_ANDL,A1
         MOVE.B      #long_size,D6
         JSR         print_string_op_nn  *print the opcode
+        MOVE.W      D0,D1               *reload the opcode into D1
+        JSR         AND_sub
+        JSR         print_ea
         BRA         AND_END
         
 AND_FAIL JSR         op_DATA
@@ -883,9 +1204,9 @@ AND_END MOVEM.L     (SP)+, D0-D5/D7/A0-A6
         RTS
         
 *-----------------------------------------------------------
-* Subroutine Title: move_size
-* Description: 
-* 
+* Subroutine Title: or_size
+* Description: Test the size bits to determine
+* the size and print the opcode string.
 * D0 is used to pass in the machine code word.
 *-----------------------------------------------------------
 or_size:
@@ -899,6 +1220,9 @@ or_size:
         LEA         opcode_ORB,A1    *move the value for printing
         MOVE.B      #byte_size,D6
         JSR         print_string_op_nn  *print the opcode
+        MOVE.W      D0,D1               *reload the opcode into D1
+        JSR         OR_sub
+        JSR         print_ea
         BRA         OR_END
         
         *test for word size
@@ -907,6 +1231,9 @@ OR_W    CMP.W       #m_size_W_logic,D1
         LEA         opcode_ORW,A1
         MOVE.B      #word_size,D6
         JSR         print_string_op_nn  *print the opcode
+        MOVE.W      D0,D1               *reload the opcode into D1
+        JSR         OR_sub
+        JSR         print_ea
         BRA         OR_END
         
         *test for long size
@@ -915,6 +1242,9 @@ OR_L    CMP.W       #m_size_L_logic,D1
         LEA         opcode_ORL,A1
         MOVE.B      #long_size,D6
         JSR         print_string_op_nn  *print the opcode
+        MOVE.W      D0,D1               *reload the opcode into D1
+        JSR         OR_sub
+        JSR         print_ea
         BRA         OR_END
         
 OR_FAIL JSR         op_DATA
@@ -923,9 +1253,9 @@ OR_END MOVEM.L     (SP)+, D0-D5/D7/A0-A6
         RTS
 
 *-----------------------------------------------------------
-* Subroutine Title: move_size
-* Description: 
-* 
+* Subroutine Title: moveq_size
+* Description: Test the size bits to determine
+* the size and print the opcode string.
 * D0 is used to pass in the machine code word.
 *-----------------------------------------------------------
 moveq_size:
@@ -939,6 +1269,9 @@ moveq_size:
         LEA         opcode_MOVEQ,A1    *move the value for printing
         MOVE.B      #long_size,D6
         JSR         print_string_op_nn  *print the opcode
+        MOVE.W      D0,D1               *reload the opcode into D1
+        JSR         MOVEQ_sub
+        JSR         print_ea
         BRA         MOVEQ_END
         
 MOVEQ_FAIL 
@@ -947,6 +1280,19 @@ MOVEQ_FAIL
 MOVEQ_END 
         MOVEM.L     (SP)+, D0-D5/D7/A0-A6
         RTS
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
