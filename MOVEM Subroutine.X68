@@ -5,7 +5,8 @@
 * Description:
 *-----------------------------------------------------------
 
-MOVEM_sub                                AND.L             #mask_MOVEM_dir,D1                          ;load the mask to determine the direction
+MOVEM_sub                                CLR               D1
+                                         AND.L             #mask_MOVEM_dir,D1                          ;load the mask to determine the direction
                                          
                                          CMP.L             #match_MOVEM_reg_mem,D1                     ;check to see if it's reg to mem
                                          BEQ               MOVEM_reg_mem                               ;if equal go figure out list
@@ -328,14 +329,12 @@ MOVEM_An_indir_pdec_r7_out			       MOVE.L			#ea_indir_predec_A7,A1						;load s
 ;------------------Absolute Addressing Output-----------------------
 MOVEM_abs_add_word_out				  MOVE.L      #ea_$,(A1)+                         ;load $ for hex and increment A1
                                       MOVE.L      D5,(A1)+                           ;load address                  
-                                      MOVEM.L           (SP)+, D1-D5/D7/A2-A6                                      
                                       RTS                                            :return to MOVEroutine
                                            
 
 MOVEM_abs_add_long_out    			  MOVE.L      (A0)+,D5                           ;pull the next long instruction that holds the address
                                       MOVE.L      #ea_$,(A1)+                         ;load $ for hex and increment A1
                                       MOVE.L      D5,(A1)+                           ;load address                  
-                                      MOVEM.L           (SP)+, D1-D5/D7/A2-A6                                      
                                       RTS                                            :return to MOVEroutine
                                             ;return to MOVEroutine                                            
 
@@ -369,9 +368,11 @@ MOVEM_m2r_abs_add_long           CMP.L             #match_MOVEM_abs_add_long,D2 
 
 ;--------------------Determine EFFECTIVE ADDRESS Register----------------------------------------------------------------------------------------
                                  
-                                 AND.L              #mask_MOVEM_ea_reg_and_mode,D2             ;load the mask into D2 for the mode and the register
+
 ;------------------Address Register Indirect-----------------------
-MOVEM_m2r_An_indir_reg          CMP.L          #match_MOVEM_An_indir_r0,D2              ;check reg is equal to 0
+MOVEM_m2r_An_indir_reg          CLR             D1 
+                                AND.L           #mask_MOVEM_ea_reg_and_mode,D2             ;load the mask into D2 for the mode and the register
+                                CMP.L           #match_MOVEM_An_indir_r0,D2              ;check reg is equal to 0
                                  BNE             MOVEM_m2r_An_indir_r1                           ;if not try reg 1
                                  BEQ             MOVEM_m2r_An_indir_r0_out                       ;if equal go to output MOVEroutine
 
@@ -429,7 +430,9 @@ MOVEM_m2r_An_indir_r7_out			       MOVE.L			#ea_indir_A7,A1		    		  ;load strin
                                             JSR             MOVEM_determine_second_op                 ;jump to MOVEroutine to determine second operand
 
 ;------------------Address Register Indirect with Post Increment-----------------------
-MOVEM_m2r_An_indir_pinc_reg                 CMP.L      #match_MOVEM_An_indir_pinc_r0,D2        ;check reg is equal to 0
+MOVEM_m2r_An_indir_pinc_reg                 CLR             D1 
+                                            AND.L           #mask_MOVEM_ea_reg_and_mode,D2             ;load the mask into D2 for the mode and the register
+                                            CMP.L      #match_MOVEM_An_indir_pinc_r0,D2        ;check reg is equal to 0
                                             BNE        MOVEM_m2r_An_indir_pinc_r1                      ;if not try reg 1
                                             BEQ        MOVEM_m2r_An_indir_pinc_r0_out               ;if equal go to output MOVEroutine
 
@@ -487,7 +490,10 @@ MOVEM_m2r_An_indir_pinc_r7_out		   	    MOVE.L			#ea_indir_postinc_A7,A1		    		
                                              JSR             MOVEM_determine_second_op                 ;jump to MOVEroutine to determine second operand
 
 ;------------------Address Register Indirect with Pre Decrement-----------------------
-MOVE_m2r_An_indir_predec                   	CMP.L      #match_MOVEM_An_indir_pdec_r0,D2       ;check reg is equal to 0
+MOVE_m2r_An_indir_predec                   	CLR             D1 
+                                            AND.L           #mask_MOVEM_ea_reg_and_mode,D2             ;load the mask into D2 for the mode and the register
+            
+                                            CMP.L      #match_MOVEM_An_indir_pdec_r0,D2       ;check reg is equal to 0
                                             BNE        MOVEM_m2r_An_indir_pdec_r1                      ;if not try reg 1
                                             BEQ        MOVEM_m2r_An_indir_pdec_r0_out               ;if equal go to output MOVEroutine
 
@@ -547,7 +553,6 @@ MOVEM_m2r_An_indir_pdec_r7_out  			    MOVE.L			#ea_indir_predec_A7,A1						;loa
 ;------------------Absolute Addressing Output-----------------------
 MOVEM_m2r_abs_add_word_out			  MOVE.L      #ea_$,(A1)+                         ;load $ for hex and increment A1
                                       MOVE.L      D5,(A1)+                           ;load address                  
-                                      MOVEM.L           (SP)+, D1-D5/D7/A2-A6                                      
                                       RTS                                            :return to MOVEroutine
                                             ;return to MOVEroutine
                                            
@@ -555,7 +560,6 @@ MOVEM_m2r_abs_add_word_out			  MOVE.L      #ea_$,(A1)+                         ;
 MOVEM_m2r_abs_add_long_out            MOVE.L      (A0)+,D5                           ;pull the next long instruction that holds the address
                                       MOVE.L      #ea_$,(A1)+                         ;load $ for hex and increment A1
                                       MOVE.L      D5,(A1)+                           ;load address                  
-                                      MOVEM.L           (SP)+, D1-D5/D7/A2-A6                                      
                                       RTS                                            :return to MOVEroutine
                                             ;return to MOVEroutine                                            
 
@@ -564,56 +568,56 @@ MOVEM_second_operand                     CLR            D1
 
 MOVEM_m2r                                MOVE.L         (A0)+,D5                                ;pull the register list
                                          
-                                         MOVE.L         #mask_MOVEM_reg_mem_D0,D1                     ;load mask into register
+                                         AND.L         #mask_MOVEM_reg_mem_D0,D1                     ;load mask into register
                                          CMP.L          #match_MOVEM_reg_mem_D0,D1                    ;check to see if the D0 is on the list
                                          BEQ            MOVEM_m2r_D0_reg_list_out
                                          BNE            MOVEM_m2r_D1
 
 MOVEM_m2r_D1                             MOVE.L         (A0)+,D5                                ;pull the register list
                                          CLR            D1
-                                         MOVE.L         #mask_MOVEM_reg_mem_D1,D1                     ;load mask into register
+                                         AND.L         #mask_MOVEM_reg_mem_D1,D1                     ;load mask into register
                                          CMP.L          #match_MOVEM_reg_mem_D1,D1                    ;check to see if the D0 is on the list
                                          BEQ            MOVEM_m2r_D1_reg_list_out
                                          BNE            MOVEM_m2r_D2
 
 MOVEM_m2r_D2                             MOVE.L         (A0)+,D5                                ;pull the register list
                                          CLR            D1
-                                         MOVE.L         #mask_MOVEM_reg_mem_D2,D1                     ;load mask into register
+                                         AND.L         #mask_MOVEM_reg_mem_D2,D1                     ;load mask into register
                                          CMP.L          #match_MOVEM_reg_mem_D2,D1                    ;check to see if the D0 is on the list
                                          BEQ            MOVEM_m2r_D2_reg_list_out
                                          BNE            MOVEM_m2r_D3
 
 MOVEM_m2r_D3                             MOVE.L         (A0)+,D5                                ;pull the register list
                                          CLR            D1
-                                         MOVE.L         #mask_MOVEM_reg_mem_D3,D1                     ;load mask into register
+                                         AND.L         #mask_MOVEM_reg_mem_D3,D1                     ;load mask into register
                                          CMP.L          #match_MOVEM_reg_mem_D3,D1                    ;check to see if the D0 is on the list
                                          BEQ            MOVEM_m2r_D3_reg_list_out
                                          BNE            MOVEM_m2r_D4
 
 MOVEM_m2r_D4                             MOVE.L         (A0)+,D5                                ;pull the register list
                                          CLR            D1
-                                         MOVE.L         #mask_MOVEM_reg_mem_D4,D1                     ;load mask into register
+                                         AND.L         #mask_MOVEM_reg_mem_D4,D1                     ;load mask into register
                                          CMP.L          #match_MOVEM_reg_mem_D4,D1                    ;check to see if the D0 is on the list
                                          BEQ            MOVEM_m2r_D4_reg_list_out
                                          BNE            MOVEM_m2r_D5
 
 MOVEM_m2r_D5                             MOVE.L         (A0)+,D5                                ;pull the register list
                                          CLR            D1
-                                         MOVE.L         #mask_MOVEM_reg_mem_D5,D1                     ;load mask into register
+                                         AND.L         #mask_MOVEM_reg_mem_D5,D1                     ;load mask into register
                                          CMP.L          #match_MOVEM_reg_mem_D5,D1                    ;check to see if the D0 is on the list
                                          BEQ            MOVEM_m2r_D5_reg_list_out
                                          BNE            MOVEM_m2r_D6
 
 MOVEM_m2r_D6                             MOVE.L         (A0)+,D5                                ;pull the register list
                                          CLR            D1
-                                         MOVE.L         #mask_MOVEM_reg_mem_D6,D1                     ;load mask into register
+                                         AND.L         #mask_MOVEM_reg_mem_D6,D1                     ;load mask into register
                                          CMP.L          #match_MOVEM_reg_mem_D6,D1                    ;check to see if the D0 is on the list
                                          BEQ            MOVEM_m2r_D6_reg_list_out
                                          BNE            MOVEM_m2r_D7
 
 MOVEM_m2r_D7                             MOVE.L         (A0)+,D5                                ;pull the register list
                                          CLR            D1
-                                         MOVE.L         #mask_MOVEM_reg_mem_D7,D1                     ;load mask into register
+                                         AND.L         #mask_MOVEM_reg_mem_D7,D1                     ;load mask into register
                                          CMP.L          #match_MOVEM_reg_mem_D7,D1                    ;check to see if the D0 is on the list
                                          BEQ            MOVEM_m2r_D7_reg_list_out
                                          BNE            MOVEM_m2r_A0
@@ -621,56 +625,56 @@ MOVEM_m2r_D7                             MOVE.L         (A0)+,D5                
 
 MOVEM_m2r_A0                             MOVE.L         (A0)+,D5                                ;pull the register list
                                          CLR            D1
-                                         MOVE.L         #mask_MOVEM_reg_mem_A0,A1                     ;load mask into register
+                                         AND.L         #mask_MOVEM_reg_mem_A0,A1                     ;load mask into register
                                          CMP.L          #match_MOVEM_reg_mem_A0,A1                    ;check to see if the A0 is on the list
                                          BEQ            MOVEM_m2r_A0_reg_list_out
                                          BNE            MOVEM_m2r_A1
 
 MOVEM_m2r_A1                             MOVE.L         (A0)+,D5                                ;pull the register list
                                          CLR            D1
-                                         MOVE.L         #mask_MOVEM_reg_mem_A1,A1                     ;load mask into register
+                                         AND.L         #mask_MOVEM_reg_mem_A1,A1                     ;load mask into register
                                          CMP.L          #match_MOVEM_reg_mem_A1,A1                    ;check to see if the A0 is on the list
                                          BEQ            MOVEM_m2r_A1_reg_list_out
                                          BNE            MOVEM_m2r_A2
 
 MOVEM_m2r_A2                             MOVE.L         (A0)+,D5                                ;pull the register list
                                          CLR            D1
-                                         MOVE.L         #mask_MOVEM_reg_mem_A2,A1                     ;load mask into register
+                                         AND.L         #mask_MOVEM_reg_mem_A2,A1                     ;load mask into register
                                          CMP.L          #match_MOVEM_reg_mem_A2,A1                    ;check to see if the A0 is on the list
                                          BEQ            MOVEM_m2r_A2_reg_list_out
                                          BNE            MOVEM_m2r_A3
 
 MOVEM_m2r_A3                             MOVE.L         (A0)+,D5                                ;pull the register list
                                          CLR            D1
-                                         MOVE.L         #mask_MOVEM_reg_mem_A3,A1                     ;load mask into register
+                                         AND.L         #mask_MOVEM_reg_mem_A3,A1                     ;load mask into register
                                          CMP.L          #match_MOVEM_reg_mem_A3,A1                    ;check to see if the A0 is on the list
                                          BEQ            MOVEM_m2r_A3_reg_list_out
                                          BNE            MOVEM_m2r_A4
 
 MOVEM_m2r_A4                             MOVE.L         (A0)+,D5                                ;pull the register list
                                          CLR            D1
-                                         MOVE.L         #mask_MOVEM_reg_mem_A4,A1                     ;load mask into register
+                                         AND.L         #mask_MOVEM_reg_mem_A4,A1                     ;load mask into register
                                          CMP.L          #match_MOVEM_reg_mem_A4,A1                    ;check to see if the A0 is on the list
                                          BEQ            MOVEM_m2r_A4_reg_list_out
                                          BNE            MOVEM_m2r_A5
 
 MOVEM_m2r_A5                             MOVE.L         (A0)+,D5                                ;pull the register list
                                          CLR            D1
-                                         MOVE.L         #mask_MOVEM_reg_mem_A5,A1                     ;load mask into register
+                                         AND.L         #mask_MOVEM_reg_mem_A5,A1                     ;load mask into register
                                          CMP.L          #match_MOVEM_reg_mem_A5,A1                    ;check to see if the A0 is on the list
                                          BEQ            MOVEM_m2r_A5_reg_list_out
                                          BNE            MOVEM_m2r_A6
 
 MOVEM_m2r_A6                             MOVE.L         (A0)+,D5                                ;pull the register list
                                          CLR            D1
-                                         MOVE.L         #mask_MOVEM_reg_mem_A6,A1                     ;load mask into register
+                                         AND.L         #mask_MOVEM_reg_mem_A6,A1                     ;load mask into register
                                          CMP.L          #match_MOVEM_reg_mem_A6,A1                    ;check to see if the A0 is on the list
                                          BEQ            MOVEM_m2r_A6_reg_list_out
                                          BNE            MOVEM_m2r_A7
 
 MOVEM_m2r_A7                             MOVE.L         (A0)+,D5                                ;pull the register list
                                          CLR            D1
-                                         MOVE.L         #mask_MOVEM_reg_mem_A7,A1                     ;load mask into register
+                                         AND.L         #mask_MOVEM_reg_mem_A7,A1                     ;load mask into register
                                          CMP.L          #match_MOVEM_reg_mem_A7,A1                    ;check to see if the A0 is on the list
                                          BEQ            MOVEM_m2r_A7_reg_list_out
                                          BNE            MOVEM_determine_second_operand
@@ -729,8 +733,7 @@ MOVEM_m2r_A7_reg_list_out               MOVE.L          #ea_A7,(A1)+            
 
 ;----------------------Error Handling----------------------------------------
 MOVEM_ERROR                                     LEA     ERROR_MESSAGE,A1                                          ;load error messge into A3
-					                            MOVEM.L           (SP)+, D1-D5/D7/A2-A6                                      
-                                                RTS                                            :return to MOVEroutine
+					                            RTS                                            :return to MOVEroutine
 
 					                            
 					                           
@@ -884,6 +887,7 @@ match_MOVEM_mem_reg_D3        EQU         $0800
 match_MOVEM_mem_reg_D2        EQU         $0400
 match_MOVEM_mem_reg_D1        EQU         $0200
 match_MOVEM_mem_reg_D0        EQU         $0100
+
 
 
 
