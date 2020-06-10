@@ -5,9 +5,9 @@
 * D2 will be loaded with the mask for the EA mode and register to be compared with matches of the determined mode and register
 * A1 will point to the location of the string constants
 *-----------------------------------------------------------    
-
    
 MOVEA_sub                        MOVEM.L           D1-D5/D7/A0-A6, -(SP)                   ;preserve the registers, 
+                                 CLR                D1
                                  AND.L             #mask_MOVEA_ea_mode,D1                  ;move the mask to D1
 ;--------------Determine EFFECTIVE ADDRESS Mode-----------------------------------                
 MOVEA_data_reg_dir               CMP.L             #match_MOVEA_Dn,D1                      ;check to see if mode is data reg direct
@@ -30,7 +30,8 @@ MOVEA_add_reg_indir_postinc      CMP.L             #match_MOVEA_An_indir_postinc
                                  BNE               MOVEA_abs_add_word                      ;if not go check abs add word
                                  BEQ               MOVEA_An_indir_postinc_reg              ;if equal go figure out the register
 
-MOVEA_abs_add_word               AND.L             #mask_MOVEA_abs_add,D2                  ;load mask to determine if abs add word or long
+MOVEA_abs_add_word               CLR               D2
+                                 AND.L             #mask_MOVEA_abs_add,D2                  ;load mask to determine if abs add word or long
                                  
                                  CMP.L             #match_MOVEA_abs_add_word,D2            ;check if abs add word
                                  MOVE.L            (A0)+,D5                                ;pull the next word instruction that holds the address
@@ -86,33 +87,35 @@ MOVEA_rD7                   CMP.L              #match_MOVEA_D7,D2              ;
 ;--------------------Data Register Direct Output-----------------------
 MOVEA_D0_out                MOVE.L          #ea_D0,A1			      ;load string constant into A1
                             JSR             MOVEA_determine_second_op         ;jump to subroutine to determine second operand
-
+                            RTS
+                            
 MOVEA_D1_out                MOVE.L          #ea_D1,A1			      ;load string constant into A1
                             JSR             MOVEA_determine_second_op         ;jump to subroutine to determine second operand
-
+                            RTS
 
 MOVEA_D2_out                MOVE.L          #ea_D2,A1			      ;load string constant into A1
                             JSR             MOVEA_determine_second_op         ;jump to subroutine to determine second operand
-
+                            RTS
+                            
 MOVEA_D3_out                MOVE.L	        #ea_D3,A1			      ;load string constant into A1
                             JSR             MOVEA_determine_second_op         ;jump to subroutine to determine second operand
-
+                            RTS
 
 MOVEA_D4_out                MOVE.L	        #ea_D4,A1			      ;load string constant into A1
                             JSR             MOVEA_determine_second_op         ;jump to subroutine to determine second operand
-
+                            RTS
 
 MOVEA_D5_out                MOVE.L	        #ea_D5,A1			      ;load string constant into A1
                             JSR             MOVEA_determine_second_op         ;jump to subroutine to determine second operand
-
+                            RTS
 
 MOVEA_D6_out                MOVE.L	        #ea_D6,A1			      ;load string constant into A1
                             JSR             MOVEA_determine_second_op         ;jump to subroutine to determine second operand
-
+                            RTS
 
 MOVEA_D7_out                MOVE.L	        #ea_D7,A1			      ;load string constant into A1
                             JSR             MOVEA_determine_second_op         ;jump to subroutine to determine second operand
-
+                            RTS
 
 ;------------------Address Register Direct-----------------------
 MOVEA_An_reg                CMP.L           #match_MOVEA_A0,D2                ;check reg is equal to 0
@@ -151,28 +154,35 @@ MOVEA_rA7                   CMP.L           #match_MOVEA_A7,D2                ;c
 ;--------------------Address Register Direct Output-----------------------
 MOVEA_A0_out          MOVE.L	      #ea_A0,A1				;load string constant into A1
                       JSR             MOVEA_determine_second_op         ;jump to subroutine to determine second operand
+                      RTS
         						
 MOVEA_A1_out          MOVE.L	      #ea_A1,A1				;load string constant into A1
                       JSR             MOVEA_determine_second_op         ;jump to subroutine to determine second operand
+                      RTS
         						
 MOVEA_A2_out          MOVE.L	      #ea_A2,A1				;load string constant into A1
                       JSR             MOVEA_determine_second_op         ;jump to subroutine to determine second operand
+                      RTS
         						
 MOVEA_A3_out          MOVE.L	      #ea_A3,A1				;load string constant into A1
                       JSR             MOVEA_determine_second_op         ;jump to subroutine to determine second operand
-
+                      RTS
+                      
 MOVEA_A4_out          MOVE.L	      #ea_A4,A1				;load string constant into A1
                       JSR             MOVEA_determine_second_op         ;jump to subroutine to determine second operand
-
+                      RTS
+                      
 MOVEA_A5_out          MOVE.L	      #ea_A5,A1				;load string constant into A1
                       JSR             MOVEA_determine_second_op         ;jump to subroutine to determine second operand
-
+                      RTS
+                      
 MOVEA_A6_out          MOVE.L	      #ea_A6,A1				;load string constant into A1
                       JSR             MOVEA_determine_second_op         ;jump to subroutine to determine second operand
-
+                      RTS
+                      
 MOVEA_A7_out          MOVE.L	      #ea_A7,A1				;load string constant into A1
                       JSR             MOVEA_determine_second_op         ;jump to subroutine to determine second operand
-
+                      RTS
 
 ;------------------Address Register Indirect-----------------------
 MOVEA_An_indir_reg       CMP.L           #match_MOVEA_An_indir_r0,D2           ;check reg is equal to 0
@@ -210,29 +220,36 @@ MOVEA_An_indir_reg7      CMP.L           #match_MOVEA_An_indir_r7,D2           ;
 
 ;--------------------Address Register Indirect Output-----------------------
 MOVEA_An_indir_reg0_out		    MOVE.L		#ea_indir_A0,A1		    	  ;load string constant into A1
-                                JSR             MOVEA_determine_second_op         ;jump to subroutine to determine second operand
-
+                                JSR         MOVEA_determine_second_op         ;jump to subroutine to determine second operand
+                                RTS
+                                
 MOVEA_An_indir_reg1_out		    MOVE.L		#ea_indir_A1,A1		    	  ;load string constant into A1
-                                JSR             MOVEA_determine_second_op         ;jump to subroutine to determine second operand
-
+                                JSR         MOVEA_determine_second_op         ;jump to subroutine to determine second operand
+                                RTS
+                                
 MOVEA_An_indir_reg2_out		    MOVE.L		#ea_indir_A2,A1		    	  ;load string constant into A1
-                                JSR             MOVEA_determine_second_op         ;jump to subroutine to determine second operand
-
+                                JSR         MOVEA_determine_second_op         ;jump to subroutine to determine second operand
+                                RTS
+                                
 MOVEA_An_indir_reg3_out		    MOVE.L		#ea_indir_A3,A1		    	  ;load string constant into A1
-                                JSR             MOVEA_determine_second_op         ;jump to subroutine to determine second operand
-
+                                JSR         MOVEA_determine_second_op         ;jump to subroutine to determine second operand
+                                RTS
+                                
 MOVEA_An_indir_reg4_out		    MOVE.L		#ea_indir_A4,A1		    	  ;load string constant into A1
-                                JSR             MOVEA_determine_second_op         ;jump to subroutine to determine second operand
-
+                                JSR         MOVEA_determine_second_op         ;jump to subroutine to determine second operand
+                                RTS
+                                
 MOVEA_An_indir_reg5_out		    MOVE.L		#ea_indir_A5,A1		    	  ;load string constant into A1
-                                JSR             MOVEA_determine_second_op         ;jump to subroutine to determine second operand
-
+                                JSR         MOVEA_determine_second_op         ;jump to subroutine to determine second operand
+                                RTS
+                                
 MOVEA_An_indir_reg6_out		    MOVE.L		#ea_indir_A6,A1		    	  ;load string constant into A1
-                                JSR             MOVEA_determine_second_op         ;jump to subroutine to determine second operand
+                                JSR         MOVEA_determine_second_op         ;jump to subroutine to determine second operand
+                                RTS
 								        
 MOVEA_An_indir_reg7_out		    MOVE.L		#ea_indir_A7,A1		    	  ;load string constant into A1
-                                JSR             MOVEA_determine_second_op         ;jump to subroutine to determine second operand
-
+                                JSR         MOVEA_determine_second_op         ;jump to subroutine to determine second operand
+                                RTS
 
 ;------------------Address Register Indirect with Post Increment-----------------------
 MOVEA_An_indir_postinc_reg        CMP.L      #match_MOVEA_An_indir_postinc_r0,D2        ;check reg is equal to 0
@@ -271,29 +288,35 @@ MOVEA_An_indir_postinc_reg7       CMP.L      #match_MOVEA_An_indir_postinc_r7,D2
 ;--------------------Address Register Indirect with Post Increment Output-----------------------
 MOVEA_An_indir_postinc_reg0_out	      MOVE.L	    #ea_indir_postinc_A0,A1	    ;load string constant into A1
                                       JSR           MOVEA_determine_second_op       ;jump to subroutine to determine second operand
-
+                                      RTS
 
 MOVEA_An_indir_postinc_reg1_out	      MOVE.L	    #ea_indir_postinc_A1,A1	    ;load string constant into A1
                                       JSR           MOVEA_determine_second_op       ;jump to subroutine to determine second operand
-
+                                      RTS
+                                      
 MOVEA_An_indir_postinc_reg2_out	      MOVE.L	    #ea_indir_postinc_A2,A1	    ;load string constant into A1
                                       JSR           MOVEA_determine_second_op       ;jump to subroutine to determine second operand
-
+                                      RTS
+                                      
 MOVEA_An_indir_postinc_reg3_out	      MOVE.L	    #ea_indir_postinc_A3,A1	    ;load string constant into A1
                                       JSR           MOVEA_determine_second_op       ;jump to subroutine to determine second operand
-
+                                      RTS
+                                      
 MOVEA_An_indir_postinc_reg4_out	      MOVE.L	    #ea_indir_postinc_A4,A1	    ;load string constant into A1
                                       JSR           MOVEA_determine_second_op       ;jump to subroutine to determine second operand
-
+                                      RTS
+                                      
 MOVEA_An_indir_postinc_reg5_out	      MOVE.L	    #ea_indir_postinc_A5,A1	    ;load string constant into A1
                                       JSR           MOVEA_determine_second_op       ;jump to subroutine to determine second operand
-
+                                      RTS
+                                      
 MOVEA_An_indir_postinc_reg6_out	      MOVE.L	    #ea_indir_postinc_A6,A1	    ;load string constant into A1
                                       JSR           MOVEA_determine_second_op       ;jump to subroutine to determine second operand
-
+                                      RTS
+                                      
 MOVEA_An_indir_postinc_reg7_out	      MOVE.L	    #ea_indir_postinc_A7,A1	    ;load string constant into A1
                                       JSR           MOVEA_determine_second_op       ;jump to subroutine to determine second operand
-
+                                      RTS
 
 ;------------------Address Register Indirect with Pre Decrement-----------------------
 MOVEA_An_indir_predec              CMP.L      #match_MOVEA_An_indir_predec_reg0,D2       ;check reg is equal to 0
@@ -330,30 +353,37 @@ MOVEA_An_indir_predec_reg7         CMP.L      #match_MOVEA_An_indir_predec_reg7,
 
 
 ;--------------------Address Register Indirect with Pre Decrement Output-----------------------
-MOVEA_An_indir_predec_reg0_out		MOVE.L		#ea_indir_predec_A0,A1		 ;load string constant into A1
+MOVEA_An_indir_predec_reg0_out		    MOVE.L		#ea_indir_predec_A0,A1		 ;load string constant into A1
                                         JSR             MOVEA_determine_second_op        ;jump to subroutine to determine second operand
+                                        RTS
 											
-MOVEA_An_indir_predec_reg1_out		MOVE.L		#ea_indir_predec_A1,A1		 ;load string constant into A1
+MOVEA_An_indir_predec_reg1_out		    MOVE.L		#ea_indir_predec_A1,A1		 ;load string constant into A1
                                         JSR             MOVEA_determine_second_op        ;jump to subroutine to determine second operand
-
-MOVEA_An_indir_predec_reg2_out		MOVE.L		#ea_indir_predec_A2,A1		 ;load string constant into A1
+                                        RTS
+                                      
+MOVEA_An_indir_predec_reg2_out		    MOVE.L		#ea_indir_predec_A2,A1		 ;load string constant into A1
                                         JSR             MOVEA_determine_second_op        ;jump to subroutine to determine second operand
-
-MOVEA_An_indir_predec_reg3_out		MOVE.L		#ea_indir_predec_A3,A1		 ;load string constant into A1
+                                        RTS
+                                        
+MOVEA_An_indir_predec_reg3_out		    MOVE.L		#ea_indir_predec_A3,A1		 ;load string constant into A1
                                         JSR             MOVEA_determine_second_op        ;jump to subroutine to determine second operand
-
-MOVEA_An_indir_predec_reg4_out		MOVE.L		#ea_indir_predec_A4,A1		 ;load string constant into A1
+                                        RTS
+                                      
+MOVEA_An_indir_predec_reg4_out		    MOVE.L		#ea_indir_predec_A4,A1		 ;load string constant into A1
                                         JSR             MOVEA_determine_second_op        ;jump to subroutine to determine second operand
-
-MOVEA_An_indir_predec_reg5_out		MOVE.L		#ea_indir_predec_A5,A1		 ;load string constant into A1
+                                        RTS
+                                      
+MOVEA_An_indir_predec_reg5_out		    MOVE.L		#ea_indir_predec_A5,A1		 ;load string constant into A1
                                         JSR             MOVEA_determine_second_op        ;jump to subroutine to determine second operand
-
-MOVEA_An_indir_predec_reg6_out		MOVE.L		#ea_indir_predec_A6,A1		 ;load string constant into A1
+                                        RTS
+                                      
+MOVEA_An_indir_predec_reg6_out		    MOVE.L		#ea_indir_predec_A6,A1		 ;load string constant into A1
                                         JSR             MOVEA_determine_second_op        ;jump to subroutine to determine second operand
-
-MOVEA_An_indir_predec_reg7_out		MOVE.L		#ea_indir_predec_A7,A1		 ;load string constant into A1
+                                        RTS
+                                      
+MOVEA_An_indir_predec_reg7_out		    MOVE.L		#ea_indir_predec_A7,A1		 ;load string constant into A1
                                         JSR             MOVEA_determine_second_op        ;jump to subroutine to determine second operand
-        
+                                        RTS
 ;------------------Absolute Addressing Output-----------------------
 MOVEA_abs_add_word_out		    MOVE.L      	#ea_$,(A1)+            ;load $ for hex and increment A1
                                 MOVE.L      	D5,(A1)+               ;load address                  
@@ -368,56 +398,57 @@ MOVEA_abs_add_long_out    	    MOVE.L      	(A0)+,D5               ;pull the nex
                                         
 ;---------------Immediate Addresing---------------------------
 MOVEA_immediate_add_out         MOVE.L		(A0)+,D5                        ;capture the immediate address
-				                CMP.L       	#match_MOVEA_imm_add_word,D6          ;check to see if need to pull word
-				                MOVE.L      	(A0)+,D5                        ;pull the word
-                                BEQ         	MOVEA_imm_add_w                 ;if equal go pull word    
-				                BNE         	MOVEA_imm_add_l                 ;if not equal, go check long
+				                CMP.L      	#match_MOVEA_imm_add_word,D6          ;check to see if need to pull word
+				                MOVE.L     	(A0)+,D5                        ;pull the word
+                                BEQ        	MOVEA_imm_add_w                 ;if equal go pull word    
+				                BNE        	MOVEA_imm_add_l                 ;if not equal, go check long
 										 
 MOVEA_imm_add_w                 MOVE.L     	#ea_$,(A1)+                     ;load the $
                                 MOVE.W     	D5,(A1)+                        ;load the word address                           
-                                JSR             MOVEA_determine_second_op       ;jump to subroutine to determine second operand
+                                JSR         MOVEA_determine_second_op       ;jump to subroutine to determine second operand
+                                RTS
                                          
 MOVEA_imm_add_l                 MOVE.L     	(A0)+,D5                        ;pull the long and increase the pointer
                                 MOVE.L     	#ea_$,(A1)+                     ;load the $
                                 MOVE.L     	D5,A1                           ;move to A1
                                 JSR        	MOVEA_determine_second_op       ;jump to subroutine to determine second operand
-                                              
+                                RTS                                              
 
 ;---------------------------------Determine Register----------------------------------------------------------------------------------------
 MOVEA_determine_second_op	    CLR.L		D2				;clear D2 
                 				AND.L		#mask_MOVEA_An_reg,D2		;load the mask for the register into D2, masks bit 11-9
 												
 MOVEA_reg0		            	CMP.L		#match_MOVEA_reg0,D2		;check to see if reg equal 0
-                				BNE		MOVEA_reg1			;if not equal got check reg 1
-				                BEQ		MOVEA_reg0_out			;if equal go to output
+                				BNE		    MOVEA_reg1			;if not equal got check reg 1
+				                BEQ		    MOVEA_reg0_out			;if equal go to output
 												
 MOVEA_reg1			            CMP.L		#match_MOVEA_reg1,D2		;check to see if reg equal 1
-                				BNE		MOVEA_reg2			;if not equal got check reg 2
-				                BEQ		MOVEA_reg1_out			;if equal go to output
-
+                				BNE		    MOVEA_reg2			;if not equal got check reg 2
+				                BEQ 		MOVEA_reg1_out			;if equal go to output
+    
 MOVEA_reg2			            CMP.L		#match_MOVEA_reg2,D2		;check to see if reg equal 2
-                				BNE		MOVEA_reg3			;if not equal got check reg 3
-				                BEQ		MOVEA_reg2_out			;if equal go to output
+                				BNE 		MOVEA_reg3			;if not equal got check reg 3
+				                BEQ	    	MOVEA_reg2_out			;if equal go to output
 
 MOVEA_reg3			            CMP.L		#match_MOVEA_reg3,D2		;check to see if reg equal 3
-                				BNE		MOVEA_reg4			;if not equal got check reg 4
-				                BEQ		MOVEA_reg3_out			;if equal go to output
+                				BNE		    MOVEA_reg4			;if not equal got check reg 4
+				                BEQ		    MOVEA_reg3_out			;if equal go to output
 												
 MOVEA_reg4			            CMP.L		#match_MOVEA_reg4,D2		;check to see if reg equal 4
-                				BNE		MOVEA_reg5			;if not equal got check reg 5
-				                BEQ		MOVEA_reg4_out			;if equal go to output
+                				BNE		    MOVEA_reg5			;if not equal got check reg 5
+				                BEQ		    MOVEA_reg4_out			;if equal go to output
 
 MOVEA_reg5			            CMP.L		#match_MOVEA_reg5,D2		;check to see if reg equal 5
-				                BNE		MOVEA_reg6			;if not equal got check reg 6
-				                BEQ		MOVEA_reg5_out			;if equal go to output
+				                BNE		    MOVEA_reg6			;if not equal got check reg 6
+				                BEQ		    MOVEA_reg5_out			;if equal go to output
 
 MOVEA_reg6			            CMP.L		#match_MOVEA_reg6,D2		;check to see if reg equal 6
-				                BNE		MOVEA_reg7			;if not equal got check reg 7
-				                BEQ		MOVEA_reg6_out			;if equal go to output			
+				                BNE		    MOVEA_reg7			;if not equal got check reg 7
+				                BEQ		    MOVEA_reg6_out			;if equal go to output			
 
 MOVEA_reg7			            CMP.L		#match_MOVEA_reg7,D2		;check to see if reg equal 7
-				                BEQ		MOVEA_reg7_out			;if equal go to output
-				                BNE         	ERROR                           ;if not equal to an addresssing mode, pritn error
+				                BEQ		    MOVEA_reg7_out			;if equal go to output
+				                BNE         ERROR                           ;if not equal to an addresssing mode, pritn error
 								
 
 ;--------------------Data Output-----------------------
@@ -446,32 +477,32 @@ MOVEA_reg7_out			        MOVE.L		#ea_A7,A1		;load string constant into A1
                                 RTS				
 
 
-ea_D0					DC.B		'D0',0
-ea_D1			   		DC.B		'D1',0
-ea_D2		 			DC.B		'D2',0
+ea_D0					    DC.B		'D0',0
+ea_D1			   		    DC.B		'D1',0
+ea_D2		 			    DC.B		'D2',0
 ea_D3			    		DC.B		'D3',0
 ea_D4		    			DC.B		'D4',0
 ea_D5		    			DC.B		'D5',0
 ea_D6			    		DC.B		'D6',0
 ea_D7		   	    		DC.B		'D7',0
 
-ea_A0                 			DC.B        	'A0',0
-ea_A1                       		DC.B        	'A1',0
-ea_A2                       		DC.B        	'A2',0
-ea_A3                       		DC.B        	'A3',0
-ea_A4                       		DC.B        	'A4',0
-ea_A5                       		DC.B        	'A5',0
+ea_A0                 		DC.B        	'A0',0
+ea_A1                       DC.B        	'A1',0
+ea_A2                       DC.B        	'A2',0
+ea_A3                       DC.B        	'A3',0
+ea_A4                       DC.B        	'A4',0
+ea_A5                       DC.B        	'A5',0
 ea_A6			       		DC.B        	'A6',0
-ea_A7                       		DC.B        	'A7',0
+ea_A7                       DC.B        	'A7',0
 
 ea_indir_A0		    		DC.B		'(A0)',0
 ea_indir_A1		    		DC.B		'(A1)',0
-ea_indir_A2				DC.B		'(A2)',0
+ea_indir_A2				    DC.B		'(A2)',0
 ea_indir_A3		    		DC.B		'(A3)',0
 ea_indir_A4		    		DC.B		'(A4)',0
 ea_indir_A5		    		DC.B		'(A5)',0
 ea_indir_A6		    		DC.B		'(A6)',0
-ea_indir_A7                     	DC.B            '(A7)',0
+ea_indir_A7                 DC.B            '(A7)',0
 
 ea_indir_postinc_A0			DC.B		'(A0)+',0
 ea_indir_postinc_A1			DC.B		'(A1)+',0
@@ -492,22 +523,22 @@ ea_indir_predec_A5			DC.B		'-(A5)',0
 ea_indir_predec_A6			DC.B		'-(A6)',0
 ea_indir_predec_A7			DC.B		'-(A7)',0
 
-ea_paren_open				DC.B		'(',0
+ea_paren_open				    DC.B		'(',0
 ea_paren_closed		    		DC.B		')',0
 ea_abs_word_string	    		DC.B		'.W',0
 ea_abs_long_string	    		DC.B		'.L',0
-ea_$					DC.B		'$',0
+ea_$					        DC.B		'$',0
 
-mask_MOVEA_ea_mode			EQU		$0038
-mask_MOVEA_abs_add			EQU		$003F
+mask_MOVEA_ea_mode			    EQU		$0038
+mask_MOVEA_abs_add			    EQU		$003F
 mask_MOVEA_ea_reg_and_mode		EQU		$003F
-mask_MOVEA_An_reg			EQU		$0E00
+mask_MOVEA_An_reg			    EQU		$0E00
 
-match_MOVEA_Dn				EQU		$0000
-match_MOVEA_An				EQU		$0008
+match_MOVEA_Dn				    EQU		$0000
+match_MOVEA_An				    EQU		$0008
 match_MOVEA_An_indir			EQU		$0010
 match_MOVEA_An_indir_predec		EQU		$0020
-match_MOVEA_An_indir_postinc		EQU		$0018
+match_MOVEA_An_indir_postinc	EQU		$0018
 match_MOVEA_abs_add_word		EQU		$0038
 match_MOVEA_abs_add_long		EQU		$0039
 
@@ -556,9 +587,9 @@ match_MOVEA_An_indir_predec_reg5	EQU		$0025
 match_MOVEA_An_indir_predec_reg6	EQU		$0026
 match_MOVEA_An_indir_predec_reg7	EQU		$0027
 
-match_MOVEA_imm_add                           EQU         	$003C
-match_MOVEA_imm_add_word                      EQU         	$00FC
-match_MOVEA_imm_add_long                      EQU         	$01FC
+match_MOVEA_imm_add                 EQU     $003C
+match_MOVEA_imm_add_word            EQU     $00FC
+match_MOVEA_imm_add_long            EQU     $01FC
 
 match_MOVEA_reg0			EQU		$0000
 match_MOVEA_reg1			EQU		$0200
