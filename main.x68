@@ -21,7 +21,7 @@ run_prog    JSR     io_subroutine
             INCLUDE 'ADDA Subroutine.x68'
             INCLUDE 'ADDQ Subroutine.x68'
             INCLUDE 'ASD Subroutine.x68'
-            INCLUDE 'JSR Subroutine.x68'
+            *INCLUDE 'JSR Subroutine.x68'
             INCLUDE 'LEA Subroutine.x68'
             INCLUDE 'MOVE Subroutine.x68'
             *INCLUDE 'MOVEM Subroutine.x68'
@@ -39,6 +39,7 @@ run_prog    JSR     io_subroutine
 
 STOP:
     END    MAIN
+
 
 
 

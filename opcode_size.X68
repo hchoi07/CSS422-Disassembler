@@ -221,10 +221,10 @@ jsr_size:
         MOVEM.L     D0-D5/D7/A0-A6, -(SP)
         LEA         opcode_JSR,A1
         MOVE.B      #no_size,D6
-        JSR         print_string_op_nn  *print the opcode
+        JSR         print_string_op_nl  *print the opcode
         MOVE.W      D0,D1               *reload the opcode into D1
-        JSR         JSR_sub
-        JSR         print_ea
+        *JSR         JSR_sub
+        *JSR         print_ea
         MOVEM.L     (SP)+, D0-D5/D7/A0-A6
         RTS
         
@@ -1280,6 +1280,8 @@ MOVEQ_FAIL
 MOVEQ_END 
         MOVEM.L     (SP)+, D0-D5/D7/A0-A6
         RTS
+
+
 
 
 
