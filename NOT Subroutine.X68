@@ -26,7 +26,9 @@ NOT_An_indir_predec              CMP.L             #match_NOT_An_indir_predec,D1
                                  BNE               NOT_abs_add_word                              ;if not go check abs add word
                                  BEQ               NOT_An_indir_predec_reg                       ;if equal go figure out the register
 
-NOT_abs_add_word                 AND.L             #mask_NOT_ea_mode_abs_add,D2              ;load mask to determine if abs add word or long
+NOT_abs_add_word                 CLR.L          D2
+                                MOVE.W          D0,D2
+                                    AND.L             #mask_NOT_ea_mode_abs_add,D2              ;load mask to determine if abs add word or long
                                  
                                  CMP.L             #match_NOT_abs_add_word,D2                ;check if abs add word
                                  MOVE.L            (A0)+,D5                                  ;pull the next word instruction that holds the address 
@@ -348,6 +350,7 @@ match_NOT_An_indir_predec_r4		    	EQU				$001C              ;match for add reg 
 match_NOT_An_indir_predec_r5	    		EQU				$001D              ;match for add reg indir with predec with add reg 5
 match_NOT_An_indir_predec_r6		    	EQU				$001E              ;match for add reg indir with predec with add reg 6
 match_NOT_An_indir_predec_r7		    	EQU				$001F              ;match for add reg indir with predec with add reg 7
+
 
 
 
