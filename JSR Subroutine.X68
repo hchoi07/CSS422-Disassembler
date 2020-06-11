@@ -31,7 +31,9 @@ JSR_abs_add_long                 CMP.L             #match_JSR_abs_add_long,D2   
                                  
                      
 ;------------------Address Register Indirect-----------------------
-JSR_An_indir_reg                 AND.L           #mask_JSR_ea_reg_and_mode,D2                       ;load the mask into D2 for the mode and the register
+JSR_An_indir_reg                 CLR.L      D2
+                                MOVE.W  D0,D2
+                                AND.L           #mask_JSR_ea_reg_and_mode,D2                       ;load the mask into D2 for the mode and the register
                                  CMP.L           #match_JSR_An_indir_r0,D2              ;check reg is equal to 0
                                  BNE             JSR_An_indir_reg1                           ;if not try reg 1
                                  BEQ             JSR_An_indir_reg0_out                       ;if equal go to output subroutine
@@ -141,6 +143,7 @@ match_JSR_An_indir_r4				EQU			$0014
 match_JSR_An_indir_r5				EQU			$0015
 match_JSR_An_indir_r6				EQU			$0016
 match_JSR_An_indir_r7				EQU			$0017
+
 
 
 

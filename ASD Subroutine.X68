@@ -22,6 +22,7 @@ shift_type                       AND.L              #mask_ASD_shift_type,D1     
 
 ;--------------Determine EFFECTIVE ADDRESS Mode-------------MEMORY SHIFT-----------------------------------                
 ASD_mem_shift                    CLR               D1                                        ;clear shift mask
+                                MOVE.W              D0,D1
                                  AND.L             #mask_ASD_ea_mode,D1                      ;move the mask to D1
 
 ASD_An_indir                     CMP.L             #match_ASD_An_indir,D1                    ;check to see if mode is add reg indir
@@ -36,7 +37,8 @@ ASD_An_indir_predec              CMP.L             #match_ASD_An_indir_predec,D1
                                  BNE               ASD_abs_add_word                              ;if ASD go check abs add word
                                  BEQ               ASD_An_indir_predec_reg                       ;if equal go figure out the register
 
-ASD_abs_add_word                 AND.L             #mask_ASD_ea_mode_abs_add,D2              ;load mask to determine if abs add word or long
+ASD_abs_add_word                 MOVE.W D0,D2
+                                AND.L             #mask_ASD_ea_mode_abs_add,D2              ;load mask to determine if abs add word or long
                                  
                                  CMP.L             #match_ASD_abs_add_word,D2                ;check if abs add word
                                  MOVE.L            (A0)+,D5                                  ;pull the next word instruction that holds the address 
@@ -52,6 +54,7 @@ ASD_abs_add_long                 CMP.L             #match_ASD_abs_add_long,D2   
                                             
 ;------------------Address Register Indirect-----------------------
 ASD_An_indir_reg                            CLR             D2                                      ;make sure D2 is empty
+                                            MOVE.W          D0,D2
                                             AND.L           #mask_ASD_ea_reg_and_mode,D2            ;load the mask into D2 for the mode and the register
                                             
                                             CMP.L           #match_ASD_An_indir_r0,D2              ;check reg is equal to 0
@@ -122,6 +125,7 @@ ASD_An_indir_reg7_out			            MOVE.L			#ea_indir_A7,A1		    			      ;load
 
 ;------------------Address Register Indirect with Post Increment-----------------------
 ASD_An_indir_postinc_reg                    CLR        D2                                      ;make sure D2 is empty
+                                             MOVE.W     D0,D2
                                             AND.L      #mask_ASD_ea_reg_and_mode,D2            ;load the mask into D2 for the mode and the register
 
                                             CMP.L      #match_ASD_An_indir_postinc_r0,D2        ;check reg is equal to 0
@@ -192,7 +196,9 @@ ASD_An_indir_pinc_r7_out			            MOVE.L			#ea_indir_postinc_A7,A1			;load 
 
 													
 ;------------------Address Register Indirect with Pre Decrement-----------------------
-ASD_An_indir_predec_reg               	    CMP.L      #match_ASD_An_indir_predec_r0,D2         ;check reg is equal to 0
+ASD_An_indir_predec_reg               	    CLR.L       D2
+                                            MOVE.W      D0,D2
+                                            CMP.L      #match_ASD_An_indir_predec_r0,D2         ;check reg is equal to 0
                                             BNE        ASD_An_indir_pdec_r1                      ;if ASD try reg 1
                                             BEQ        ASD_An_indir_pdec_r0_out               ;if equal go to output subroutine
 
@@ -277,6 +283,7 @@ ASD_abs_add_long_out    				  MOVE.L      (A0)+,D5                           ;pu
 ;-----------------------------------------------------------------Register Shift-----------------------------------------------------------
 ; determine if the shift is a data register or a immediate value
 ASD_reg_shift                       CLR         D1                              ;clear D1
+                                    MOVE.W      D0,D1
                                     AND.L       #mask_ASD_reg_shift_ir,D1           ;load the mask into D1
                                     CMP.L       #match_ASD_shift_reg,D1             ;check to see if the shift is a data register
 									 BEQ         ASD_shift_reg                       ;if the shift is a register, go to subroutine
@@ -285,6 +292,7 @@ ASD_reg_shift                       CLR         D1                              
 ;i/r = 1, the shift is a Data register                                    
 ; this the subroutine for the data register shift
 ASD_shift_reg                           CLR         D1                              ;clear D1
+                                        MOVE.W      D0,D1
                                         AND.L       #mask_ASD_reg_shift,D1              ;load mask into D1 for bits 11-9
 
 ASD_count_reg0                          CMP.L       #match_ASD_count_reg0,D1            ;check to see if count/shift = 0
@@ -325,7 +333,10 @@ ASD_count_reg7                          CMP.L       #match_ASD_count_reg7,D1    
 ;1-7 = 1-7
 ;0 = 8
 ; this is the subroutine for the immedite value shift
-ASD_count_val                       CMP.L       #match_ASD_count_val0,D1          ;check to see if shift count is 0
+ASD_count_val                       CLR         D1                              ;clear D1
+                                        MOVE.W      D0,D1
+                                        AND.L       #mask_ASD_reg_shift,D1
+                                    CMP.L       #match_ASD_count_val0,D1          ;check to see if shift count is 0
                                     BNE         ASD_count_val1                    ;if ASD 0 check 1
                                     BEQ         ASD_count_val0_out                ;if 0 got to output
 
@@ -359,57 +370,74 @@ ASD_count_val7                      CMP.L       #match_ASD_count_val7,D1        
 
 ;-----------------------------------Count Shift Immedite Value Output---------------------------
 ASD_count_val0_out                MOVE.L			#ea_val0,A1			    ;load string constant into A1
+                                    JSR         print_first
 					    	      JSR               ASD_Dn0	                ;jump to subroutine to determine the second operand
 						      
 ASD_count_val1_out                MOVE.L			#ea_val1,A1			    ;load string constant into A1
+                                    JSR         print_first
 				    		      JSR               ASD_Dn0	                ;jump to subroutine to determine the second operand
 
 ASD_count_val2_out                MOVE.L			#ea_val2,A1			    ;load string constant into A1
+                                    JSR         print_first
 			    			      JSR               ASD_Dn0	                ;jump to subroutine to determine the second operand
 
 ASD_count_val3_out                MOVE.L			#ea_val3,A1			    ;load string constant into A1
+                                    JSR         print_first
 		    				      JSR               ASD_Dn0	                ;jump to subroutine to determine the second operand
 
 ASD_count_val4_out                MOVE.L			#ea_val4,A1			    ;load string constant into A1
+                                    JSR         print_first
 	    					      JSR               ASD_Dn0	                ;jump to subroutine to determine the second operand
     
 ASD_count_val5_out                MOVE.L			#ea_val5,A1			    ;load string constant into A1
+                                    JSR         print_first
 			    			      JSR               ASD_Dn0	                ;jump to subroutine to determine the second operand
 
 ASD_count_val6_out                MOVE.L			#ea_val6,A1			    ;load string constant into A1
+                                    JSR         print_first
 		    				      JSR               ASD_Dn0	                ;jump to subroutine to determine the second operand
 
 ASD_count_val7_out                MOVE.L			#ea_val7,A1			    ;load string constant into A1
+                                    JSR         print_first
 	    					      JSR               ASD_Dn0	                ;jump to subroutine to determine the second operand
 
 ;-------------------------Count Shift Output (Dn)-----------------------------------------
 ASD_count_reg0_out                MOVE.L			#ea_D0,A1			;load string constant into A1
+                                    JSR         print_first
     						      JSR               ASD_Dn0	                ;jump to subroutine to determine the second operand
 						      
 ASD_count_reg1_out                MOVE.L			#ea_D1,A1			;load string constant into A1
+                                    JSR         print_first
 	    					      JSR               ASD_Dn0	                ;jump to subroutine to determine the second operand
 						      
 ASD_count_reg2_out                MOVE.L			#ea_D2,A1			;load string constant into A1
+                                    JSR         print_first
 		    				      JSR               ASD_Dn0	                ;jump to subroutine to determine the second operand
 						      
 ASD_count_reg3_out                MOVE.L			#ea_D3,A1			;load string constant into A1
+                                    JSR         print_first
 			    			      JSR               ASD_Dn0	                ;jump to subroutine to determine the second operand
 						      
 ASD_count_reg4_out                MOVE.L			#ea_D4,A1			;load string constant into A1
+                                    JSR         print_first
 				    		      JSR               ASD_Dn0	                ;jump to subroutine to determine the second operand
 						      
 ASD_count_reg5_out                MOVE.L			#ea_D5,A1			;load string constant into A1
+                                    JSR         print_first
 					    	      JSR               ASD_Dn0	                ;jump to subroutine to determine the second operand
 						      
 ASD_count_reg6_out                MOVE.L			#ea_D6,A1			;load string constant into A1
+                                    JSR         print_first
 						          JSR               ASD_Dn0	                ;jump to subroutine to determine the second operand
 						      
 ASD_count_reg7_out                MOVE.L			#ea_D7,A1			;load string constant into A1
+                                    JSR         print_first
 						          JSR               ASD_Dn0	                ;jump to subroutine to determine the second operand                                    
                                     
                                     
 ;----------------------------------------------Determine Second Operand Data Register-----------------------------------------------------
 ASD_Dn0                         CLR             D1                  ;clear D1
+                                MOVE.W          D0,D1
                                 AND.L           #mask_ASD_data_reg,D1   ;load data register mask for second operand
                                 
                                 CMP.L           #match_ASD_D_reg0,D1          ;check if data register is D0
@@ -559,6 +587,7 @@ match_ASD_An_indir_predec_r4		    	EQU				$001C              ;match for add reg 
 match_ASD_An_indir_predec_r5	    		EQU				$001D              ;match for add reg indir with predec with add reg 5
 match_ASD_An_indir_predec_r6		    	EQU				$001E              ;match for add reg indir with predec with add reg 6
 match_ASD_An_indir_predec_r7		    	EQU				$001F              ;match for add reg indir with predec with add reg 7
+
 
 
 
