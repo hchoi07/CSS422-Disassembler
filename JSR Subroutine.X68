@@ -16,7 +16,9 @@ JSR_add_reg_indir                CMP.L             #match_JSR_An_indir,D1       
                                  BNE               JSR_abs_add_word                                 ;if not, go check add reg indir predec 
                                  BEQ               JSR_An_indir_reg                                  ;if equal go figure out the register           
            
-JSR_abs_add_word                 AND.L             #mask_JSR_abs_add,D2                          ;load mask to determine if abs add word or long
+JSR_abs_add_word                CLR.L           D2
+                                MOVE.W          D0,D2 
+                                AND.L             #mask_JSR_abs_add,D2                          ;load mask to determine if abs add word or long
                                  
                                  CMP.L             #match_JSR_abs_add_word,D2                    ;check if abs add word
                                  MOVE.L            (A0)+,D5                                      ;pull the next word instruction that holds the address 
@@ -143,6 +145,7 @@ match_JSR_An_indir_r4				EQU			$0014
 match_JSR_An_indir_r5				EQU			$0015
 match_JSR_An_indir_r6				EQU			$0016
 match_JSR_An_indir_r7				EQU			$0017
+
 
 
 
