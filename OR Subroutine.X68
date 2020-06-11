@@ -12,7 +12,7 @@
 ;--------------------------------------------------------OR ORroutine-----------------------------------------------------------------------
 OR_sub                                                 ;preserve the registers, 
                                  
-                                       MOVE.L              #mask_OR_opmode,D1                       ;load mask to determine the operOR order
+                                       AND.L              #mask_OR_opmode,D1                       ;load mask to determine the operOR order
                                 
 OR_Dn_ea_match                         CMP.L              #match_OR_b_Dn_ea,D1                 ;check to see if it's Dn,ea
                                        BEQ                OR_Dn_ea                                 ;if equal go figure out data register
@@ -41,7 +41,8 @@ OR_ea_Dn_match_l                       CMP.L              #match_OR_l_ea_Dn,D1  
 *                                               EA,Dn Order                                       
 ;-------------------------------------------------------------------------------------------------------------------------
 OR_ea_Dn                             CLR                D1                                        ;clear D1 to load new mask                                
-                                     MOVE.L             #mask_OR_ea_mode,D1                       ;move the mask to D1
+                                     MOVE.W              D0,D1
+                                     AND.L             #mask_OR_ea_mode,D1                       ;move the mask to D1
 ;--------------Determine EFFECTIVE ADDRESS Mode-----------------------------------                
 OR_ea_Dn_add_reg_indir               CMP.L             #match_OR_An_indir,D1                      ;check to see if mode is add reg indir
                                      BNE               OR_ea_Dn_add_reg_indir_predec              ;if not, go check add reg indir predec 
@@ -55,7 +56,9 @@ OR_ea_Dn_add_reg_indir_postinc       CMP.L             #match_OR_An_indir_postin
                                      BNE               OR_ea_Dn_abs_add_word                      ;if not go check abs add word
                                      BEQ               OR_ea_Dn_An_indir_postinc_reg              ;if equal go figure out the register
 
-OR_ea_Dn_abs_add_word                MOVE.L            #mask_OR_abs_add,D2                        ;load mask to determine if abs add word or long
+OR_ea_Dn_abs_add_word               CLR.L       D2
+                                    MOVE.W      D0,D2
+                                    AND.L            #mask_OR_abs_add,D2                        ;load mask to determine if abs add word or long
                                  
                                      CMP.L             #match_OR_abs_add_word,D2                  ;check if abs add word
                                      MOVE.L            (A0)+,D5                                   ;pull the next word instruction that holds the address
@@ -70,7 +73,9 @@ OR_ea_Dn_abs_add_long                CMP.L             #match_OR_abs_add_long,D2
                                  
                                  
 ;-----------------------------------Data Register Direct--------------------------------
-OR_ea_Dn_Dn_reg                  MOVE.L             #mask_OR_ea_reg_OR_mode,D2             ;load the mask into D2 for the mode OR the register
+OR_ea_Dn_Dn_reg                  CLR.L  D2
+                                 MOVE.W D0,D2
+                                AND.L             #mask_OR_ea_reg_OR_mode,D2             ;load the mask into D2 for the mode OR the register
                                  CMP.L              #match_OR_D0,D2                       ;check to see in the register is 0
                                  BNE                OR_ea_Dn_rD1                                     ;if not go check register 1
                                  BEQ                OR_ea_Dn_D0_out                              ;if equal go to output ORroutine
@@ -104,36 +109,52 @@ OR_ea_Dn_rD7                     CMP.L              #match_OR_D7,D2             
                                  BNE                ERROR                               ;if not equal, got to error message
 ;--------------------Data Register Direct Output-----------------------
 OR_ea_Dn_D0_out                 MOVE.L          #ea_D0,A1							;load string constant into A1
+                                JSR     print_first
                                 JSR             OR_determine_second_op                 ;jump to ORroutine to determine second operOR
-
+                                RTS
+    
 OR_ea_Dn_D1_out                 MOVE.L          #ea_D1,A1							;load string constant into A1
+                                JSR     print_first
                                 JSR             OR_determine_second_op                 ;jump to ORroutine to determine second operOR
-
+                                RTS
 
 OR_ea_Dn_D2_out                 MOVE.L          #ea_D2,A1							;load string constant into A1
+                                JSR     print_first
                                 JSR             OR_determine_second_op                 ;jump to ORroutine to determine second operOR
+                                RTS
 
 OR_ea_Dn_D3_out                 MOVE.L			#ea_D3,A1							;load string constant into A1
+                                JSR     print_first
                                 JSR             OR_determine_second_op                 ;jump to ORroutine to determine second operOR
+                                RTS
 
 
 OR_ea_Dn_D4_out                 MOVE.L			#ea_D4,A1							;load string constant into A1
+                                JSR     print_first
                                 JSR             OR_determine_second_op                 ;jump to ORroutine to determine second operOR
+                                RTS
 
 
 OR_ea_Dn_D5_out                 MOVE.L			#ea_D5,A1							;load string constant into A1
+                                JSR     print_first
                                 JSR             OR_determine_second_op                 ;jump to ORroutine to determine second operOR
-
+                                RTS
 
 OR_ea_Dn_D6_out                 MOVE.L			#ea_D6,A1							;load string constant into A1
+                                JSR     print_first
                                 JSR             OR_determine_second_op                 ;jump to ORroutine to determine second operOR
-
+                                RTS
 
 OR_ea_Dn_D7_out                 MOVE.L			#ea_D7,A1							;load string constant into A1
+                                JSR     print_first
                                 JSR             OR_determine_second_op                 ;jump to ORroutine to determine second operOR
+                                RTS
 
 ;------------------Address Register Direct-----------------------
-OR_ea_Dn_An_reg                  CMP.L           #match_OR_A0,D2                      ;check reg is equal to 0
+OR_ea_Dn_An_reg                  CLR.L  D2
+                                 MOVE.W D0,D2
+                                AND.L             #mask_OR_ea_reg_OR_mode,D2
+                                CMP.L           #match_OR_A0,D2                      ;check reg is equal to 0
                                  BNE             OR_ea_Dn_rA1                         ;if not try reg 1
                                  BEQ             OR_ea_Dn_An_indir_reg0_out           ;if equal go to output ORroutine
 
@@ -167,31 +188,50 @@ OR_ea_Dn_rA7                     CMP.L           #match_OR_A7,D2                
 
 ;--------------------Address Register Direct Output-----------------------
 OR_ea_Dn_A0_out                 MOVE.L			#ea_A0,A1							;load string constant into A1
+                                JSR     print_first
                                 JSR             OR_determine_second_op                 ;jump to ORroutine to determine second operOR
+                                RTS
         						
 OR_ea_Dn_A1_out                 MOVE.L			#ea_A1,A1							;load string constant into A1
+                                JSR     print_first
                                 JSR             OR_determine_second_op                 ;jump to ORroutine to determine second operOR
+                                RTS
         						
 OR_ea_Dn_A2_out                 MOVE.L			#ea_A2,A1							;load string constant into A1
+                                JSR     print_first
                                 JSR             OR_determine_second_op                 ;jump to ORroutine to determine second operOR
+                                RTS
         						
 OR_ea_Dn_A3_out                 MOVE.L			#ea_A3,A1							;load string constant into A1
+                                JSR     print_first
                                 JSR             OR_determine_second_op                 ;jump to ORroutine to determine second operOR
+                                RTS
 
 OR_ea_Dn_A4_out                 MOVE.L			#ea_A4,A1							;load string constant into A1
+                                JSR     print_first
                                 JSR             OR_determine_second_op                 ;jump to ORroutine to determine second operOR
+                                RTS
 
 OR_ea_Dn_A5_out                 MOVE.L			#ea_A5,A1							;load string constant into A1
+                                JSR     print_first
                                 JSR             OR_determine_second_op                 ;jump to ORroutine to determine second operOR
+                                RTS
 
 OR_ea_Dn_A6_out                 MOVE.L			#ea_A6,A1							;load string constant into A1
+                                JSR     print_first
                                 JSR             OR_determine_second_op                 ;jump to ORroutine to determine second operOR
+                                RTS
 
 OR_ea_Dn_A7_out                 MOVE.L			#ea_A7,A1							;load string constant into A1
+                                JSR     print_first
                                 JSR             OR_determine_second_op                 ;jump to ORroutine to determine second operOR
+                                RTS
 
 ;------------------Address Register Indirect-----------------------
-OR_ea_Dn_An_indir_reg            CMP.L          #match_OR_An_indir_r0,D2              ;check reg is equal to 0
+OR_ea_Dn_An_indir_reg            CLR.L  D2
+                                 MOVE.W D0,D2
+                                AND.L             #mask_OR_ea_reg_OR_mode,D2
+                                CMP.L          #match_OR_An_indir_r0,D2              ;check reg is equal to 0
                                  BNE             OR_ea_Dn_An_indir_reg1                           ;if not try reg 1
                                  BEQ             OR_ea_Dn_An_indir_reg0_out                       ;if equal go to output ORroutine
 
@@ -225,31 +265,50 @@ OR_ea_Dn_An_indir_reg7           CMP.L           #match_OR_An_indir_r7,D2       
 
 ;--------------------Address Register Indirect Output-----------------------
 OR_ea_Dn_An_indir_reg0_out			        MOVE.L			#ea_indir_A0,A1		    	        ;load string constant into A1
+                                JSR     print_first
                                             JSR             OR_determine_second_op                 ;jump to ORroutine to determine second operOR
+                                RTS
 
 OR_ea_Dn_An_indir_reg1_out			        MOVE.L			#ea_indir_A1,A1		    		  ;load string constant into A1
+                                JSR     print_first
                                             JSR             OR_determine_second_op                 ;jump to ORroutine to determine second operOR
+                                RTS
 
 OR_ea_Dn_An_indir_reg2_out			        MOVE.L			#ea_indir_A2,A1		    		  ;load string constant into A1
+                                JSR     print_first
                                             JSR             OR_determine_second_op                 ;jump to ORroutine to determine second operOR
+                                RTS
 
 OR_ea_Dn_An_indir_reg3_out			        MOVE.L			#ea_indir_A3,A1		    		  ;load string constant into A1
+                                JSR     print_first
                                             JSR             OR_determine_second_op                 ;jump to ORroutine to determine second operOR
+                                RTS
 
 OR_ea_Dn_An_indir_reg4_out			        MOVE.L			#ea_indir_A4,A1		    		  ;load string constant into A1
+                                JSR     print_first
                                             JSR             OR_determine_second_op                 ;jump to ORroutine to determine second operOR
+                                RTS
 
 OR_ea_Dn_An_indir_reg5_out			        MOVE.L			#ea_indir_A5,A1		    		  ;load string constant into A1
+                                JSR     print_first
                                             JSR             OR_determine_second_op                 ;jump to ORroutine to determine second operOR
+                                RTS
 
 OR_ea_Dn_An_indir_reg6_out			        MOVE.L			#ea_indir_A6,A1		    		  ;load string constant into A1
+                                JSR     print_first
                                             JSR             OR_determine_second_op                 ;jump to ORroutine to determine second operOR
+                                RTS
 								        
 OR_ea_Dn_An_indir_reg7_out			        MOVE.L			#ea_indir_A7,A1		    		  ;load string constant into A1
+                                JSR     print_first
                                             JSR             OR_determine_second_op                 ;jump to ORroutine to determine second operOR
+                                RTS
 
 ;------------------Address Register Indirect with Post Increment-----------------------
-OR_ea_Dn_An_indir_postinc_reg               CMP.L      #match_OR_An_indir_postinc_r0,D2        ;check reg is equal to 0
+OR_ea_Dn_An_indir_postinc_reg               CLR.L  D2
+                                            MOVE.W D0,D2
+                                            AND.L             #mask_OR_ea_reg_OR_mode,D2
+                                            CMP.L      #match_OR_An_indir_postinc_r0,D2        ;check reg is equal to 0
                                             BNE        OR_ea_Dn_An_indir_pinc_r1               ;if not try reg 1
                                             BEQ        OR_ea_Dn_An_indir_pinc_r0_out           ;if equal go to output ORroutine
 
@@ -283,31 +342,50 @@ OR_ea_Dn_An_indir_pinc_r7                   CMP.L      #match_OR_An_indir_postin
 
 ;--------------------Address Register Indirect with Post Increment Output-----------------------
 OR_ea_Dn_An_indir_pinc_r0_out			    MOVE.L			#ea_indir_postinc_A0,A1		    			      ;load string constant into A1
+                                JSR     print_first
                                             JSR             OR_determine_second_op                 ;jump to ORroutine to determine second operOR
+                                RTS
 
 OR_ea_Dn_An_indir_pinc_r1_out			    MOVE.L			#ea_indir_postinc_A1,A1		    			      ;load string constant into A1
+                                JSR     print_first
                                             JSR             OR_determine_second_op                 ;jump to ORroutine to determine second operOR
+                                RTS
 
 OR_ea_Dn_An_indir_pinc_r2_out			    MOVE.L			#ea_indir_postinc_A2,A1		    			      ;load string constant into A1
+                                JSR     print_first
                                             JSR             OR_determine_second_op                 ;jump to ORroutine to determine second operORO
+                                RTS
 
 OR_ea_Dn_An_indir_pinc_r3_out			    MOVE.L			#ea_indir_postinc_A3,A1		    			      ;load string constant into A1
+                                JSR     print_first
                                             JSR             OR_determine_second_op                 ;jump to ORroutine to determine second operOR
+                                RTS
 
 OR_ea_Dn_An_indir_pinc_r4_out			    MOVE.L			#ea_indir_postinc_A4,A1		    			      ;load string constant into A1
+                                JSR     print_first
                                             JSR             OR_determine_second_op                 ;jump to ORroutine to determine second operOR
+                                RTS
 
 OR_ea_Dn_An_indir_pinc_r5_out			    MOVE.L			#ea_indir_postinc_A5,A1		    			      ;load string constant into A1
+                                JSR     print_first
                                             JSR             OR_determine_second_op                 ;jump to ORroutine to determine second operOR
+                                RTS
 
 OR_ea_Dn_An_indir_pinc_r6_out			    MOVE.L			#ea_indir_postinc_A6,A1		    			      ;load string constant into A1
+                                JSR     print_first
                                             JSR             OR_determine_second_op                 ;jump to ORroutine to determine second operOR
+                                RTS
 
 OR_ea_Dn_An_indir_pinc_r7_out			    MOVE.L			#ea_indir_postinc_A7,A1		    			      ;load string constant into A1
+                                JSR     print_first
                                             JSR             OR_determine_second_op                 ;jump to ORroutine to determine second operOR
+                                RTS
 
 ;------------------Address Register Indirect with Pre Decrement-----------------------
-OR_ea_Dn_An_indir_predec                    CMP.L      #match_OR_An_indir_predec_reg0,D2       ;check reg is equal to 0
+OR_ea_Dn_An_indir_predec                    CLR.L  D2
+                                            MOVE.W D0,D2
+                                            AND.L             #mask_OR_ea_reg_OR_mode,D2
+                                            CMP.L      #match_OR_An_indir_predec_reg0,D2       ;check reg is equal to 0
                                             BNE        OR_ea_Dn_An_indir_pdec_r1                      ;if not try reg 1
                                             BEQ        OR_ea_Dn_An_indir_pdec_r0_out               ;if equal go to output ORroutine
 
@@ -341,39 +419,58 @@ OR_ea_Dn_An_indir_pdec_r7                   CMP.L      #match_OR_An_indir_predec
 
 ;--------------------Address Register Indirect with Pre Decrement Output-----------------------
 OR_ea_Dn_An_indir_pdec_r0_out			        MOVE.L			#ea_indir_predec_A0,A1					      ;load string constant into A1
+                                JSR     print_first
                                                 JSR             OR_determine_second_op                 ;jump to ORroutine to determine second operOR
+                                RTS
 											
 OR_ea_Dn_An_indir_pdec_r1_out			        MOVE.L			#ea_indir_predec_A1,A1						;load string constant into A1
+                                JSR     print_first
                                                 JSR             OR_determine_second_op                 ;jump to ORroutine to determine second operOR
+                                RTS
 
 OR_ea_Dn_An_indir_pdec_r2_out		    	    MOVE.L			#ea_indir_predec_A2,A1						;load string constant into A1
+                                JSR     print_first
                                                 JSR             OR_determine_second_op                 ;jump to ORroutine to determine second operOR
+                                RTS
 
 OR_ea_Dn_An_indir_pdec_r3_out	    		    MOVE.L			#ea_indir_predec_A3,A1						;load string constant into A1
+                                JSR     print_first
                                                 JSR             OR_determine_second_op                 ;jump to ORroutine to determine second operOR
+                                RTS
 
 OR_ea_Dn_An_indir_pdec_r4_out   			    MOVE.L			#ea_indir_predec_A4,A1						;load string constant into A1
+                                JSR     print_first
                                                 JSR             OR_determine_second_op                 ;jump to ORroutine to determine second operOR
+                                RTS
 
 OR_ea_Dn_An_indir_pdec_r5_out		    	    MOVE.L			#ea_indir_predec_A5,A1						;load string constant into A1
+                                JSR     print_first
                                                 JSR             OR_determine_second_op                 ;jump to ORroutine to determine second operOR
+                                RTS
 
 OR_ea_Dn_An_indir_pdec_r6_out	    		    MOVE.L			#ea_indir_predec_A6,A1						;load string constant into A1
+                                JSR     print_first
                                                 JSR             OR_determine_second_op                 ;jump to ORroutine to determine second operOR
+                                RTS
 
 OR_ea_Dn_An_indir_pdec_r7_out   			    MOVE.L			#ea_indir_predec_A7,A1						;load string constant into A1
+                                JSR     print_first
                                                 JSR             OR_determine_second_op                 ;jump to ORroutine to determine second operOR
+                                RTS
         
 ;------------------Absolute Addressing Output-----------------------
 OR_ea_Dn_abs_add_word_out				  MOVE.L      #ea_$,(A1)+                         ;load $ for hex OR increment A1
                                           MOVE.L      D5,(A1)+                           ;load address                  
-                                          JSR         OR_determine_second_op                 ;jump to ORroutine to determine second operOR
-                                           
+                                        JSR  print_first 
+                                         JSR         OR_determine_second_op                 ;jump to ORroutine to determine second operOR
+                                RTS                                           
 
 OR_ea_Dn_abs_add_long_out    			 MOVE.L      (A0)+,D5                           ;pull the next long instruction that holds the address
                                          MOVE.L      #ea_$,(A1)+                         ;load $ for hex OR increment A1
                                          MOVE.L      D5,(A1)+                           ;load address                  
+                                        JSR     print_first
                                          JSR         OR_determine_second_op                 ;jump to ORroutine to determine second operOR
+                                RTS
 
 ;---------------Immediate Addresing---------------------------
 OR_ea_Dn_immediate_add_out          MOVE.L		(A0)+,D5                             ;capture the immediate address
@@ -384,16 +481,19 @@ OR_ea_Dn_immediate_add_out          MOVE.L		(A0)+,D5                            
 										 
 OR_ea_Dn_imm_add_w                  MOVE.L     #ea_$,(A1)+                          ;load the $
                                     MOVE.W     D5,(A1)+                             ;load the word address                           
+                                JSR     print_first
                                     JSR        OR_determine_second_op                 ;jump to ORroutine to determine second operOR
                                          
 OR_ea_Dn_imm_add_l                  MOVE.L     (A0)+,D5                             ;pull the long OR increase the pointer
                                     MOVE.L     #ea_$,(A1)+                          ;load the $
                                     MOVE.L     D5,A1                               ;move to A1
+                                JSR     print_first
                                     JSR        OR_determine_second_op                 ;jump to ORroutine to determine second operOR
 
 ;---------------------------------Determine Register----------------------------------------------------------------------------------------
-OR_determine_second_op							CLR.L		D2							;clear D2 
-												OR.L		#mask_OR_An_reg,D2		;load the mask for the register into D2, masks bit 11-9
+OR_determine_second_op							CLR.L  D2
+                                                MOVE.W D0,D2
+												AND.L		#mask_OR_An_reg,D2		;load the mask for the register into D2, masks bit 11-9
 												
 ea_Dn_OR_reg0									CMP.L		#match_OR_reg0,D2		;check to see if reg equal 0
 												BNE			ea_Dn_OR_reg1					;if not equal got check reg 1
@@ -501,7 +601,8 @@ ea_Dn_OR_reg7_out			                    MOVE.L			#ea_D7,A1		               	;loa
 ;------------------------------------------------------------------------------------------------------------------------------------------                                              
 ;---------------------------------Determine Register----------------------------------------------------------------------------------------
 OR_Dn_ea       								    CLR.L		D2							      ;clear D2 
-												MOVE.L		#mask_OR_An_reg,D2		      ;load the mask for the register into D2, masks bit 11-9
+                                                MOVE.W      D0,D2
+												AND.L		#mask_OR_An_reg,D2		      ;load the mask for the register into D2, masks bit 11-9
 												
 Dn_ea_OR_reg0   								CMP.L		#match_OR_reg0,D2		            ;check to see if reg equal 0
 												BNE			Dn_ea_OR_reg1					;if not equal got check reg 1
@@ -538,31 +639,48 @@ Dn_ea_OR_reg7								    CMP.L		#match_OR_reg7,D2		            ;check to see if 
 
 ;--------------------Data Output-----------------------
 Dn_ea_OR_reg0_out		      MOVE.L			#ea_D0,A1					                       ;load string constant into A1
+                                JSR     print_first
                               JSR               OR_determine_second_operand                 ;jump to ORroutine to determine second operOR
+                                RTS
 											
 Dn_ea_OR_reg1_out		      MOVE.L			#ea_D1,A1				                		;load string constant into A1
+                                JSR     print_first
                               JSR               OR_determine_second_operand                 ;jump to ORroutine to determine second operOR
+                                RTS
                                             
 Dn_ea_OR_reg2_out		      MOVE.L			#ea_D2,A1				                		;load string constant into A1
+                                JSR     print_first
                               JSR               OR_determine_second_operand                 ;jump to ORroutine to determine second operOR
+                                RTS
                                             
 Dn_ea_OR_reg3_out		      MOVE.L			#ea_D3,A1				                        	;load string constant into A1
+                                JSR     print_first
                               JSR               OR_determine_second_operand                 ;jump to ORroutine to determine second operOR
+                                RTS
                                             
 Dn_ea_OR_reg4_out		      MOVE.L			#ea_D4,A1				                    		;load string constant into A1
+                                JSR     print_first
                               JSR               OR_determine_second_operand                 ;jump to ORroutine to determine second operOR
+                                RTS
                                                 
 Dn_ea_OR_reg5_out		      MOVE.L			#ea_D5,A1					                     	;load string constant into A1
+                                JSR     print_first
                               JSR               OR_determine_second_operand                 ;jump to ORroutine to determine second operOR
+                                RTS
                                             
 Dn_ea_OR_reg6_out		      MOVE.L			#ea_D6,A1					                    	;load string constant into A1
+                                JSR     print_first
                               JSR               OR_determine_second_operand                 ;jump to ORroutine to determine second operOR
+                                RTS
                                             
 Dn_ea_OR_reg7_out    	      MOVE.L			#ea_D7,A1					                    	;load string constant into A1
+                                JSR     print_first
                               JSR               OR_determine_second_operand                 ;jump to ORroutine to determine second operOR
+                                RTS
                                             
 ;------------------------------------------------------Determine Second OperOR----------------------------------------------------------------
 OR_determine_second_operand      CLR               D1                                            ;clear D1 to load new mask                                
+                                 MOVE.W             D0,D1
                                  MOVE.L             #mask_OR_ea_mode,D1                        ;move the mask to D1
 ;--------------Determine EFFECTIVE ADDRESS Mode-----------------------------------                
 OR_Dn_ea_add_reg_indir           CMP.L             #match_OR_An_indir,D1                      ;check to see if mode is add reg indir
@@ -592,7 +710,9 @@ OR_Dn_ea_abs_add_long            CMP.L             #match_OR_abs_add_long,D2    
                                  
                                  
 ;------------------Address Register Indirect-----------------------
-OR_Dn_ea_An_indir_reg            MOVE.L          #mask_OR_ea_reg_OR_mode,D2         ;load the mask into D2 for the mode OR the register
+OR_Dn_ea_An_indir_reg            CLR.L          D2
+                                 MOVE.W         D0,D2
+                                AND.L          #mask_OR_ea_reg_OR_mode,D2         ;load the mask into D2 for the mode OR the register
                                  CMP.L           #match_OR_An_indir_r0,D2              ;check reg is equal to 0
                                  BNE             OR_Dn_ea_An_indir_reg1                           ;if not try reg 1
                                  BEQ             OR_Dn_ea_An_indir_reg0_out                       ;if equal go to output ORroutine
@@ -659,7 +779,10 @@ OR_Dn_ea_An_indir_reg7_out			MOVE.L			#ea_indir_A7,A1		    		  ;load string cons
                                     RTS
 
 ;------------------Address Register Indirect with Post Increment-----------------------
-OR_Dn_ea_An_indir_postinc_reg               CMP.L      #match_OR_An_indir_postinc_r0,D2                 ;check reg is equal to 0
+OR_Dn_ea_An_indir_postinc_reg               CLR.L          D2
+                                            MOVE.W         D0,D2
+                                            AND.L          #mask_OR_ea_reg_OR_mode,D2 
+                                            CMP.L      #match_OR_An_indir_postinc_r0,D2                 ;check reg is equal to 0
                                             BNE        OR_Dn_ea_An_indir_pinc_r1                      ;if not try reg 1
                                             BEQ        OR_Dn_ea_An_indir_pinc_r0_out                  ;if equal go to output ORroutine
 
@@ -725,7 +848,10 @@ OR_Dn_ea_An_indir_pinc_r7_out	        MOVE.L			#ea_indir_postinc_A7,A1		    			 
                                         RTS
 
 ;------------------Address Register Indirect with Pre Decrement-----------------------
-OR_Dn_ea_An_indir_predec                    CMP.L      #match_OR_An_indir_predec_reg0,D2       ;check reg is equal to 0
+OR_Dn_ea_An_indir_predec                    CLR.L          D2
+                                            MOVE.W         D0,D2
+                                            AND.L          #mask_OR_ea_reg_OR_mode,D2 
+                                            CMP.L      #match_OR_An_indir_predec_reg0,D2       ;check reg is equal to 0
                                             BNE        OR_Dn_ea_An_indir_pdec_r1                      ;if not try reg 1
                                             BEQ        OR_Dn_ea_An_indir_pdec_r0_out               ;if equal go to output ORroutine
 
@@ -886,6 +1012,8 @@ match_OR_reg4							EQU			$0800
 match_OR_reg5							EQU			$0A00
 match_OR_reg6							EQU			$0C00
 match_OR_reg7							EQU			$0E00
+
+
 
 
 
