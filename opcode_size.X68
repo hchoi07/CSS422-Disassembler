@@ -102,10 +102,10 @@ movem_rm_size:
         BNE         MOVEM_rm_L 
         LEA         opcode_MOVEMW,A1    *move the value for printing
         MOVE.B      #word_size,D6
-        JSR         print_string_op_nn  *print the opcode
+        JSR         print_string_op_nl  *print the opcode
         MOVE.W      D0,D1               *reload the opcode into D1
-        JSR         MOVEM_sub
-        JSR         print_ea
+        *JSR         MOVEM_sub
+        *JSR         print_ea
         BRA         MOVEM_rm_END
         
         *test for long size
@@ -114,10 +114,10 @@ MOVEM_rm_L
         BNE         MOVEM_rm_FAIL
         LEA         opcode_MOVEML,A1
         MOVE.B      #long_size,D6
-        JSR         print_string_op_nn  *print the opcode
+        JSR         print_string_op_nl  *print the opcode
         MOVE.W      D0,D1               *reload the opcode into D1
-        JSR         MOVEM_sub
-        JSR         print_ea
+        *JSR         MOVEM_sub
+        *JSR         print_ea
         BRA         MOVEM_rm_END
         
 MOVEM_rm_FAIL 
@@ -143,10 +143,10 @@ movem_mr_size:
         BNE         MOVEM_mr_L
         LEA         opcode_MOVEMW,A1    *move the value for printing
         MOVE.B      #word_size,D6
-        JSR         print_string_op_nn  *print the opcode
+        JSR         print_string_op_nl  *print the opcode
         MOVE.W      D0,D1               *reload the opcode into D1
-        JSR         MOVEM_sub
-        JSR         print_ea
+        *JSR         MOVEM_sub
+        *JSR         print_ea
         BRA         MOVEM_mr_END
         
         *test for long size
@@ -155,10 +155,10 @@ MOVEM_mr_L
         BNE         MOVEM_mr_FAIL
         LEA         opcode_MOVEML,A1
         MOVE.B      #long_size,D6
-        JSR         print_string_op_nn  *print the opcode
+        JSR         print_string_op_nl  *print the opcode
         MOVE.W      D0,D1               *reload the opcode into D1
-        JSR         MOVEM_sub
-        JSR         print_ea
+        *JSR         MOVEM_sub
+        *JSR         print_ea
         BRA         MOVEM_mr_END
         
 MOVEM_mr_FAIL 
@@ -1280,6 +1280,9 @@ MOVEQ_FAIL
 MOVEQ_END 
         MOVEM.L     (SP)+, D0-D5/D7/A0-A6
         RTS
+
+
+
 
 
 

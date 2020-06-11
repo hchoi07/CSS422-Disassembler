@@ -14,7 +14,9 @@ LEA_add_reg_indir                CMP.L             #match_LEA_An_indir,D1       
                                  BNE               LEA_abs_add_word                             ;if not, go check add reg indir predec 
                                  BEQ               LEA_An_indir_reg                             ;if equal go figure out the register           
            
-LEA_abs_add_word                 AND.L             #mask_LEA_abs_add,D2                         ;load mask to determine if abs add word or long
+LEA_abs_add_word                CLR.L       D2
+                                MOVE.W      D0,D2 
+                                AND.L             #mask_LEA_abs_add,D2                         ;load mask to determine if abs add word or long
                                  
                                  CMP.L             #match_LEA_abs_add_word,D2                   ;check if abs add word
                                  MOVE.L            (A0)+,D5                                     ;pull the next word instruction that holds the address
@@ -29,7 +31,9 @@ LEA_abs_add_long                 CMP.L             #match_LEA_abs_add_long,D2   
                                 
                                
 ;------------------Address Register Indirect-----------------------
-LEA_An_indir_reg                 AND.L           #mask_LEA_ea_reg_and_mode,D2                       ;load the mask into D2 for the mode and the register 
+LEA_An_indir_reg                 CLR.L      D2
+                                MOVE.W      D0,D2
+                                AND.L           #mask_LEA_ea_reg_and_mode,D2                       ;load the mask into D2 for the mode and the register 
                                  CMP.L           #match_LEA_An_indir_r0,D2              ;check reg is equal to 0
                                  BNE             LEA_An_indir_reg1                           ;if not try reg 1
                                  BEQ             LEA_An_indir_reg0_out                       ;if equal go to output subroutine
@@ -65,28 +69,35 @@ LEA_An_indir_reg7                CMP.L           #match_LEA_An_indir_r7,D2      
 ;--------------------Address Register Indirect Output-----------------------
 LEA_An_indir_reg0_out			        MOVE.L			#ea_indir_A0,A1		    	        ;load string constant into A1
                                         JSR             LEA_determine_second_op                 ;jump to subroutine to determine second operand
+                                        RTS
 
 LEA_An_indir_reg1_out			        MOVE.L			#ea_indir_A1,A1		    		  ;load string constant into A1
                                         JSR             LEA_determine_second_op                 ;jump to subroutine to determine second operand
+                                        RTS
 
 LEA_An_indir_reg2_out			        MOVE.L			#ea_indir_A2,A1		    		  ;load string constant into A1
                                         JSR             LEA_determine_second_op                 ;jump to subroutine to determine second operand
+                                        RTS
 
 LEA_An_indir_reg3_out			        MOVE.L			#ea_indir_A3,A1		    		  ;load string constant into A1
                                         JSR             LEA_determine_second_op                 ;jump to subroutine to determine second operand
+                                        RTS
 
 LEA_An_indir_reg4_out			        MOVE.L			#ea_indir_A4,A1		    		  ;load string constant into A1
                                         JSR             LEA_determine_second_op                 ;jump to subroutine to determine second operand
+                                        RTS
 
 LEA_An_indir_reg5_out			        MOVE.L			#ea_indir_A5,A1		    		  ;load string constant into A1
                                         JSR             LEA_determine_second_op                 ;jump to subroutine to determine second operand
+                                        RTS
 
 LEA_An_indir_reg6_out			        MOVE.L			#ea_indir_A6,A1		    		  ;load string constant into A1
                                         JSR             LEA_determine_second_op                 ;jump to subroutine to determine second operand
+                                        RTS
 								        
 LEA_An_indir_reg7_out			        MOVE.L			#ea_indir_A7,A1		    		  ;load string constant into A1
                                         JSR             LEA_determine_second_op                 ;jump to subroutine to determine second operand
-
+                                        RTS
 ;------------------Absolute Addressing Output-----------------------
 LEA_abs_add_word_out					 MOVE.L      #ea_$,(A1)+                         ;load $ for hex and increment A1
                                          MOVE.L      D5,(A1)+                           ;load address                  
@@ -100,6 +111,7 @@ LEA_abs_add_long_out    	    		 MOVE.L      (A0)+,D5                           ;
                                               
 ;---------------------------------Determine Register----------------------------------------------------------------------------------------
 LEA_determine_second_op  						CLR.L		D2												;clear D2 
+                                                MOVE.W      D0,D2
 												AND.L		#mask_LEA_An_reg,D2								;load the mask for the register into D2, masks bit 11-9
 												
 LEA_reg0										CMP.L		#match_LEA_reg0,D2								;check to see if reg equal 0
@@ -198,6 +210,8 @@ match_LEA_reg4							EQU			$0800
 match_LEA_reg5							EQU			$0A00
 match_LEA_reg6							EQU			$0C00
 match_LEA_reg7							EQU			$0E00
+
+
 
 
 

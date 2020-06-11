@@ -50,27 +50,35 @@ ADDQ_reg7						CMP.L		#match_ADDQ_reg7,D2								;check to see if reg equal 7
 
 ;--------------------Data Output-----------------------
 ADDQ_reg0_out			                    MOVE.L      #ea_data0,A1					           ;load string constant into A1
+                                            JSR         print_first
 											JSR         ADDQ_determine_second_operand                ;jump to subroutine to determine the second operand
 											
 ADDQ_reg1_out			                    MOVE.L      #ea_data1,A1			    			;load string constant into A1
+                                            JSR         print_first
 											JSR         ADDQ_determine_second_operand                 ;jump to subroutine to determine the second operand
 
 ADDQ_reg2_out			                    MOVE.L      #ea_data2,A1				        		;load string constant into A1
+                                            JSR         print_first
 											JSR         ADDQ_determine_second_operand                 ;jump to subroutine to determine the second operand
 
 ADDQ_reg3_out			                    MOVE.L      #ea_data3,A1				    	        	;load string constant into A1
+                                            JSR         print_first
 											JSR         ADDQ_determine_second_operand                 ;jump to subroutine to determine the second operand
  
 ADDQ_reg4_out			                    MOVE.L      #ea_data4,A1			    			;load string constant into A1
+                                            JSR         print_first
 											JSR         ADDQ_determine_second_operand                 ;jump to subroutine to determine the second operand
 
 ADDQ_reg5_out			                    MOVE.L      #ea_data5,A1		    				;load string constant into A1
+                                            JSR         print_first
 											JSR         ADDQ_determine_second_operand                 ;jump to subroutine to determine the second operand
 
 ADDQ_reg6_out			                    MOVE.L      #ea_data6,A1	    					;load string constant into A1
+                                            JSR         print_first
 											JSR         ADDQ_determine_second_operand                 ;jump to subroutine to determine the second operand
 
 ADDQ_reg7_out			                    MOVE.L      #ea_data7,A1    						;load string constant into A1
+                                            JSR         print_first
 											JSR         ADDQ_determine_second_operand                 ;jump to subroutine to determine the second operand
 				
 
@@ -112,7 +120,7 @@ ADDQ_abs_add_long                CMP.L             #match_ADDQ_abs_add_long,D2  
                                  
 ;-----------------------------------Data Register Direct--------------------------------
 ADDQ_Dn_reg                      CLR.L  D2
-                                 MOVE.W 
+                                 MOVE.W D0,D2
                                  AND.L              #mask_ADDQ_ea_reg_and_mode,D2                       ;load the mask into D2 for the mode and the register
                                  CMP.L              #match_ADDQ_D0,D2                       ;check to see in the register is 0
                                  BNE                ADDQ_rD1                                     ;if not go check register 1
@@ -185,7 +193,7 @@ ADDQ_D7_out                     MOVE.L              #ea_D7,A1							;load string
 
 ;------------------Address Register Direct-----------------------
 ADDQ_An_reg                      CLR.L  D2
-                                 MOVE.W 
+                                 MOVE.W D0,D2
                                  AND.L              #mask_ADDQ_ea_reg_and_mode,D2
                                 CMP.L           #match_ADDQ_A0,D2                           ;check reg is equal to 0
                                  BNE             ADDQ_rA1                                    ;if not try reg 1
@@ -254,7 +262,7 @@ ADDQ_A7_out                          MOVE.L      #ea_A7,A1							;load string co
 
 ;------------------Address Register Indirect-----------------------
 ADDQ_An_indir_reg                CLR.L  D2
-                                 MOVE.W 
+                                 MOVE.W D0,D2
                                  AND.L              #mask_ADDQ_ea_reg_and_mode,D2
                                 CMP.L           #match_ADDQ_An_indir_r0,D2              ;check reg is equal to 0
                                  BNE             ADDQ_An_indir_reg1                      ;if not try reg 1
@@ -323,7 +331,7 @@ ADDQ_An_indir_reg7_out			            MOVE.L      #ea_indir_A7,A1		    			      ;
 
 ;------------------Address Register Indirect with Post Increment-----------------------
 ADDQ_An_indir_pinc_reg                      CLR.L  D2
-                                         MOVE.W 
+                                         MOVE.W D0,D2
                                         AND.L              #mask_ADDQ_ea_reg_and_mode,D2
                                             CMP.L      #match_ADDQ_An_indir_postinc_reg0,D2            ;check reg is equal to 0
                                             BNE        ADDQ_An_indir_pinc_r1                           ;if not try reg 1
@@ -392,7 +400,7 @@ ADDQ_An_indir_pinc_r7_out	    		        MOVE.L      #ea_indir_postinc_A7,A1		   
 
 ;------------------Address Register Indirect with Pre Decrement-----------------------
 ADDQ_An_indir_predec                       	CLR.L  D2
-                                         MOVE.W 
+                                         MOVE.W D0,D2
                                          AND.L              #mask_ADDQ_ea_reg_and_mode,D2
                                             CMP.L      #match_ADDQ_An_indir_predec_reg0,D2           ;check reg is equal to 0
                                             BNE        ADDQ_An_indir_pdec_r1                         ;if not try reg 1
@@ -541,6 +549,7 @@ match_ADDQ_reg4							EQU			$0800
 match_ADDQ_reg5							EQU			$0A00
 match_ADDQ_reg6							EQU			$0C00
 match_ADDQ_reg7							EQU			$0E00
+
 
 
 

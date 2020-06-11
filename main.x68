@@ -24,7 +24,7 @@ run_prog    JSR     io_subroutine
             INCLUDE 'JSR Subroutine.x68'
             INCLUDE 'LEA Subroutine.x68'
             INCLUDE 'MOVE Subroutine.x68'
-            INCLUDE 'MOVEM Subroutine.x68'
+            *INCLUDE 'MOVEM Subroutine.x68'
             INCLUDE 'SUB Subroutine.x68'
             INCLUDE 'LSD Subroutine.x68'
             INCLUDE 'MOVEA Subroutine.x68'
@@ -39,6 +39,7 @@ run_prog    JSR     io_subroutine
 
 STOP:
     END    MAIN
+
 
 
 
