@@ -12,16 +12,18 @@
 * after that the data register is decoded and added to the print register
 *-----------------------------------------------------------
 
-LSD_sub                                          ;preserve the registers,\ 
-                                 
+LSD_sub                                       
 ;------------------------Determine Shift Type-----------------------------------------------------------------
-LSD_shift_type                   AND.L              #mask_LSD_shift_type,D1                 ;load mask into D1
+LSD_shift_type                   CLR.L              D1
+                                 MOVE.W             D0,D1
+                                 AND.L              #mask_LSD_shift_type,D1                 ;load mask into D1
                                  CMP.L              #match_LSD_mem_shift,D1                 ;check to see if memory shift
                                  BEQ                LSD_mem_shift                               ;if equal go to mem shift subroutine
                                  BNE                LSD_reg_shift                               ;if LSD mem shift, go to reg shift
 
 ;--------------Determine EFFECTIVE ADDRESS Mode-------------MEMORY SHIFT-----------------------------------                
 LSD_mem_shift                    CLR               D1                                        ;clear shift mask
+                                 MOVE.W            D0,D1
                                  AND.L             #mask_LSD_ea_mode,D1                      ;move the mask to D1
 
 LSD_An_indir                     CMP.L             #match_LSD_An_indir,D1                    ;check to see if mode is add reg indir
@@ -36,7 +38,9 @@ LSD_An_indir_predec              CMP.L             #match_LSD_An_indir_predec,D1
                                  BNE               LSD_abs_add_word                              ;if LSD go check abs add word
                                  BEQ               LSD_An_indir_predec_reg                       ;if equal go figure out the register
 
-LSD_abs_add_word                 AND.L             #mask_LSD_ea_mode_abs_add,D2              ;load mask to determine if abs add word or long
+LSD_abs_add_word                 CLR.L             D2
+                                 MOVE.W            D0,D2
+                                 AND.L             #mask_LSD_ea_mode_abs_add,D2              ;load mask to determine if abs add word or long
                                  
                                  CMP.L             #match_LSD_abs_add_word,D2                ;check if abs add word
                                  MOVE.L            (A0)+,D5                                  ;pull the next word instruction that holds the address 
@@ -51,8 +55,9 @@ LSD_abs_add_long                 CMP.L             #match_LSD_abs_add_long,D2   
 ;--------------------Determine EFFECTIVE ADDRESS Register----------------------------------------------------------------------------------------
                                             
 ;------------------Address Register Indirect-----------------------
-LSD_An_indir_reg                            CLR                D2                                      ;make sure D2 is empty
-                                            AND.L              #mask_LSD_ea_reg_and_mode,D2            ;load the mask into D2 for the mode and the register
+LSD_An_indir_reg                            CLR             D2                                      ;make sure D2 is empty
+                                            MOVE.W          D0,D2
+                                            AND.L           #mask_LSD_ea_reg_and_mode,D2            ;load the mask into D2 for the mode and the register
 
                                             CMP.L           #match_LSD_An_indir_r0,D2              ;check reg is equal to 0
                                             BNE             LSD_An_indir_reg1                            ;if LSD try reg 1
@@ -88,40 +93,43 @@ LSD_An_indir_reg7                           CMP.L           #match_LSD_An_indir_
 
 ;--------------------Address Register Indirect Output-----------------------
 LSD_An_indir_reg0_out			        MOVE.L			#ea_indir_A0,A1							;load string constant into A1
-                                     
+                                        JSR             print_first
 								        RTS												            ;return to subroutine
 									
 LSD_An_indir_reg1_out			        MOVE.L			#ea_indir_A1,A1							;load string constant into A1
-                                     
+                                        JSR             print_first                                     
 								        RTS												            ;return to subroutine
 											
 LSD_An_indir_reg2_out		            MOVE.L			#ea_indir_A2,A1							;load string constant into A1
-                                     
-							        	RTS							        					;return to subroutine
+                                        JSR             print_first
+         					        	RTS							        					;return to subroutine
 
 LSD_An_indir_reg3_out		            MOVE.L			#ea_indir_A3,A1							;load string constant into A1
-                                     
+                                        JSR             print_first                                     
     					            	RTS									        			;return to subroutine
 											
 LSD_An_indir_reg4_out		            MOVE.L			#ea_indir_A4,A1							;load string constant into A1
-                                     
-						        		RTS											            	;return to subroutine
+                                        JSR             print_first
+                                        RTS											            	;return to subroutine
 										
 LSD_An_indir_reg5_out			        MOVE.L			#ea_indir_A5,A1							;load string constant into A1
-                                     
+                                        JSR             print_first                                     
 								        RTS			        									;return to subroutine
 
 LSD_An_indir_reg6_out			        MOVE.L			#ea_indir_A6,A1		    			      ;load string constant into A1
-                                     
+                                        JSR             print_first                                     
 								        RTS										            		;return to subroutine
 
 LSD_An_indir_reg7_out			        MOVE.L			#ea_indir_A7,A1		    			      ;load string constant into A1
-                                     
+                                        JSR             print_first                                     
 								        RTS										            		;return to subroutine
 
 ;------------------Address Register Indirect with Post Increment-----------------------
-LSD_An_indir_postinc_reg                    CMP.L      #match_LSD_An_indir_postinc_r0,D2        ;check reg is equal to 0
-
+LSD_An_indir_postinc_reg                    CLR        D2                                      ;make sure D2 is empty
+                                            MOVE.W     D0,D2
+                                            AND.L      #mask_LSD_ea_reg_and_mode,D2            ;load the mask into D2 for the mode and the register
+                                            
+                                            CMP.L      #match_LSD_An_indir_postinc_r0,D2        ;check reg is equal to 0
                                             BNE        LSD_An_indir_pinc_r1                      ;if LSD try reg 1
                                             BEQ        LSD_An_indir_pinc_r0_out               ;if equal go to output subroutine
 
@@ -153,41 +161,45 @@ LSD_An_indir_pinc_r7                        CMP.L      #match_LSD_An_indir_posti
                                             BNE        ERROR                                        :if LSD equal to an addresssing mode, pritn error
 
 ;--------------------Address Register Indirect with Post Increment Output-----------------------
-LSD_An_indir_pinc_r0_out		        	MOVE.L			#ea_indir_postinc_A1,A1							;load string constant into A1
-                                     
+LSD_An_indir_pinc_r0_out		        	MOVE.L			#ea_indir_postinc_A1,A1							;load string constant into A1                                     
+											JSR             print_first
+                                            RTS												;return to subroutine
+
+LSD_An_indir_pinc_r1_out		        	MOVE.L			#ea_indir_postinc_A1,A1							;load string constant into A1                                     
+											JSR             print_first
 											RTS												;return to subroutine
 
-LSD_An_indir_pinc_r1_out		        	MOVE.L			#ea_indir_postinc_A1,A1							;load string constant into A1
-                                     
+LSD_An_indir_pinc_r2_out		        	MOVE.L			#ea_indir_postinc_A2,A1							;load string constant into A1                                     
+											JSR             print_first
 											RTS												;return to subroutine
 
-LSD_An_indir_pinc_r2_out		        	MOVE.L			#ea_indir_postinc_A2,A1							;load string constant into A1
-                                     
+LSD_An_indir_pinc_r3_out		        	MOVE.L			#ea_indir_postinc_A3,A1							;load string constant into A1                                     
+											JSR             print_first
 											RTS												;return to subroutine
 
-LSD_An_indir_pinc_r3_out		        	MOVE.L			#ea_indir_postinc_A3,A1							;load string constant into A1
-                                     
-											RTS												;return to subroutine
-
-LSD_An_indir_pinc_r4_out		          	MOVE.L			#ea_indir_postinc_A4,A1							;load string constant into A1
-                                     
+LSD_An_indir_pinc_r4_out		          	MOVE.L			#ea_indir_postinc_A4,A1							;load string constant into A1                                     
+											JSR             print_first
 								  			RTS												;return to subroutine
 
-LSD_An_indir_pinc_r5_out			        MOVE.L			#ea_indir_postinc_A5,A1							;load string constant into A1
-                                     
+LSD_An_indir_pinc_r5_out			        MOVE.L			#ea_indir_postinc_A5,A1							;load string constant into A1                                     
+											JSR             print_first
 											RTS												;return to subroutine
  
-LSD_An_indir_pinc_r6_out			        MOVE.L			#ea_indir_postinc_A6,A1							;load string constant into A1
-                                     
+LSD_An_indir_pinc_r6_out			        MOVE.L			#ea_indir_postinc_A6,A1							;load string constant into A1                                     
+											JSR             print_first
 											RTS												;return to subroutine
 
-LSD_An_indir_pinc_r7_out			        MOVE.L			#ea_indir_postinc_A7,A1							;load string constant into A1
-                                     
+LSD_An_indir_pinc_r7_out			        MOVE.L			#ea_indir_postinc_A7,A1							;load string constant into A1                                     
+											JSR             print_first
 											RTS												;return to subroutine
 
 													
 ;------------------Address Register Indirect with Pre Decrement-----------------------
-LSD_An_indir_predec_reg                  	CMP.L      #match_LSD_An_indir_predec_r0,D2         ;check reg is equal to 0
+LSD_An_indir_predec_reg                  	CLR        D2                                      ;make sure D2 is empty
+                                            MOVE.W     D0,D2
+                                            AND.L      #mask_LSD_ea_reg_and_mode,D2            ;load the mask into D2 for the mode and the register
+                                            
+                                            CMP.L      #match_LSD_An_indir_predec_r0,D2         ;check reg is equal to 0
                                             BNE        LSD_An_indir_pdec_r1                      ;if LSD try reg 1
                                             BEQ        LSD_An_indir_pdec_r0_out               ;if equal go to output subroutine
 
@@ -221,55 +233,57 @@ LSD_An_indir_pdec_r7                        CMP.L      #match_LSD_An_indir_prede
 
 ;--------------------Address Register Indirect with Pre Decrement Output-----------------------
 LSD_An_indir_pdec_r0_out			        MOVE.L			#ea_indir_predec_A0,A1							;load string constant into A1
-                                     
+                                            JSR             print_first                                     
 											RTS														;return to subroutine
 
 LSD_An_indir_pdec_r1_out			        MOVE.L			#ea_indir_predec_A1,A1							;load string constant into A1
-                                     
+                                            JSR             print_first                                     
 											RTS														;return to subroutine
 													
 LSD_An_indir_pdec_r2_out			        MOVE.L			#ea_indir_predec_A2,A1							;load string constant into A1
-                                     
+                                            JSR             print_first                                     
 											RTS														;return to subroutine
 
 LSD_An_indir_pdec_r3_out			        MOVE.L			#ea_indir_predec_A3,A1							;load string constant into A1
-                                     
+                                            JSR             print_first                                     
 											RTS														;return to subroutine
 
 LSD_An_indir_pdec_r4_out			        MOVE.L			#ea_indir_predec_A4,A1							;load string constant into A1
-                                     
+                                            JSR             print_first                                     
 											RTS														;return to subroutine
 	
 LSD_An_indir_pdec_r5_out		        	MOVE.L			#ea_indir_predec_A5,A1							;load string constant into A1
-                                     
+                                            JSR             print_first                                     
 											RTS														;return to subroutine
 	
 LSD_An_indir_pdec_r6_out		        	MOVE.L			#ea_indir_predec_A6,A1							;load string constant into A1
-                                     
+                                            JSR             print_first                                     
 											RTS														;return to subroutine
 
 LSD_An_indir_pdec_r7_out		        	MOVE.L			#ea_indir_predec_A7,A1							;load string constant into A1
-                                     
+                                            JSR             print_first                                     
 											RTS														;return to subroutine
 													
 ;------------------Absolute Addressing Output-----------------------
 LSD_abs_add_word_out					 MOVE.L      #ea_$,(A1)+                        ;load $ for hex and increment A1
                                          MOVE.L      D5,(A1)+                           ;load address                  
-                                     
+          								 JSR         print_first
                                          RTS                                            :return to subroutine
                                            
 
 LSD_abs_add_long_out    				 MOVE.L      (A0)+,D5                           ;pull the next long instruction that holds the address
                                          MOVE.L      #ea_$,(A1)+                         ;load $ for hex and increment A1
                                          MOVE.L      D5,(A1)+                           ;load address                  
-                                     
+          								 JSR         print_first                                     
                                          RTS                                            :return to subroutine                                            
 
 												
 ;-----------------------------------------------------------------Register Shift-----------------------------------------------------------
 ; determine if the shift is a data register or a immediate value
 LSD_reg_shift                       CLR         D1                              ;clear D1
+                                    MOVE.W      D0,D1                
                                     AND.L       #mask_LSD_reg_shift_ir,D1           ;load the mask into D1
+                                    
                                     CMP.L       #match_LSD_shift_reg,D1             ;check to see if the shift is a data register
 									BEQ         LSD_shift_reg                       ;if the shift is a register, go to subroutine
                                     BNE         LSD_count_val			            ;if LSD go to immediate value subroutine
@@ -277,6 +291,7 @@ LSD_reg_shift                       CLR         D1                              
 ;i/r = 1, the shift is a Data register                                    
 ; this the subroutine for the data register shift
 LSD_shift_reg                       CLR         D1                              ;clear D1
+                                    MOVE.W      D0,D1
                                     AND.L       #mask_LSD_reg_shift,D1              ;load mask into D1 for bits 11-9
 
 LSD_count_reg0                      CMP.L       #match_LSD_count_reg0,D1            ;check to see if count/shift = 0
@@ -317,7 +332,11 @@ LSD_count_reg7                      CMP.L       #match_LSD_count_reg7,D1        
 ;1-7 = 1-7
 ;0 = 8
 ; this is the subroutine for the immedite value shift
-LSD_count_val                       CMP.L       #match_LSD_count_val0,D1          ;check to see if shift count is 0
+LSD_count_val                       CLR         D1                              ;clear D1
+                                    MOVE.W      D0,D1
+                                    AND.L       #mask_LSD_count_shift,D1
+                                    
+                                    CMP.L       #match_LSD_count_val0,D1          ;check to see if shift count is 0
                                     BNE         LSD_count_val1                    ;if LSD 0 check 1
                                     BEQ         LSD_count_val0_out                ;if 0 got to output
 
@@ -351,57 +370,74 @@ LSD_count_val7                      CMP.L       #match_LSD_count_val7,D1        
 
 ;-----------------------------------Count Shift Immedite Value Output---------------------------
 LSD_count_val0_out            MOVE.L			#ea_val0,A1			;load string constant into A1
-						      JSR               LSD_Dn0	                ;jump to subroutine to determine the second operand
+          					  JSR               print_first						      
+                              JSR               LSD_Dn0	                ;jump to subroutine to determine the second operand
 						      
 LSD_count_val1_out            MOVE.L			#ea_val1,A1			;load string constant into A1
+          					  JSR               print_first
 						      JSR               LSD_Dn0	                ;jump to subroutine to determine the second operand
 
 LSD_count_val2_out            MOVE.L			#ea_val2,A1			;load string constant into A1
+          					  JSR               print_first
 						      JSR               LSD_Dn0	                ;jump to subroutine to determine the second operand
 
 LSD_count_val3_out            MOVE.L			#ea_val3,A1			;load string constant into A1
+          					  JSR               print_first
 						      JSR               LSD_Dn0	                ;jump to subroutine to determine the second operand
 
 LSD_count_val4_out            MOVE.L			#ea_val4,A1			;load string constant into A1
+          					  JSR               print_first
 						      JSR               LSD_Dn0	                ;jump to subroutine to determine the second operand
 
 LSD_count_val5_out            MOVE.L			#ea_val5,A1			;load string constant into A1
+          					  JSR               print_first
 						      JSR               LSD_Dn0	                ;jump to subroutine to determine the second operand
 
 LSD_count_val6_out            MOVE.L			#ea_val6,A1			;load string constant into A1
+          					  JSR               print_first
 						      JSR               LSD_Dn0	                ;jump to subroutine to determine the second operand
 
 LSD_count_val7_out            MOVE.L			#ea_val7,A1			;load string constant into A1
+          					  JSR               print_first
 						      JSR               LSD_Dn0	                ;jump to subroutine to determine the second operand
 
 ;-------------------------Count Shift Output (Dn)-----------------------------------------
 LSD_count_reg0_out            MOVE.L			#ea_D0,A1			;load string constant into A1
+          					  JSR               print_first
 						      JSR               LSD_Dn0	                ;jump to subroutine to determine the second operand
 						      
 LSD_count_reg1_out            MOVE.L			#ea_D1,A1			;load string constant into A1
+          					  JSR               print_first
 						      JSR               LSD_Dn0	                ;jump to subroutine to determine the second operand
 						      
 LSD_count_reg2_out            MOVE.L			#ea_D2,A1			;load string constant into A1
+          					  JSR               print_first
 						      JSR               LSD_Dn0	                ;jump to subroutine to determine the second operand
 						      
 LSD_count_reg3_out            MOVE.L			#ea_D3,A1			;load string constant into A1
+          					  JSR               print_first
 						      JSR               LSD_Dn0	                ;jump to subroutine to determine the second operand
 						      
 LSD_count_reg4_out            MOVE.L			#ea_D4,A1			;load string constant into A1
+          					  JSR               print_first
 						      JSR               LSD_Dn0	                ;jump to subroutine to determine the second operand
 						      
 LSD_count_reg5_out            MOVE.L			#ea_D5,A1			;load string constant into A1
+          					  JSR               print_first
 						      JSR               LSD_Dn0	                ;jump to subroutine to determine the second operand
 						      
 LSD_count_reg6_out            MOVE.L			#ea_D6,A1			;load string constant into A1
+          					  JSR               print_first
 						      JSR               LSD_Dn0	                ;jump to subroutine to determine the second operand
 						      
 LSD_count_reg7_out            MOVE.L			#ea_D7,A1			;load string constant into A1
+          					  JSR               print_first
 						      JSR               LSD_Dn0	                ;jump to subroutine to determine the second operand                                    
                                     
                                     
 ;----------------------------------------------Determine Second Operand Data Register-----------------------------------------------------
-LSD_Dn0                         CLR             D1                  ;clear D1
+LSD_Dn0                         CLR         D1                              ;clear D1
+                                MOVE.W      D0,D1
                                 AND.L           #mask_LSD_data_reg,D1   ;load data register mask for second operand
                                 
                                 CMP.L           #match_LSD_D_reg0,D1          ;check if data register is D0
@@ -439,35 +475,27 @@ LSD_Dn7                         CMP.L           #match_LSD_D_reg7,D1          ;c
                                 
 ;-------------------------------Dn Second Operand Output-----------------------------------------------------------------
 LSD_D0_out                    MOVE.L			#ea_D0,A1			;load string constant into A1
-                                     
+                              RTS	                                ;return to subroutine
+
+LSD_D1_out                    MOVE.L			#ea_D1,A1			;load string constant into A1                                    
 					          RTS	                                ;return to subroutine
 
-LSD_D1_out                    MOVE.L			#ea_D1,A1			;load string constant into A1
-                                     
-					          RTS	                                ;return to subroutine
-
-LSD_D2_out                    MOVE.L			#ea_D2,A1			;load string constant into A1
-                                     
+LSD_D2_out                    MOVE.L			#ea_D2,A1			;load string constant into A1                                     
 					          RTS	                                ;return to subroutine
             
-LSD_D3_out                    MOVE.L			#ea_D3,A1			;load string constant into A1
-                                     
+LSD_D3_out                    MOVE.L			#ea_D3,A1			;load string constant into A1                                    
 					          RTS	                                ;return to subroutine
 
-LSD_D4_out                    MOVE.L			#ea_D4,A1			;load string constant into A1
-                                     
+LSD_D4_out                    MOVE.L			#ea_D4,A1			;load string constant into A1                                    
 					          RTS	                                ;return to subroutine
 
-LSD_D5_out                    MOVE.L			#ea_D5,A1			;load string constant into A1
-                                     
+LSD_D5_out                    MOVE.L			#ea_D5,A1			;load string constant into A1                                     
 					          RTS	                                ;return to subroutine
 
-LSD_D6_out                    MOVE.L			#ea_D6,A1			;load string constant into A1
-                                     
+LSD_D6_out                    MOVE.L			#ea_D6,A1			;load string constant into A1                                     
 					          RTS	                                ;return to subroutine
 
-LSD_D7_out                    MOVE.L			#ea_D7,A1			;load string constant into A1
-                                     
+LSD_D7_out                    MOVE.L			#ea_D7,A1			;load string constant into A1                                     
 					          RTS	                                ;return to subroutine
 
 *----------------------------------------------------------------------------------------------------------------------------
@@ -549,6 +577,10 @@ match_LSD_An_indir_predec_r4		    	EQU				$001C              ;match for add reg 
 match_LSD_An_indir_predec_r5	    		EQU				$001D              ;match for add reg indir with predec with add reg 5
 match_LSD_An_indir_predec_r6		    	EQU				$001E              ;match for add reg indir with predec with add reg 6
 match_LSD_An_indir_predec_r7		    	EQU				$001              ;match for add reg indir with predec with add reg 7
+
+
+
+
 
 
 
