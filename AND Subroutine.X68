@@ -624,34 +624,42 @@ Dn_ea_AND_reg7								    CMP.L		#match_AND_reg7,D2		            ;check to see i
 
 ;--------------------Data Output-----------------------
 Dn_ea_AND_reg0_out		         MOVE.L			#ea_D0,A1					                       ;load string constant into A1
+                                    JSR             print_first
                                  JSR            AND_determine_second_operand                 ;jump to ANDroutine to determine second operand
                                  RTS
 																						
 Dn_ea_AND_reg1_out		         MOVE.L			#ea_D1,A1				                		;load string constant into A1
+                                    JSR             print_first
                                  JSR            AND_determine_second_operand                 ;jump to ANDroutine to determine second operand
                                  RTS
                                             
 Dn_ea_AND_reg2_out		         MOVE.L			#ea_D2,A1				                		;load string constant into A1
+                                    JSR             print_first
                                  JSR            AND_determine_second_operand                 ;jump to ANDroutine to determine second operand
                                  RTS
                                             
 Dn_ea_AND_reg3_out		         MOVE.L			#ea_D3,A1				                        	;load string constant into A1
+                                    JSR             print_first
                                  JSR            AND_determine_second_operand                 ;jump to ANDroutine to determine second operand
                                  RTS
                                             
 Dn_ea_AND_reg4_out		         MOVE.L			#ea_D4,A1				                    		;load string constant into A1
+                                    JSR             print_first
                                  JSR            AND_determine_second_operand                 ;jump to ANDroutine to determine second operand
                                  RTS
                                             
 Dn_ea_AND_reg5_out		         MOVE.L			#ea_D5,A1					                     	;load string constant into A1
+                                    JSR             print_first
                                  JSR            AND_determine_second_operand                 ;jump to ANDroutine to determine second operand
                                  RTS
                                             
 Dn_ea_AND_reg6_out		         MOVE.L			#ea_D6,A1					                    	;load string constant into A1
+                                    JSR             print_first
                                  JSR            AND_determine_second_operand                 ;jump to ANDroutine to determine second operand
                                  RTS
                                             
 Dn_ea_AND_reg7_out    	         MOVE.L		    #ea_D7,A1					                    	;load string constant into A1
+                                    JSR             print_first
                                  JSR            AND_determine_second_operand                 ;jump to ANDroutine to determine second operand
                                  RTS                                            
 ;------------------------------------------------------Determine Second Operand----------------------------------------------------------------
@@ -671,7 +679,9 @@ Dn_ea_add_reg_indir_postinc      CMP.L             #match_AND_An_indir_postinc,D
                                  BNE               Dn_ea_abs_add_word                                  ;if not go check abs add word
                                  BEQ               Dn_ea_An_indir_postinc_reg                          ;if equal go figure out the register
 
-Dn_ea_abs_add_word               AND.L             #mask_AND_abs_add,D2                        ;load mask to determine if abs add word or long
+Dn_ea_abs_add_word              CLR.L   D2
+                                MOVE.W      D0,D2 
+                                AND.L             #mask_AND_abs_add,D2                        ;load mask to determine if abs add word or long
                                  
                                  CMP.L             #match_AND_abs_add_word,D2                  ;check if abs add word
                                  MOVE.L            (A0)+,D5                                      ;pull the next word instruction that holds the address
@@ -962,6 +972,7 @@ match_AND_reg4							EQU			$0800
 match_AND_reg5							EQU			$0A00
 match_AND_reg6							EQU			$0C00
 match_AND_reg7							EQU			$0E00
+
 
 
 

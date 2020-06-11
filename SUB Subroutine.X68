@@ -21,7 +21,7 @@ SUB_ea_Dn_match_w               CMP.L              #match_SUB_w_Dn_ea,D1        
 
 SUB_ea_Dn_match_l               CMP.L              #match_SUB_l_Dn_ea,D1                 ;check to see if it's Dn,ea
                                 BEQ                SUB_ea_Dn                             ;if equal go figure out data register
-                                BNE                SUB_ea_Dn_match                       ;if not check other order
+                                BNE                SUB_Dn_ea_match                       ;if not check other order
 
 SUB_Dn_ea_match                 CMP.L              #match_SUB_b_ea_Dn,D1                 ;check to see if it's ea,Dn
                                 BEQ                SUB_Dn_ea                             ;if equal go figure out ea mode
@@ -900,6 +900,7 @@ match_SUB_reg4			EQU		$0800
 match_SUB_reg5			EQU		$0A00
 match_SUB_reg6			EQU		$0C00
 match_SUB_reg7			EQU		$0E00
+
 
 
 
