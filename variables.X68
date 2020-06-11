@@ -156,6 +156,10 @@ match_ADDA_An_indir_predec_reg5			EQU			$0025
 match_ADDA_An_indir_predec_reg6			EQU			$0026
 match_ADDA_An_indir_predec_reg7			EQU			$0027
 
+match_ADDA_imm_add                      EQU         		$003C
+match_ADDA_imm_add_word                 EQU         		$00FC
+match_ADDA_imm_add_long                 EQU         		$01FC
+
 match_imm_add                           EQU         $003C
 match_imm_add_word                      EQU         $00FC
 match_imm_add_long                      EQU         $01FC
@@ -239,6 +243,7 @@ match_ADDQ_reg6							EQU			$0C00
 match_ADDQ_reg7							EQU			$0E00
 
 *ADD EA
+
 
 
 
