@@ -209,7 +209,7 @@ MOVEA_A7_out          MOVE.L	      #ea_A7,A1				;load string constant into A1
 
 ;------------------Address Register Indirect-----------------------
 MOVEA_An_indir_reg       CLR.L      D2
-                        MOVE.W      Do,D2
+                        MOVE.W      D0,D2
                         AND.L              #mask_MOVEA_ea_reg_and_mode,D2
                         CMP.L           #match_MOVEA_An_indir_r0,D2           ;check reg is equal to 0
                          BNE             MOVEA_An_indir_reg1                   ;if not try reg 1
@@ -609,6 +609,7 @@ match_MOVEA_reg4			EQU		$0800
 match_MOVEA_reg5			EQU		$0A00
 match_MOVEA_reg6			EQU		$0C00
 match_MOVEA_reg7			EQU		$0E00
+
 
 
 
