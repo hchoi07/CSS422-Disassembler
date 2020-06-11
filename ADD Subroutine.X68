@@ -9,6 +9,9 @@
 
 ADD_ADD                                                  ;preserve the registers, 
 ;-----------------------------ea,Dn-----------------------------------------------------------------------------------------------------
+
+                                       CLR.L              D1
+                                       MOVE.W             D0,D1
                                        AND.L              #mask_opmode,D1                              ;load mask to determine the operand order
                                 
 ADD_ea_Dn_match                        CMP.L              #match_ADD_b_Dn_ea,D1                 ;check to see if it's Dn,ea
@@ -37,7 +40,8 @@ ADD_Dn_ea_match_l                      CMP.L              #match_ADD_l_ea_Dn,D1 
 ;--------------------------------------------------------------------------------------------------------------------------
 *                                               EA,Dn Order                                       
 ;-------------------------------------------------------------------------------------------------------------------------
-ADD_ea_Dn                            CLR               D1                                            ;clear D1 to load new mask                                
+ADD_ea_Dn                        CLR.L               D1                                            ;clear D1 to load new mask                                
+                                 MOVE.W            D0,D1
                                  AND.L             #mask_ADD_ea_mode,D1                          ;move the mask to D1
 ;--------------Determine EFFECTIVE ADDRESS Mode-----------------------------------                
 ADD_ea_Dn_data_reg_dir           CMP.L             #match_ADD_Dn,D1                              ;check to see if mode is data reg direct
@@ -74,7 +78,9 @@ ADD_ea_Dn_immediate_add          CMP.L             #match_imm_add,D1            
                                  
                                  
 ;-----------------------------------Data Register Direct--------------------------------
-ADD_ea_Dn_Dn_reg                 AND.L              #mask_ADD_ea_reg_and_mode,D2                       ;load the mask into D2 for the mode and the register
+ADD_ea_Dn_Dn_reg                 CLR.L                D2
+                                 MOVE.W             D0,D2
+                                 AND.L              #mask_ADD_ea_reg_and_mode,D2                       ;load the mask into D2 for the mode and the register
                                  CMP.L              #match_ADD_D0,D2                       ;check to see in the register is 0
                                  BNE                ADD_ea_Dn_rD1                                     ;if not go check register 1
                                  BEQ                ADD_ea_Dn_D0_out                              ;if equal go to output ADDroutine
@@ -108,36 +114,48 @@ ADD_ea_Dn_rD7                    CMP.L              #match_ADD_D7,D2            
                                  BNE                ADD_ERROR                               ;if not equal, got to error message
 ;--------------------Data Register Direct Output-----------------------
 ADD_ea_Dn_D0_out                MOVE.L          #ea_D0,A1							;load string constant into A1
+                                JSR             print_first
                                 JSR             ADD_determine_second_op                 ;jump to ADDroutine to determine second operand
 
 ADD_ea_Dn_D1_out                MOVE.L          #ea_D1,A1							;load string constant into A1
+                                JSR             print_first
                                 JSR             ADD_determine_second_op                 ;jump to ADDroutine to determine second operand
 
 
 ADD_ea_Dn_D2_out                MOVE.L          #ea_D2,A1							;load string constant into A1
+                                JSR             print_first
                                 JSR             ADD_determine_second_op                 ;jump to ADDroutine to determine second operand
 
 ADD_ea_Dn_D3_out                MOVE.L			#ea_D3,A1							;load string constant into A1
+                                JSR             print_first
                                 JSR             ADD_determine_second_op                 ;jump to ADDroutine to determine second operand
 
 
 ADD_ea_Dn_D4_out                MOVE.L			#ea_D4,A1							;load string constant into A1
+                                JSR             print_first
                                 JSR             ADD_determine_second_op                 ;jump to ADDroutine to determine second operand
 
 
 ADD_ea_Dn_D5_out                MOVE.L			#ea_D5,A1							;load string constant into A1
+                                JSR             print_first
                                 JSR             ADD_determine_second_op                 ;jump to ADDroutine to determine second operand
 
 
 ADD_ea_Dn_D6_out                MOVE.L			#ea_D6,A1							;load string constant into A1
+                                JSR             print_first
                                 JSR             ADD_determine_second_op                 ;jump to ADDroutine to determine second operand
 
 
 ADD_ea_Dn_D7_out                MOVE.L			#ea_D7,A1							;load string constant into A1
+                                JSR             print_first
                                 JSR             ADD_determine_second_op                 ;jump to ADDroutine to determine second operand
 
 ;------------------Address Register Indirect-----------------------
-ADD_ea_Dn_An_indir_reg           CMP.L          #match_ADD_An_indir_r0,D2              ;check reg is equal to 0
+ADD_ea_Dn_An_indir_reg           CLR.L           D2
+                                 MOVE.W          D0,D2
+                                 AND.L           #mask_ADD_ea_reg_and_mode,D2                       ;load the mask into D2 for the mode and the register
+                                 
+                                 CMP.L           #match_ADD_An_indir_r0,D2              ;check reg is equal to 0
                                  BNE             ADD_ea_Dn_An_indir_reg1                           ;if not try reg 1
                                  BEQ             ADD_ea_Dn_An_indir_reg0_out                       ;if equal go to output ADDroutine
 
@@ -171,31 +189,43 @@ ADD_ea_Dn_An_indir_reg7          CMP.L           #match_ADD_An_indir_r7,D2      
 
 ;--------------------Address Register Indirect Output-----------------------
 ADD_ea_Dn_An_indir_reg0_out			    MOVE.L			#ea_indir_A0,A1		    	        ;load string constant into A1
-                                        JSR             ADD_determine_second_op                 ;jump to ADDroutine to determine second operand
+                                        JSR             print_first                                       
+                                         JSR             ADD_determine_second_op                 ;jump to ADDroutine to determine second operand
 
 ADD_ea_Dn_An_indir_reg1_out			    MOVE.L			#ea_indir_A1,A1		    		  ;load string constant into A1
+                                        JSR             print_first        
                                         JSR             ADD_determine_second_op                 ;jump to ADDroutine to determine second operand
 
 ADD_ea_Dn_An_indir_reg2_out			    MOVE.L			#ea_indir_A2,A1		    		  ;load string constant into A1
+                                        JSR             print_first
                                         JSR             ADD_determine_second_op                 ;jump to ADDroutine to determine second operand
 
 ADD_ea_Dn_An_indir_reg3_out			    MOVE.L			#ea_indir_A3,A1		    		  ;load string constant into A1
+                                        JSR             print_first
                                         JSR             ADD_determine_second_op                 ;jump to ADDroutine to determine second operand
 
 ADD_ea_Dn_An_indir_reg4_out			    MOVE.L			#ea_indir_A4,A1		    		  ;load string constant into A1
+                                        JSR             print_first
                                         JSR             ADD_determine_second_op                 ;jump to ADDroutine to determine second operand
 
 ADD_ea_Dn_An_indir_reg5_out			    MOVE.L			#ea_indir_A5,A1		    		  ;load string constant into A1
+                                        JSR             print_first    
                                         JSR             ADD_determine_second_op                 ;jump to ADDroutine to determine second operand
 
 ADD_ea_Dn_An_indir_reg6_out			    MOVE.L			#ea_indir_A6,A1		    		  ;load string constant into A1
+                                        JSR             print_first
                                         JSR             ADD_determine_second_op                 ;jump to ADDroutine to determine second operand
 								        
 ADD_ea_Dn_An_indir_reg7_out  	        MOVE.L			#ea_indir_A7,A1		    		  ;load string constant into A1
+                                        JSR             print_first
                                         JSR             ADD_determine_second_op                 ;jump to ADDroutine to determine second operand
 
 ;------------------Address Register Indirect with Post Increment-----------------------
-ADD_ea_Dn_An_indir_postinc_reg              CMP.L      #match_ADD_An_indir_postinc_r0,D2        ;check reg is equal to 0
+ADD_ea_Dn_An_indir_postinc_reg             CLR.L       D2
+                                            MOVE.W     D0,D2
+                                            AND.L      #mask_ADD_ea_reg_and_mode,D2                       ;load the mask into D2 for the mode and the register
+                                            
+                                            CMP.L      #match_ADD_An_indir_postinc_r0,D2        ;check reg is equal to 0
                                             BNE        ADD_ea_Dn_An_indir_postinc_reg1                      ;if not try reg 1
                                             BEQ        ADD_ea_Dn_An_indir_postin_r0_out               ;if equal go to output ADDroutine
 
@@ -229,31 +259,43 @@ ADD_ea_Dn_An_indir_postinc_reg7             CMP.L      #match_ADD_An_indir_posti
 
 ;--------------------Address Register Indirect with Post Increment Output-----------------------
 ADD_ea_Dn_An_indir_postin_r0_out			    MOVE.L			#ea_indir_postinc_A0,A1		    			      ;load string constant into A1
+                                                JSR             print_first
                                                 JSR             ADD_determine_second_op                 ;jump to ADDroutine to determine second operand
 
 ADD_ea_Dn_An_indir_postin_r1_out			    MOVE.L			#ea_indir_postinc_A1,A1		    			      ;load string constant into A1
+                                                JSR             print_first
                                                 JSR             ADD_determine_second_op                 ;jump to ADDroutine to determine second operand
 
 ADD_ea_Dn_An_indir_postin_r2_out			    MOVE.L			#ea_indir_postinc_A2,A1		    			      ;load string constant into A1
+                                                JSR             print_first
                                                 JSR             ADD_determine_second_op                 ;jump to ADDroutine to determine second operand
 
 ADD_ea_Dn_An_indir_postin_r3_out			    MOVE.L			#ea_indir_postinc_A3,A1		    			      ;load string constant into A1
+                                                JSR             print_first
                                                 JSR             ADD_determine_second_op                 ;jump to ADDroutine to determine second operand
 
 ADD_ea_Dn_An_indir_postin_r4_out			    MOVE.L			#ea_indir_postinc_A4,A1		    			      ;load string constant into A1
+                                                JSR             print_first
                                                 JSR             ADD_determine_second_op                 ;jump to ADDroutine to determine second operand
 
 ADD_ea_Dn_An_indir_postin_r5_out			    MOVE.L			#ea_indir_postinc_A5,A1		    			      ;load string constant into A1
-                                                JSR             ADD_determine_second_op                 ;jump to ADDroutine to determine second operand
+                                                JSR             print_first
+                                                 JSR             ADD_determine_second_op                 ;jump to ADDroutine to determine second operand
 
 ADD_ea_Dn_An_indir_postin_r6_out			    MOVE.L			#ea_indir_postinc_A6,A1		    			      ;load string constant into A1
+                                                JSR             print_first
                                                 JSR             ADD_determine_second_op                 ;jump to ADDroutine to determine second operand
 
 ADD_ea_Dn_An_indir_postin_r7_out			    MOVE.L			#ea_indir_postinc_A7,A1		    			      ;load string constant into A1
+                                                JSR             print_first
                                                 JSR             ADD_determine_second_op                 ;jump to ADDroutine to determine second operand
 
 ;------------------Address Register Indirect with Pre Decrement-----------------------
-ADD_ea_Dn_An_indir_predec                   CMP.L      #match_ADD_An_indir_predec_reg0,D2       ;check reg is equal to 0
+ADD_ea_Dn_An_indir_predec                   CLR.L      D2
+                                            MOVE.W     D0,D2
+                                            AND.L      #mask_ADD_ea_reg_and_mode,D2                       ;load the mask into D2 for the mode and the register
+                                            CMP.L      #match_ADD_An_indir_predec_reg0,D2       ;check reg is equal to 0
+                                            
                                             BNE        ADD_ea_Dn_An_indir_predec_reg1                      ;if not try reg 1
                                             BEQ        ADD_ea_Dn_An_indir_prede_r0_out               ;if equal go to output ADDroutine
 
@@ -287,38 +329,48 @@ ADD_ea_Dn_An_indir_predec_reg7              CMP.L      #match_ADD_An_indir_prede
 
 ;--------------------Address Register Indirect with Pre Decrement Output-----------------------
 ADD_ea_Dn_An_indir_prede_r0_out			MOVE.L			#ea_indir_predec_A0,A1					      ;load string constant into A1
+                                        JSR             print_first
                                         JSR             ADD_determine_second_op                 ;jump to ADDroutine to determine second operand
 											
 ADD_ea_Dn_An_indir_prede_r1_out			MOVE.L			#ea_indir_predec_A1,A1						;load string constant into A1
+                                        JSR             print_first
                                         JSR             ADD_determine_second_op                 ;jump to ADDroutine to determine second operand
 
 ADD_ea_Dn_An_indir_prede_r2_out			MOVE.L			#ea_indir_predec_A2,A1						;load string constant into A1
+                                        JSR             print_first
                                         JSR             ADD_determine_second_op                 ;jump to ADDroutine to determine second operand
 
 ADD_ea_Dn_An_indir_prede_r3_out			MOVE.L			#ea_indir_predec_A3,A1						;load string constant into A1
+                                        JSR             print_first
                                         JSR             ADD_determine_second_op                 ;jump to ADDroutine to determine second operand
 
 ADD_ea_Dn_An_indir_prede_r4_out		    MOVE.L			#ea_indir_predec_A4,A1						;load string constant into A1
+                                        JSR             print_first
                                         JSR             ADD_determine_second_op                 ;jump to ADDroutine to determine second operand
 
 ADD_ea_Dn_An_indir_prede_r5_out		    MOVE.L			#ea_indir_predec_A5,A1						;load string constant into A1
+                                        JSR             print_first
                                         JSR             ADD_determine_second_op                 ;jump to ADDroutine to determine second operand
 
 ADD_ea_Dn_An_indir_prede_r6_out		    MOVE.L			#ea_indir_predec_A6,A1						;load string constant into A1
+                                        JSR             print_first
                                         JSR             ADD_determine_second_op                 ;jump to ADDroutine to determine second operand
 
 ADD_ea_Dn_An_indir_prede_r7_out		    MOVE.L			#ea_indir_predec_A7,A1						;load string constant into A1
+                                        JSR             print_first
                                         JSR             ADD_determine_second_op                 ;jump to ADDroutine to determine second operand
         
 ;------------------Absolute Addressing Output-----------------------
-ADD_ea_Dn_abs_add_word_out				 MOVE.L      #ea_$,(A1)+                         ;load $ for hex and increment A1
+ADD_ea_Dn_abs_add_word_out			  MOVE.L      #ea_$,(A1)+                         ;load $ for hex and increment A1
                                       MOVE.L      D5,(A1)+                           ;load address                  
+                                      JSR             print_first
                                       RTS                                            :return to ADDroutine
                                            
 
 ADD_ea_Dn_abs_add_long_out    			 MOVE.L      (A0)+,D5                           ;pull the next long instruction that holds the address
                                       MOVE.L      #ea_$,(A1)+                         ;load $ for hex and increment A1
                                       MOVE.L      D5,(A1)+                           ;load address                  
+                                      JSR             print_first
                                       RTS                                            :return to ADDroutine                                            
 ;---------------Immediate Addresing---------------------------
 ADD_ea_Dn_immediate_add_out          MOVE.L		(A0)+,D5                             ;capture the immediate address
@@ -329,16 +381,19 @@ ADD_ea_Dn_immediate_add_out          MOVE.L		(A0)+,D5                           
 										 
 ADD_ea_Dn_imm_add_w                   MOVE.L     #ea_$,(A1)+                          ;load the $
                                       MOVE.W     D5,(A1)+                             ;load the word address                           
+                                        JSR             print_first
                                       JSR        ADD_determine_second_op                 ;jump to ADDroutine to determine second operand
                                          
 ADD_ea_Dn_imm_add_l                   MOVE.L     (A0)+,D5                             ;pull the long and increase the pointer
                                       MOVE.L     #ea_$,(A1)+                          ;load the $
-                                      MOVE.L     D5,A1                               ;move to A1
+                                      MOVE.L     D5,A1                               ;move to A
+                                      JSR             print_first
                                       JSR        ADD_determine_second_op                 ;jump to ADDroutine to determine second operand
 
 ;---------------------------------Determine Register----------------------------------------------------------------------------------------
 ADD_determine_second_op							CLR.L		D2							;clear D2 
-												AND.L		#mask_ADD_An_reg,D2		;load the mask for the register into D2, masks bit 11-9
+                                                MOVE.W      D0,D2												
+                                                AND.L		#mask_ADD_An_reg,D2		;load the mask for the register into D2, masks bit 11-9
 												
 ea_Dn_ADD_reg0								    CMP.L		#match_ADD_reg0,D2		;check to see if reg equal 0
 												BNE			ea_Dn_ADD_reg1					;if not equal got check reg 1
@@ -437,8 +492,9 @@ ea_Dn_ADD_reg7_out			               MOVE.L			#ea_D7,A1					                    	
 * 
 ;------------------------------------------------------------------------------------------------------------------------------------------                                              
 ;---------------------------------Determine Register----------------------------------------------------------------------------------------
-ADD_Dn_ea           								    CLR.L		D2							      ;clear D2 
-												AND.L		#mask_ADD_An_reg,D2		      ;load the mask for the register into D2, masks bit 11-9
+ADD_Dn_ea           						    CLR.L		D2							      ;clear D2 
+												MOVE.W      D0,D2
+                                                AND.L		#mask_ADD_An_reg,D2		      ;load the mask for the register into D2, masks bit 11-9
 												
 Dn_ea_ADD_reg0   								CMP.L		#match_ADD_reg0,D2		            ;check to see if reg equal 0
 												BNE			Dn_ea_ADD_reg1					;if not equal got check reg 1
@@ -475,33 +531,42 @@ Dn_ea_ADD_reg7								    CMP.L		#match_ADD_reg7,D2		            ;check to see i
 
 ;--------------------Data Output-----------------------
 Dn_ea_ADD_reg0_out		         MOVE.L			#ea_D0,A1					                       ;load string constant into A1
+                                 JSR            print_first
                                  JSR            ADD_determine_second_operand                 ;jump to ADDroutine to determine second operand
 
 											
 Dn_ea_ADD_reg1_out		         MOVE.L			#ea_D1,A1				                		;load string constant into A1
+                                 JSR            print_first
                                  JSR            ADD_determine_second_operand                 ;jump to ADDroutine to determine second operand
                                             
 Dn_ea_ADD_reg2_out		         MOVE.L			#ea_D2,A1				                		;load string constant into A1
+                                 JSR            print_first
                                  JSR            ADD_determine_second_operand                 ;jump to ADDroutine to determine second operand
                                             
 Dn_ea_ADD_reg3_out		         MOVE.L			#ea_D3,A1				                        	;load string constant into A1
+                                 JSR            print_first
                                  JSR            ADD_determine_second_operand                 ;jump to ADDroutine to determine second operand
                                             
 Dn_ea_ADD_reg4_out		         MOVE.L			#ea_D4,A1				                    		;load string constant into A1
+                                 JSR            print_first
                                  JSR            ADD_determine_second_operand                 ;jump to ADDroutine to determine second operand
                                             
 Dn_ea_ADD_reg5_out		         MOVE.L			#ea_D5,A1					                     	;load string constant into A1
+                                 JSR            print_first
                                  JSR            ADD_determine_second_operand                 ;jump to ADDroutine to determine second operand
                                             
 Dn_ea_ADD_reg6_out		         MOVE.L			#ea_D6,A1					                    	;load string constant into A1
+                                 JSR            print_first
                                  JSR            ADD_determine_second_operand                 ;jump to ADDroutine to determine second operand
                                             
 Dn_ea_ADD_reg7_out    	         MOVE.L			#ea_D7,A1					                    	;load string constant into A1
+                                 JSR            print_first
                                  JSR            ADD_determine_second_operand                 ;jump to ADDroutine to determine second operand
                                             
 ;------------------------------------------------------Determine Second Operand----------------------------------------------------------------
 ADD_determine_second_operand     CLR               D1                                            ;clear D1 to load new mask                                
-                                 AND.L             #mask_ADD_ea_mode,D1                        ;move the mask to D1
+                                MOVE.W             D0,D1 
+                                AND.L             #mask_ADD_ea_mode,D1                        ;move the mask to D1
 ;--------------Determine EFFECTIVE ADDRESS Mode-----------------------------------                
 ADD_Dn_ea_add_reg_indir          CMP.L             #match_ADD_An_indir,D1                      ;check to see if mode is add reg indir
                                  BNE               ADD_Dn_ea_add_reg_indir_predec                          ;if not, go check add reg indir predec 
@@ -515,7 +580,9 @@ ADD_Dn_ea_add_reg_indir_postinc  CMP.L             #match_ADD_An_indir_postinc,D
                                  BNE               ADD_Dn_ea_abs_add_word                                  ;if not go check abs add word
                                  BEQ               ADD_Dn_ea_An_indir_postinc_reg                          ;if equal go figure out the register
 
-ADD_Dn_ea_abs_add_word           AND.L             #mask_ADD_abs_add,D2                        ;load mask to determine if abs add word or long
+ADD_Dn_ea_abs_add_word           CLR.L             D2
+                                 MOVE.W            D0,D2
+                                 AND.L             #mask_ADD_abs_add,D2                        ;load mask to determine if abs add word or long
                                  
                                  CMP.L             #match_ADD_abs_add_word,D2                  ;check if abs add word
                                  MOVE.L            (A0)+,D5                                      ;pull the next word instruction that holds the address
@@ -530,7 +597,9 @@ ADD_Dn_ea_abs_add_long           CMP.L             #match_ADD_abs_add_long,D2   
                                  
                                  
 ;------------------Address Register Indirect-----------------------
-ADD_Dn_ea_An_indir_reg           AND.L              #mask_ADD_ea_reg_and_mode,D2         ;load the mask into D2 for the mode and the register
+ADD_Dn_ea_An_indir_reg          CLR.L           D2
+                                MOVE.W          D0,D2 
+                                AND.L           #mask_ADD_ea_reg_and_mode,D2         ;load the mask into D2 for the mode and the register
                                  CMP.L          #match_ADD_An_indir_r0,D2              ;check reg is equal to 0
                                  BNE             ADD_Dn_ea_An_indir_reg1                           ;if not try reg 1
                                  BEQ             ADD_Dn_ea_An_indir_reg0_out                       ;if equal go to output ADDroutine
@@ -589,7 +658,9 @@ ADD_Dn_ea_An_indir_reg7_out			MOVE.L			#ea_indir_A7,A1		    		  ;load string con
                                      RTS
 
 ;------------------Address Register Indirect with Post Increment-----------------------
-ADD_Dn_ea_An_indir_postinc_reg              CMP.L      #match_ADD_An_indir_postinc_r0,D2        ;check reg is equal to 0
+ADD_Dn_ea_An_indir_postinc_reg              CLR.L           D2
+                                            MOVE.W          D0,D2 
+                                            CMP.L      #match_ADD_An_indir_postinc_r0,D2        ;check reg is equal to 0
                                             BNE        ADD_Dn_ea_An_indir_postinc_reg1                      ;if not try reg 1
                                             BEQ        ADD_Dn_ea_An_indir_postin_r0_out                  ;if equal go to output ADDroutine
 
@@ -647,7 +718,9 @@ ADD_Dn_ea_An_indir_postin_r7_out			    MOVE.L			#ea_indir_postinc_A7,A1		    			
                                                 RTS
 
 ;------------------Address Register Indirect with Pre Decrement-----------------------
-ADD_Dn_ea_An_indir_predec                   CMP.L      #match_ADD_An_indir_predec_reg0,D2       ;check reg is equal to 0
+ADD_Dn_ea_An_indir_predec                   CLR.L           D2
+                                            MOVE.W          D0,D2 
+                                            CMP.L      #match_ADD_An_indir_predec_reg0,D2       ;check reg is equal to 0
                                             BNE        ADD_Dn_ea_An_indir_predec_reg1                      ;if not try reg 1
                                             BEQ        ADD_Dn_ea_An_indir_prede_r0_out               ;if equal go to output ADDroutine
 
@@ -747,12 +820,12 @@ ADD_ERROR                                           LEA     ERROR_MESSAGE,A1    
 					                            RTS
 					                            
 					                            
-mask_opmode                          EQU         $01C0                   ;mask for the opmode to determine operand order
+mask_opmode                         EQU         $01C0                   ;mask for the opmode to determine operand order
 
 mask_ADD_ea_mode					EQU			$0038
 mask_ADD_abs_add					EQU			$003F
 mask_ADD_ea_reg_and_mode			EQU			$003F
-mask_ADD_An_reg					EQU			$0E00
+mask_ADD_An_reg				    	EQU			$0E00
 
 
 match_ADD_b_ea_Dn                    EQU         $0100                ;match for ea,Dn byte size
@@ -830,6 +903,9 @@ match_ADD_reg4							EQU			$0800
 match_ADD_reg5							EQU			$0A00
 match_ADD_reg6							EQU			$0C00
 match_ADD_reg7							EQU			$0E00
+
+
+
 
 
 
