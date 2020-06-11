@@ -70,48 +70,56 @@ LEA_An_indir_reg7                CMP.L           #match_LEA_An_indir_r7,D2      
 LEA_An_indir_reg0_out			        MOVE.L			#ea_indir_A0,A1		    	        ;load string constant into A1
                                         JSR             print_first
                                         JSR             LEA_determine_second_op                 ;jump to subroutine to determine second operand
+                                        RTS
 
 LEA_An_indir_reg1_out			        MOVE.L			#ea_indir_A1,A1		    		  ;load string constant into A1
                                         JSR             print_first
                                         JSR             LEA_determine_second_op                 ;jump to subroutine to determine second operand
+                                        RTS
 
 LEA_An_indir_reg2_out			        MOVE.L			#ea_indir_A2,A1		    		  ;load string constant into A1
                                         JSR             print_first
                                         JSR             LEA_determine_second_op                 ;jump to subroutine to determine second operand
+                                        RTS
 
 LEA_An_indir_reg3_out			        MOVE.L			#ea_indir_A3,A1		    		  ;load string constant into A1
                                         JSR             print_first
                                         JSR             LEA_determine_second_op                 ;jump to subroutine to determine second operand
+                                        RTS
 
 LEA_An_indir_reg4_out			        MOVE.L			#ea_indir_A4,A1		    		  ;load string constant into A1
                                         JSR             print_first
                                         JSR             LEA_determine_second_op                 ;jump to subroutine to determine second operand
+                                        RTS
 
 LEA_An_indir_reg5_out			        MOVE.L			#ea_indir_A5,A1		    		  ;load string constant into A1
                                         JSR             print_first
                                         JSR             LEA_determine_second_op                 ;jump to subroutine to determine second operand
+                                        RTS
 
 LEA_An_indir_reg6_out			        MOVE.L			#ea_indir_A6,A1		    		  ;load string constant into A1
                                         JSR             print_first
                                         JSR             LEA_determine_second_op                 ;jump to subroutine to determine second operand
+                                        RTS
 								        
 LEA_An_indir_reg7_out			        MOVE.L			#ea_indir_A7,A1		    		  ;load string constant into A1
                                         JSR             print_first
                                         JSR             LEA_determine_second_op                 ;jump to subroutine to determine second operand
+                                        RTS
 
 ;------------------Absolute Addressing Output-----------------------
 LEA_abs_add_word_out					 MOVE.L      #ea_$,(A1)+                         ;load $ for hex and increment A1
                                          MOVE.L      D5,(A1)+                           ;load address                  
                                         JSR             print_first
                                          JSR         LEA_determine_second_op                 ;jump to subroutine to determine second operand
-                                           
+                                        RTS                                           
 
 LEA_abs_add_long_out    	    		 MOVE.L      (A0)+,D5                           ;pull the next long instruction that holds the address
                                          MOVE.L      #ea_$,(A1)+                         ;load $ for hex and increment A1
                                          MOVE.L      D5,(A1)+                           ;load address                  
                                         JSR             print_first
                                          JSR         LEA_determine_second_op                 ;jump to subroutine to determine second operand
-                                              
+                                        RTS                                              
 ;---------------------------------Determine Register----------------------------------------------------------------------------------------
 LEA_determine_second_op  						CLR.L		D2												;clear D2 
                                                 MOVE.W      D0,D2
@@ -213,6 +221,7 @@ match_LEA_reg4							EQU			$0800
 match_LEA_reg5							EQU			$0A00
 match_LEA_reg6							EQU			$0C00
 match_LEA_reg7							EQU			$0E00
+
 
 
 
