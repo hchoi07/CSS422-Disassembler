@@ -16,7 +16,10 @@ MOVEQ_first_operand             AND.L             #mask_MOVEQ_first_operand,D1  
                                 MOVE.L            D3,A1                                     ;move the data into A1
                                 JSR               MOVEQ_second_operand
 
-MOVEQ_second_operand            AND.L             #mask_MOVEQ_second_op_Dn,D1                     ;move the mask to D1
+MOVEQ_second_operand            CLR.L        D2
+                                MOVE.W      D0,D2
+                                AND.L             #mask_MOVEQ_second_op_Dn,D2 
+                                                   ;move the mask to D1
                                  
 ;-----------------------------------Determine Second Operand Data register--------------------------------
 MOVEQ_Dn_reg                    CMP.L              #match_MOVEQ_D0,D2                         ;check to see in the register is 0
@@ -91,6 +94,7 @@ match_MOVEQ_D4				EQU				$0800              ;match for data reg dir with data re
 match_MOVEQ_D5				EQU				$0A00              ;match for data reg dir with data reg 5
 match_MOVEQ_D6				EQU				$0C00              ;match for data reg dir with data reg 6
 match_MOVEQ_D7				EQU				$0E00              ;match for data reg dir with data reg 7
+
 
 
 
