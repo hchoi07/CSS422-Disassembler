@@ -1,0 +1,836 @@
+00000000 Starting Address
+Assembler used: EASy68K Editor/Assembler v5.16.01
+Created On: 6/10/2020 8:50:36 PM
+
+00000000                             1  *-----------------------------------------------------------
+00000000                             2  * Title      :ROD EA Subroutine
+00000000                             3  * D0 holds the whole instruction, D6 holds the size
+00000000                             4  * D1 will be loaded with the mask for the EA mode
+00000000                             5  * D2 will be loaded with the mask for the EA mode and register to be compared with matchs of the dettermined mode and register
+00000000                             6  * A1 will point to the location of the string constants
+00000000                             7  * Bits 6&7 will be masked to determine the type of shift
+00000000                             8  * First bits 6&7 will be masked to determine the shift type
+00000000                             9  * Then in mem shift subroutine, the EA mode and register are determined
+00000000                            10  * In Reg shift, bit 5 is masked to determine if the count/reg is either an immediate value or data register
+00000000                            11  * the count/register is added to the print register (A0)
+00000000                            12  * after that the data register is decoded and added to the print register
+00000000                            13  *-----------------------------------------------------------
+00000000                            14  
+00000000                            15  
+00000000                            16  ROD_sub                                             ;preserve the registers,\ 
+00000000                            17                                   
+00000000                            18  ;------------------------Determine Shift Type-----------------------------------------------------------------
+00000000  4281                      19  ROD_shift_type                   CLR.L              D1
+00000002  3200                      20                                   MOVE.W             D0,D1                
+00000004  C2BC 000000C0             21                                   AND.L              #mask_ROD_shift_type,D1                 ;load mask into D1
+0000000A                            22  
+0000000A  B2BC 000000C0             23                                   CMP.L              #match_ROD_mem_shift,D1                 ;check to see if memory shift
+00000010  6700 0006                 24                                   BEQ                ROD_mem_shift                               ;if equal go to mem shift subroutine
+00000014  6600 0296                 25                                   BNE                ROD_reg_shift                               ;if ROD mem shift, go to reg shift
+00000018                            26  
+00000018                            27  ;--------------Determine EFFECTIVE ADDRESS Mode-------------MEMORY SHIFT-----------------------------------                
+00000018  4281                      28  ROD_mem_shift                    CLR.L              D1                                        ;clear shift mask
+0000001A  3200                      29                                   MOVE.W             D0,D1                
+0000001C  C2BC 00000038             30                                   AND.L             #mask_ROD_ea_mode,D1                      ;move the mask to D1
+00000022                            31  
+00000022  B2BC 00000010             32  ROD_An_indir                     CMP.L             #match_ROD_An_indir,D1                    ;check to see if mode is add reg indir
+00000028  6600 0014                 33                                   BNE               ROD_An_indir_predec                           ;if ROD, go check add reg indir predec 
+0000002C  6700 0046                 34                                   BEQ               ROD_An_indir_reg                              ;if equal go figure out the register           
+00000030                            35            
+00000030  B2BC 00000020             36  ROD_An_indir_postinc             CMP.L             #match_ROD_An_indir_postinc,D1            ;check to see if mode is add reg indor w/ postinc
+00000036  6600 0006                 37                                   BNE               ROD_An_indir_predec                           ;if ROD go check add reg indir/predec
+0000003A  6700 00F2                 38                                   BEQ               ROD_An_indir_postinc_reg                      ;if equal go figure out the register
+0000003E                            39                        
+0000003E  B2BC 00000018             40  ROD_An_indir_predec              CMP.L             #match_ROD_An_indir_predec,D1             ;check to see if mode is add reg indir w/predec
+00000044  6600 0006                 41                                   BNE               ROD_abs_add_word                              ;if ROD go check abs add word
+00000048  6700 0198                 42                                   BEQ               ROD_An_indir_predec_reg                       ;if equal go figure out the register
+0000004C                            43  
+0000004C  4282                      44  ROD_abs_add_word                 CLR.L             D2
+0000004E  3400                      45                                   MOVE.W            D0,D2
+00000050  C4BC 0000003F             46                                   AND.L             #mask_ROD_ea_mode_abs_add,D2              ;load mask to determine if abs add word or long
+00000056                            47                                   
+00000056  B4BC 00000039             48                                   CMP.L             #match_ROD_abs_add_word,D2                ;check if abs add word
+0000005C  2A18                      49                                   MOVE.L            (A0)+,D5                                  ;pull the next word instruction that holds the address 
+0000005E  6600 0006                 50                                   BNE               ROD_abs_add_long                              ;if ROD go check abs add long
+00000062  6700 0232                 51                                   BEQ               ROD_abs_add_word_out                          ;if equal go to output
+00000066                            52    
+00000066  B4BC 0000003C             53  ROD_abs_add_long                 CMP.L             #match_ROD_abs_add_long,D2                ;check to see if abs add long
+0000006C  6700 0232                 54                                   BEQ               ROD_abs_add_long_out                          ;if equal go to output
+Line 55 ERROR: Undefined symbol
+00000070  6600 BCA4                 55                                   BNE               ERROR                                     ;if ROD equal to an addresssing mode, pritn error
+00000074                            56                               
+00000074                            57  
+00000074                            58  ;--------------------Determine EFFECTIVE ADDRESS Register----------------------------------------------------------------------------------------
+00000074                            59  ;------------------Address Register Indirect-----------------------
+00000074  4282                      60  ROD_An_indir_reg                            CLR.L             D2                                      ;make sure D2 is empty
+00000076  3400                      61                                              MOVE.W          D0,D2
+00000078  C4BC 0000003F             62                                              AND.L           #mask_ROD_ea_reg_and_mode,D2            ;load the mask into D2 for the mode and the register
+0000007E                            63  
+0000007E  B4BC 00000010             64                                              CMP.L           #match_ROD_An_indir_r0,D2              ;check reg is equal to 0
+00000084  6600 0006                 65                                              BNE             ROD_An_indir_reg1                            ;if ROD try reg 1
+00000088  6700 0064                 66                                              BEQ             ROD_An_indir_reg0_out                     ;if equal go to output subroutine
+0000008C                            67  
+0000008C  B4BC 00000011             68  ROD_An_indir_reg1                           CMP.L           #match_ROD_An_indir_r1,D2              ;check reg is equal to 1
+00000092  6600 0006                 69                                              BNE             ROD_An_indir_reg2                            ;if ROD try reg 2
+00000096  6700 005E                 70                                              BEQ             ROD_An_indir_reg1_out                     ;if equal go to output subroutine
+0000009A                            71  
+0000009A  B4BC 00000012             72  ROD_An_indir_reg2                           CMP.L           #match_ROD_An_indir_r2,D2              ;check reg is equal to 2
+000000A0  6600 0006                 73                                              BNE             ROD_An_indir_reg3                            ;if ROD try reg 3
+000000A4  6700 0058                 74                                              BEQ             ROD_An_indir_reg2_out                     ;if equal go to output subroutine
+000000A8                            75  
+000000A8  B4BC 00000013             76  ROD_An_indir_reg3                           CMP.L           #match_ROD_An_indir_r3,D2              ;check reg is equal to 3
+000000AE  6600 0006                 77                                              BNE             ROD_An_indir_reg4                            ;if ROD try reg 4
+000000B2  6700 0052                 78                                              BEQ             ROD_An_indir_reg3_out                     ;if equal go to output subroutine
+000000B6                            79  
+000000B6  B4BC 00000014             80  ROD_An_indir_reg4                           CMP.L           #match_ROD_An_indir_r4,D2              ;check reg is equal to 4
+000000BC  6600 0006                 81                                              BNE             ROD_An_indir_reg5                            ;if ROD try reg 5
+000000C0  6700 004C                 82                                              BEQ             ROD_An_indir_reg4_out                    ;if equal go to output subroutine
+000000C4                            83  
+000000C4  B4BC 00000015             84  ROD_An_indir_reg5                           CMP.L           #match_ROD_An_indir_r5,D2              ;check reg is equal to 5
+000000CA  6600 0006                 85                                              BNE             ROD_An_indir_reg6                            ;if ROD try reg 6
+000000CE  6700 0046                 86                                              BEQ             ROD_An_indir_reg5_out                     ;if equal go to output subroutine
+000000D2                            87  
+000000D2  B4BC 00000016             88  ROD_An_indir_reg6                           CMP.L           #match_ROD_An_indir_r6,D2              ;check reg is equal to 6
+000000D8  6700 0044                 89                                              BEQ             ROD_An_indir_reg6_out                     ;if equal go to output subroutine
+000000DC  6600 0002                 90                                              BNE             ROD_An_indir_reg7
+000000E0                            91                                              
+000000E0  B4BC 00000016             92  ROD_An_indir_reg7                           CMP.L           #match_ROD_An_indir_r6,D2              ;check reg is equal to 6
+000000E6  6700 003E                 93                                              BEQ             ROD_An_indir_reg7_out                     ;if equal go to output subroutine
+Line 94 ERROR: Undefined symbol
+000000EA  6600 BC2A                 94                                              BNE             ERROR                                        :if ROD equal to an addresssing mode, pritn error
+000000EE                            95  
+000000EE                            96  ;--------------------Address Register Indirect Output-----------------------
+Line 97 ERROR: Undefined symbol
+000000EE  227C 004DBD16             97  ROD_An_indir_reg0_out                   MOVE.L          #ea_indir_A0,A1                         ;load string constant into A1
+000000F4  4E75                      98                                          RTS                                                         ;return to subroutine
+000000F6                            99                                      
+Line 100 ERROR: Undefined symbol
+000000F6  227C 004DBD16            100  ROD_An_indir_reg1_out                   MOVE.L          #ea_indir_A1,A1                         ;load string constant into A1
+000000FC  4E75                     101                                          RTS                                                         ;return to subroutine
+000000FE                           102                                              
+Line 103 ERROR: Undefined symbol
+000000FE  227C 004DBD16            103  ROD_An_indir_reg2_out                   MOVE.L          #ea_indir_A2,A1                         ;load string constant into A1
+00000104  4E75                     104                                          RTS                                                     ;return to subroutine
+00000106                           105  
+Line 106 ERROR: Undefined symbol
+00000106  227C 004DBD16            106  ROD_An_indir_reg3_out                   MOVE.L          #ea_indir_A3,A1                         ;load string constant into A1
+0000010C  4E75                     107                                          RTS                                                     ;return to subroutine
+0000010E                           108                                              
+Line 109 ERROR: Undefined symbol
+0000010E  227C 004DBD16            109  ROD_An_indir_reg4_out                   MOVE.L          #ea_indir_A4,A1                         ;load string constant into A1
+00000114  4E75                     110                                          RTS                                                         ;return to subroutine
+00000116                           111                                          
+Line 112 ERROR: Undefined symbol
+00000116  227C 004DBD16            112  ROD_An_indir_reg5_out                   MOVE.L          #ea_indir_A5,A1                         ;load string constant into A1
+0000011C  4E75                     113                                          RTS                                                     ;return to subroutine
+0000011E                           114  
+Line 115 ERROR: Undefined symbol
+0000011E  227C 004DBD16            115  ROD_An_indir_reg6_out                   MOVE.L          #ea_indir_A6,A1                           ;load string constant into A1
+00000124  4E75                     116                                          RTS                                                         ;return to subroutine
+00000126                           117  
+Line 118 ERROR: Undefined symbol
+00000126  227C 004DBD16            118  ROD_An_indir_reg7_out                   MOVE.L          #ea_indir_A7,A1                           ;load string constant into A1
+0000012C  4E75                     119                                          RTS                                                         ;return to subroutine
+0000012E                           120  
+0000012E                           121  ;------------------Address Register Indirect with Post Increment-----------------------
+0000012E  4282                     122  ROD_An_indir_postinc_reg                    CLR.L             D2                                      ;make sure D2 is empty
+00000130  3400                     123                                              MOVE.W          D0,D2
+00000132  B4BC 00000020            124                                              CMP.L      #match_ROD_An_indir_postinc_r0,D2        ;check reg is equal to 0
+00000138                           125  
+00000138  6600 0006                126                                              BNE        ROD_An_indir_pinc_r1                      ;if ROD try reg 1
+0000013C  6700 0064                127                                              BEQ        ROD_An_indir_pinc_r0_out               ;if equal go to output subroutine
+00000140                           128  
+00000140  B4BC 00000021            129  ROD_An_indir_pinc_r1                        CMP.L      #match_ROD_An_indir_postinc_r1,D2        ;check reg is equal to 1
+00000146  6600 0006                130                                              BNE        ROD_An_indir_pinc_r2                      ;if ROD try reg 2
+0000014A  6700 005E                131                                              BEQ        ROD_An_indir_pinc_r1_out               ;if equal go to output subroutine
+0000014E                           132  
+0000014E  B4BC 00000022            133  ROD_An_indir_pinc_r2                        CMP.L      #match_ROD_An_indir_postinc_r2,D2        ;check reg is equal to 2
+00000154  6600 0006                134                                              BNE        ROD_An_indir_pinc_r3                      ;if ROD try reg 3
+00000158  6700 0058                135                                              BEQ        ROD_An_indir_pinc_r2_out               ;if equal go to output subroutine
+0000015C                           136      
+0000015C  B4BC 00000023            137  ROD_An_indir_pinc_r3                        CMP.L      #match_ROD_An_indir_postinc_r3,D2        ;check reg is equal to 3
+00000162  6600 0006                138                                              BNE        ROD_An_indir_pinc_r4                      ;if ROD try reg 4
+00000166  6700 0052                139                                              BEQ        ROD_An_indir_pinc_r3_out               ;if equal go to output subroutine
+0000016A                           140   
+0000016A  B4BC 00000024            141  ROD_An_indir_pinc_r4                        CMP.L      #match_ROD_An_indir_postinc_r4,D2        ;check reg is equal to 4
+00000170  6600 0006                142                                              BNE        ROD_An_indir_pinc_r5                      ;if ROD try reg 5
+00000174  6700 004C                143                                              BEQ        ROD_An_indir_pinc_r4_out               ;if equal go to output subroutine
+00000178                           144  
+00000178  B4BC 00000025            145  ROD_An_indir_pinc_r5                        CMP.L      #match_ROD_An_indir_postinc_r5,D2        ;check reg is equal to 5
+0000017E  6600 0006                146                                              BNE        ROD_An_indir_pinc_r6                      ;if ROD try reg 6
+00000182  6700 0046                147                                              BEQ        ROD_An_indir_pinc_r5_out               ;if equal go to output subroutine
+00000186                           148  
+00000186  B4BC 00000026            149  ROD_An_indir_pinc_r6                        CMP.L      #match_ROD_An_indir_postinc_r6,D2        ;check reg is equal to 6
+0000018C  6700 0044                150                                              BEQ        ROD_An_indir_pinc_r6_out              ;if equal go to output subroutine
+00000190  6600 0002                151                                              BNE        ROD_An_indir_pinc_r7
+00000194                           152  
+00000194  B4BC 00000026            153  ROD_An_indir_pinc_r7                        CMP.L      #match_ROD_An_indir_postinc_r6,D2        ;check reg is equal to 6
+0000019A  6700 003E                154                                              BEQ        ROD_An_indir_pinc_r7_out              ;if equal go to output subroutine
+Line 155 ERROR: Undefined symbol
+0000019E  6600 BB76                155                                              BNE        ERROR                                        :if ROD equal to an addresssing mode, pritn error
+000001A2                           156  
+000001A2                           157  ;--------------------Address Register Indirect with Post Increment Output-----------------------
+Line 158 ERROR: Undefined symbol
+000001A2  227C 004DBD16            158  ROD_An_indir_pinc_r0_out                    MOVE.L          #ea_indir_postinc_A1,A1                         ;load string constant into A1
+000001A8  4E75                     159                                              RTS                                             ;return to subroutine
+000001AA                           160  
+Line 161 ERROR: Undefined symbol
+000001AA  227C 004DBD16            161  ROD_An_indir_pinc_r1_out                    MOVE.L          #ea_indir_postinc_A1,A1                         ;load string constant into A1
+000001B0  4E75                     162                                              RTS                                             ;return to subroutine
+000001B2                           163  
+Line 164 ERROR: Undefined symbol
+000001B2  227C 004DBD16            164  ROD_An_indir_pinc_r2_out                    MOVE.L          #ea_indir_postinc_A2,A1                         ;load string constant into A1
+000001B8  4E75                     165                                              RTS                                             ;return to subroutine
+000001BA                           166  
+Line 167 ERROR: Undefined symbol
+000001BA  227C 004DBD16            167  ROD_An_indir_pinc_r3_out                    MOVE.L          #ea_indir_postinc_A3,A1                         ;load string constant into A1
+000001C0  4E75                     168                                              RTS                                             ;return to subroutine
+000001C2                           169  
+Line 170 ERROR: Undefined symbol
+000001C2  227C 004DBD16            170  ROD_An_indir_pinc_r4_out                    MOVE.L          #ea_indir_postinc_A4,A1                         ;load string constant into A1
+000001C8  4E75                     171                                              RTS                                             ;return to subroutine
+000001CA                           172  
+Line 173 ERROR: Undefined symbol
+000001CA  227C 004DBD16            173  ROD_An_indir_pinc_r5_out                    MOVE.L          #ea_indir_postinc_A5,A1                         ;load string constant into A1
+000001D0  4E75                     174                                              RTS                                             ;return to subroutine
+000001D2                           175   
+Line 176 ERROR: Undefined symbol
+000001D2  227C 004DBD16            176  ROD_An_indir_pinc_r6_out                    MOVE.L          #ea_indir_postinc_A6,A1                         ;load string constant into A1
+000001D8  4E75                     177                                              RTS                                             ;return to subroutine
+000001DA                           178  
+Line 179 ERROR: Undefined symbol
+000001DA  227C 004DBD16            179  ROD_An_indir_pinc_r7_out                    MOVE.L          #ea_indir_postinc_A7,A1                         ;load string constant into A1
+000001E0  4E75                     180                                              RTS                                             ;return to subroutine
+000001E2                           181                                                      
+000001E2                           182  ;------------------Address Register Indirect with Pre Decrement-----------------------
+000001E2  4282                     183  ROD_An_indir_predec_reg                     CLR.L             D2                                      ;make sure D2 is empty
+000001E4  3400                     184                                              MOVE.W          D0,D2
+000001E6  B4BC 00000018            185                                              CMP.L      #match_ROD_An_indir_predec_r0,D2         ;check reg is equal to 0
+000001EC  6600 0006                186                                              BNE        ROD_An_indir_pdec_r1                      ;if ROD try reg 1
+000001F0  6700 0064                187                                              BEQ        ROD_An_indir_pdec_r0_out               ;if equal go to output subroutine
+000001F4                           188  
+000001F4  B4BC 00000019            189  ROD_An_indir_pdec_r1                         CMP.L      #match_ROD_An_indir_predec_r1,D2         ;check reg is equal to 1
+000001FA  6600 0006                190                                              BNE        ROD_An_indir_pdec_r2                      ;if ROD try reg 2
+000001FE  6700 005E                191                                              BEQ        ROD_An_indir_pdec_r1_out              ;if equal go to output subroutine
+00000202                           192  
+00000202  B4BC 0000001A            193  ROD_An_indir_pdec_r2                        CMP.L      #match_ROD_An_indir_predec_r2,D2         ;check reg is equal to 2
+00000208  6600 0006                194                                              BNE        ROD_An_indir_pdec_r3                      ;if ROD try reg 3
+0000020C  6700 0058                195                                              BEQ        ROD_An_indir_pdec_r2_out               ;if equal go to output subroutine
+00000210                           196  
+00000210  B4BC 0000001B            197  ROD_An_indir_pdec_r3                        CMP.L      #match_ROD_An_indir_predec_r3,D2         ;check reg is equal to 3
+00000216  6600 0006                198                                              BNE        ROD_An_indir_pdec_r4                      ;if ROD try reg 4
+0000021A  6700 0062                199                                              BEQ        ROD_An_indir_pdec_r5_out               ;if equal go to output subroutine
+0000021E                           200  
+0000021E  B4BC 0000001C            201  ROD_An_indir_pdec_r4                        CMP.L      #match_ROD_An_indir_predec_r4,D2         ;check reg is equal to 4
+00000224  6600 0006                202                                              BNE        ROD_An_indir_pdec_r5                      ;if ROD try reg 5
+00000228  6700 004C                203                                              BEQ        ROD_An_indir_pdec_r4_out               ;if equal go to output subroutine
+0000022C                           204  
+0000022C  B4BC 0000001D            205  ROD_An_indir_pdec_r5                        CMP.L      #match_ROD_An_indir_predec_r5,D2         ;check reg is equal to 5
+00000232  6600 0006                206                                              BNE        ROD_An_indir_pdec_r6                      ;if ROD try reg 6
+00000236  6700 0046                207                                              BEQ        ROD_An_indir_pdec_r5_out               ;if equal go to output subroutine
+0000023A                           208  
+0000023A  B4BC 0000001E            209  ROD_An_indir_pdec_r6                        CMP.L      #match_ROD_An_indir_predec_r6,D2         ;check reg is equal to 6
+00000240  6700 0044                210                                              BEQ        ROD_An_indir_pdec_r6_out               ;if equal go to output subroutine
+00000244  6600 0002                211                                              BNE        ROD_An_indir_pdec_r7
+00000248                           212                                              
+00000248  B4BC 0000001F            213  ROD_An_indir_pdec_r7                        CMP.L      #match_ROD_An_indir_predec_r7,D2         ;check reg is equal to 6
+0000024E  6700 003E                214                                              BEQ        ROD_An_indir_pdec_r7_out               ;if equal go to output subroutine
+Line 215 ERROR: Undefined symbol
+00000252  6600 BAC2                215                                              BNE        ERROR                                        :if ROD equal to an addresssing mode, pritn error
+00000256                           216  ;--------------------Address Register Indirect with Pre Decrement Output-----------------------
+Line 217 ERROR: Undefined symbol
+00000256  227C 004DBD16            217  ROD_An_indir_pdec_r0_out                    MOVE.L          #ea_indir_predec_A0,A1                          ;load string constant into A1
+0000025C  4E75                     218                                              RTS                                                     ;return to subroutine
+0000025E                           219  
+Line 220 ERROR: Undefined symbol
+0000025E  227C 004DBD16            220  ROD_An_indir_pdec_r1_out                    MOVE.L          #ea_indir_predec_A1,A1                          ;load string constant into A1
+00000264  4E75                     221                                              RTS                                                     ;return to subroutine
+00000266                           222                                                      
+Line 223 ERROR: Undefined symbol
+00000266  227C 004DBD16            223  ROD_An_indir_pdec_r2_out                    MOVE.L          #ea_indir_predec_A2,A1                          ;load string constant into A1
+0000026C  4E75                     224                                              RTS                                                     ;return to subroutine
+0000026E                           225  
+Line 226 ERROR: Undefined symbol
+0000026E  227C 004DBD16            226  ROD_An_indir_pdec_r3_out                    MOVE.L          #ea_indir_predec_A3,A1                          ;load string constant into A1
+00000274  4E75                     227                                              RTS                                                     ;return to subroutine
+00000276                           228  
+Line 229 ERROR: Undefined symbol
+00000276  227C 004DBD16            229  ROD_An_indir_pdec_r4_out                    MOVE.L          #ea_indir_predec_A4,A1                          ;load string constant into A1
+0000027C  4E75                     230                                              RTS                                                     ;return to subroutine
+0000027E                           231      
+Line 232 ERROR: Undefined symbol
+0000027E  227C 004DBD16            232  ROD_An_indir_pdec_r5_out                    MOVE.L          #ea_indir_predec_A5,A1                          ;load string constant into A1
+00000284  4E75                     233                                              RTS                                                     ;return to subroutine
+00000286                           234      
+Line 235 ERROR: Undefined symbol
+00000286  227C 004DBD16            235  ROD_An_indir_pdec_r6_out                    MOVE.L          #ea_indir_predec_A6,A1                          ;load string constant into A1
+0000028C  4E75                     236                                              RTS                                                     ;return to subroutine
+0000028E                           237  
+Line 238 ERROR: Undefined symbol
+0000028E  227C 004DBD16            238  ROD_An_indir_pdec_r7_out                    MOVE.L          #ea_indir_predec_A7,A1                          ;load string constant into A1
+00000294  4E75                     239                                              RTS                                                     ;return to subroutine
+00000296                           240                                                      
+00000296                           241  ;------------------Absolute Addressing Output-----------------------
+Line 242 ERROR: Undefined symbol
+00000296  22FC 004DBD16            242  ROD_abs_add_word_out                     MOVE.L      #ea_$,(A1)+                        ;load $ for hex and increment A1
+0000029C  22C5                     243                                           MOVE.L      D5,(A1)+                           ;load address                  
+0000029E  4E75                     244                                           RTS                                            :return to subroutine
+000002A0                           245                                             
+000002A0                           246  
+000002A0  2A18                     247  ROD_abs_add_long_out                     MOVE.L      (A0)+,D5                           ;pull the next long instruction that holds the address
+Line 248 ERROR: Undefined symbol
+000002A2  22FC 004DBD16            248                                           MOVE.L      #ea_$,(A1)+                         ;load $ for hex and increment A1
+000002A8  22C5                     249                                           MOVE.L      D5,(A1)+                           ;load address                  
+000002AA  4E75                     250                                           RTS                                            :return to subroutine
+000002AC                           251                                                  
+000002AC                           252  ;-----------------------------------------------------------------Register Shift-----------------------------------------------------------
+000002AC                           253  ; determine if the shift is a data register or a immediate value
+000002AC  4281                     254  ROD_reg_shift                       CLR.L         D1                              ;clear D1
+000002AE  3200                     255                                      MOVE.W      D0,D1
+000002B0  C2BC 00000020            256                                      AND.L       #mask_ROD_reg_shift_ir,D1           ;load the mask into D1
+000002B6  B2BC 00000020            257                                      CMP.L       #match_ROD_shift_reg,D1             ;check to see if the shift is a data register
+000002BC  6700 0006                258                                      BEQ         ROD_shift_reg                       ;if the shift is a register, go to subroutine
+000002C0  6600 007C                259                                      BNE         ROD_count_val                       ;if ROD go to immediate value subroutine
+000002C4                           260  
+000002C4                           261  ;i/r = 1, the shift is a Data register                                    
+000002C4                           262  ; this the subroutine for the data register shift
+000002C4  4281                     263  ROD_shift_reg                       CLR.L       D1                             ;clear D1
+000002C6  3200                     264                                      MOVE.W      D0,D1
+000002C8  C2BC 00000020            265                                      AND.L       #mask_ROD_reg_shift,D1              ;load mask into D1 for bits 11-9
+000002CE                           266  
+000002CE  B2BC 00000000            267  ROD_count_reg0                      CMP.L       #match_ROD_count_reg0,D1            ;check to see if count/shift = 0
+000002D4  6600 0006                268                                      BNE         ROD_count_reg1                    ;if ROD go check 1
+000002D8  6700 017E                269                                      BEQ         ROD_count_reg0_out                ;got to output
+000002DC                           270                                      
+000002DC  B2BC 00000200            271  ROD_count_reg1                      CMP.L       #match_ROD_count_reg1,D1            ;check to see if count/shift = 1
+000002E2  6600 0006                272                                      BNE         ROD_count_reg2                    ;if ROD go check 2
+000002E6  6700 0184                273                                      BEQ         ROD_count_reg1_out                ;got to output
+000002EA                           274  
+000002EA  B2BC 00000400            275  ROD_count_reg2                      CMP.L       #match_ROD_count_reg2,D1            ;check to see if count/shift = 2
+000002F0  6600 0006                276                                      BNE         ROD_count_reg3                    ;if ROD go check 3
+000002F4  6700 018A                277                                      BEQ         ROD_count_reg2_out                ;got to output
+000002F8                           278  
+000002F8  B2BC 00000600            279  ROD_count_reg3                      CMP.L       #match_ROD_count_reg3,D1            ;check to see if count/shift = 3
+000002FE  6600 0006                280                                      BNE         ROD_count_reg4                    ;if ROD go check 4
+00000302  6700 0190                281                                      BEQ         ROD_count_reg3_out                ;got to output
+00000306                           282  
+00000306  B2BC 00000800            283  ROD_count_reg4                      CMP.L       #match_ROD_count_reg4,D1            ;check to see if count/shift = 4
+0000030C  6600 0006                284                                      BNE         ROD_count_reg5                    ;if ROD go check 5
+00000310  6700 0196                285                                      BEQ         ROD_count_reg4_out                ;got to output
+00000314                           286  
+00000314  B2BC 00000A00            287  ROD_count_reg5                      CMP.L       #match_ROD_count_reg5,D1            ;check to see if count/shift = 5
+0000031A  6600 0006                288                                      BNE         ROD_count_reg6                      ;if ROD go check 6
+0000031E  6700 019C                289                                      BEQ         ROD_count_reg5_out                  ;got to output
+00000322                           290  
+00000322  B2BC 00000C00            291  ROD_count_reg6                      CMP.L       #match_ROD_count_reg6,D1            ;check to see if count/shift = 6
+00000328  6600 0006                292                                      BNE         ROD_count_reg7                      ;if ROD go check 7
+0000032C  6700 01A2                293                                      BEQ         ROD_count_reg6_out                  ;got to output
+00000330                           294  
+00000330  B2BC 00000E00            295  ROD_count_reg7                      CMP.L       #match_ROD_count_reg7,D1            ;check to see if count/shift = 7
+Line 296 ERROR: Undefined symbol
+00000336  6600 B9DE                296                                      BNE         ERROR                           ; if none of the registers, then print error message
+0000033A  6700 01A8                297                                      BEQ         ROD_count_reg7_out                  ;got to output
+0000033E                           298  
+0000033E                           299  
+0000033E                           300  
+0000033E                           301  ;i/r = 0, the shift is an immediate value
+0000033E                           302  ;1-7 = 1-7
+0000033E                           303  ;0 = 8
+0000033E                           304  ; this is the subroutine for the immedite value shift
+0000033E  4242                     305  ROD_count_val                       CLR         D2                                      ;make sure D2 is empty
+00000340  3400                     306                                      MOVE.W      D0,D2
+00000342  C2BC 00000E00            307                                      AND.L       #mask_ROD_count_shift,D1
+00000348  B2BC 00000000            308                                      CMP.L       #match_ROD_count_val0,D1          ;check to see if shift count is 0
+0000034E  6600 0006                309                                      BNE         ROD_count_val1                    ;if ROD 0 check 1
+00000352  6700 0064                310                                      BEQ         ROD_count_val0_out                ;if 0 got to output
+00000356                           311  
+00000356  B2BC 00000200            312  ROD_count_val1                      CMP.L       #match_ROD_count_val1,D1          ;check to see if shift count is 0
+0000035C  6600 0006                313                                      BNE         ROD_count_val2                    ;if ROD 0 check 1
+00000360  6700 006A                314                                      BEQ         ROD_count_val1_out                ;if 0 got to output
+00000364                           315  
+00000364  B2BC 00000400            316  ROD_count_val2                      CMP.L       #match_ROD_count_val2,D1          ;check to see if shift count is 0
+0000036A  6600 0006                317                                      BNE         ROD_count_val3                    ;if ROD 0 check 1
+0000036E  6700 0070                318                                      BEQ         ROD_count_val2_out                ;if 0 got to output
+00000372                           319  
+00000372  B2BC 00000600            320  ROD_count_val3                      CMP.L       #match_ROD_count_val3,D1          ;check to see if shift count is 0
+00000378  6600 0006                321                                      BNE         ROD_count_val4                    ;if ROD 0 check 1
+0000037C  6700 0076                322                                      BEQ         ROD_count_val3_out                ;if 0 got to output
+00000380                           323  
+00000380  B2BC 00000800            324  ROD_count_val4                      CMP.L       #match_ROD_count_val4,D1          ;check to see if shift count is 0
+00000386  6600 0006                325                                      BNE         ROD_count_val5                    ;if ROD 0 check 1
+0000038A  6700 007C                326                                      BEQ         ROD_count_val4_out                ;if 0 got to output
+0000038E                           327  
+0000038E  B2BC 00000A00            328  ROD_count_val5                      CMP.L       #match_ROD_count_val5,D1          ;check to see if shift count is 0
+00000394  6600 0006                329                                      BNE         ROD_count_val6                    ;if ROD 0 check 1
+00000398  6700 0082                330                                      BEQ         ROD_count_val5_out                ;if 0 got to output
+0000039C                           331  
+0000039C  B2BC 00000C00            332  ROD_count_val6                      CMP.L       #match_ROD_count_val6,D1          ;check to see if shift count is 0
+000003A2  6600 0006                333                                      BNE         ROD_count_val7                    ;if ROD 0 check 1
+000003A6  6700 0088                334                                      BEQ         ROD_count_val6_out                ;if 0 got to output
+000003AA                           335  
+000003AA  B2BC 00000E00            336  ROD_count_val7                      CMP.L       #match_ROD_count_val7,D1          ;check to see if shift count is 0
+Line 337 ERROR: Undefined symbol
+000003B0  6600 B964                337                                      BNE         ERROR                           ;if none of the registers, invlid EA mode
+000003B4  6700 008E                338                                      BEQ         ROD_count_val7_out                ;if 0 got to output
+000003B8                           339  
+000003B8                           340  ;-----------------------------------Count Shift Immedite Value Output---------------------------
+Line 341 ERROR: Undefined symbol
+000003B8  227C 004DBD16            341  ROD_count_val0_out            MOVE.L            #ea_val0,A1         ;load string constant into A1
+Line 342 ERROR: Undefined symbol
+000003BE  4EB9 004DBD16            342                                JSR               print_first
+000003C4  4EB9 000004F8            343                                JSR               ROD_Dn0                 ;jump to subroutine to determine the second operand
+000003CA  4E75                     344                                RTS
+000003CC                           345                                
+Line 346 ERROR: Undefined symbol
+000003CC  227C 004DBD16            346  ROD_count_val1_out            MOVE.L            #ea_val1,A1         ;load string constant into A1
+Line 347 ERROR: Undefined symbol
+000003D2  4EB9 004DBD16            347                                JSR               print_first
+000003D8  4EB9 000004F8            348                                JSR               ROD_Dn0                 ;jump to subroutine to determine the second operand
+000003DE  4E75                     349                                RTS                             
+000003E0                           350  
+Line 351 ERROR: Undefined symbol
+000003E0  227C 004DBD16            351  ROD_count_val2_out            MOVE.L            #ea_val2,A1         ;load string constant into A1
+Line 352 ERROR: Undefined symbol
+000003E6  4EB9 004DBD16            352                                JSR               print_first
+000003EC  4EB9 000004F8            353                                JSR               ROD_Dn0                 ;jump to subroutine to determine the second operand
+000003F2  4E75                     354                                RTS
+000003F4                           355                                
+Line 356 ERROR: Undefined symbol
+000003F4  227C 004DBD16            356  ROD_count_val3_out            MOVE.L            #ea_val3,A1         ;load string constant into A1
+Line 357 ERROR: Undefined symbol
+000003FA  4EB9 004DBD16            357                                JSR               print_first
+00000400  4EB9 000004F8            358                                JSR               ROD_Dn0                 ;jump to subroutine to determine the second operand
+00000406  4E75                     359                                RTS
+00000408                           360                                
+Line 361 ERROR: Undefined symbol
+00000408  227C 004DBD16            361  ROD_count_val4_out            MOVE.L            #ea_val4,A1         ;load string constant into A1
+Line 362 ERROR: Undefined symbol
+0000040E  4EB9 004DBD16            362                                JSR               print_first
+00000414  4EB9 000004F8            363                                JSR               ROD_Dn0                 ;jump to subroutine to determine the second operand
+0000041A  4E75                     364                                RTS
+0000041C                           365                                
+Line 366 ERROR: Undefined symbol
+0000041C  227C 004DBD16            366  ROD_count_val5_out            MOVE.L            #ea_val5,A1         ;load string constant into A1
+Line 367 ERROR: Undefined symbol
+00000422  4EB9 004DBD16            367                                JSR               print_first
+00000428  4EB9 000004F8            368                                JSR               ROD_Dn0                 ;jump to subroutine to determine the second operand
+0000042E  4E75                     369                                RTS
+00000430                           370                                
+Line 371 ERROR: Undefined symbol
+00000430  227C 004DBD16            371  ROD_count_val6_out            MOVE.L            #ea_val6,A1         ;load string constant into A1
+Line 372 ERROR: Undefined symbol
+00000436  4EB9 004DBD16            372                                JSR               print_first
+0000043C  4EB9 000004F8            373                                JSR               ROD_Dn0                 ;jump to subroutine to determine the second operand
+00000442  4E75                     374                                RTS
+00000444                           375                                
+Line 376 ERROR: Undefined symbol
+00000444  227C 004DBD16            376  ROD_count_val7_out            MOVE.L            #ea_val7,A1         ;load string constant into A1
+Line 377 ERROR: Undefined symbol
+0000044A  4EB9 004DBD16            377                                JSR               print_first
+00000450  4EB9 000004F8            378                                JSR               ROD_Dn0                 ;jump to subroutine to determine the second operand
+00000456  4E75                     379                                RTS
+00000458                           380                                
+00000458                           381  ;-------------------------Count Shift Output (Dn)-----------------------------------------
+Line 382 ERROR: Undefined symbol
+00000458  227C 004DBD16            382  ROD_count_reg0_out            MOVE.L            #ea_D0,A1           ;load string constant into A1
+Line 383 ERROR: Undefined symbol
+0000045E  4EB9 004DBD16            383                                JSR               print_first
+00000464  4EB9 000004F8            384                                JSR               ROD_Dn0                 ;jump to subroutine to determine the second operand
+0000046A  4E75                     385                                RTS
+0000046C                           386                                
+Line 387 ERROR: Undefined symbol
+0000046C  227C 004DBD16            387  ROD_count_reg1_out            MOVE.L            #ea_D1,A1           ;load string constant into A1
+Line 388 ERROR: Undefined symbol
+00000472  4EB9 004DBD16            388                                JSR               print_first
+00000478  4EB9 000004F8            389                                JSR               ROD_Dn0                 ;jump to subroutine to determine the second operand
+0000047E  4E75                     390                                RTS
+00000480                           391                                
+Line 392 ERROR: Undefined symbol
+00000480  227C 004DBD16            392  ROD_count_reg2_out            MOVE.L            #ea_D2,A1           ;load string constant into A1
+Line 393 ERROR: Undefined symbol
+00000486  4EB9 004DBD16            393                                JSR               print_first
+0000048C  4EB9 000004F8            394                                JSR               ROD_Dn0                 ;jump to subroutine to determine the second operand
+00000492  4E75                     395                                RTS
+00000494                           396                                
+Line 397 ERROR: Undefined symbol
+00000494  227C 004DBD16            397  ROD_count_reg3_out            MOVE.L            #ea_D3,A1           ;load string constant into A1
+Line 398 ERROR: Undefined symbol
+0000049A  4EB9 004DBD16            398                                JSR               print_first
+000004A0  4EB9 000004F8            399                                JSR               ROD_Dn0                 ;jump to subroutine to determine the second operand
+000004A6  4E75                     400                                RTS
+000004A8                           401                                
+Line 402 ERROR: Undefined symbol
+000004A8  227C 004DBD16            402  ROD_count_reg4_out            MOVE.L            #ea_D4,A1           ;load string constant into A1
+Line 403 ERROR: Undefined symbol
+000004AE  4EB9 004DBD16            403                                JSR               print_first
+000004B4  4EB9 000004F8            404                                JSR               ROD_Dn0                 ;jump to subroutine to determine the second operand
+000004BA  4E75                     405                                RTS
+000004BC                           406                                
+Line 407 ERROR: Undefined symbol
+000004BC  227C 004DBD16            407  ROD_count_reg5_out            MOVE.L            #ea_D5,A1           ;load string constant into A1
+Line 408 ERROR: Undefined symbol
+000004C2  4EB9 004DBD16            408                                JSR               print_first
+000004C8  4EB9 000004F8            409                                JSR               ROD_Dn0                 ;jump to subroutine to determine the second operand
+000004CE  4E75                     410                                RTS
+000004D0                           411                                
+Line 412 ERROR: Undefined symbol
+000004D0  227C 004DBD16            412  ROD_count_reg6_out            MOVE.L            #ea_D6,A1           ;load string constant into A1
+Line 413 ERROR: Undefined symbol
+000004D6  4EB9 004DBD16            413                                JSR               print_first
+000004DC  4EB9 000004F8            414                                JSR               ROD_Dn0                 ;jump to subroutine to determine the second operand
+000004E2  4E75                     415                                RTS
+000004E4                           416                                
+Line 417 ERROR: Undefined symbol
+000004E4  227C 004DBD16            417  ROD_count_reg7_out            MOVE.L            #ea_D7,A1           ;load string constant into A1
+Line 418 ERROR: Undefined symbol
+000004EA  4EB9 004DBD16            418                                JSR               print_first
+000004F0  4EB9 000004F8            419                                JSR               ROD_Dn0                 ;jump to subroutine to determine the second operand                                    
+000004F6  4E75                     420                                RTS                                    
+000004F8                           421                                      
+000004F8                           422  ;----------------------------------------------Determine Second Operand Data Register-----------------------------------------------------
+000004F8  4241                     423  ROD_Dn0                         CLR             D1                  ;clear D1
+000004FA  3200                     424                                  MOVE.W          D0,D1
+000004FC  C2BC 00000007            425                                  AND.L           #mask_ROD_data_reg,D1   ;load data register mask for second operand
+00000502                           426                                  
+00000502  B2BC 00000000            427                                  CMP.L           #match_ROD_D_reg0,D1          ;check if data register is D0
+00000508  6700 0068                428                                  BEQ             ROD_D0_out              ;if equal got to output subroutine
+0000050C  6600 0002                429                                  BNE             ROD_Dn1                 ;if ROD check D1
+00000510                           430                                  
+00000510  B2BC 00000001            431  ROD_Dn1                         CMP.L           #match_ROD_D_reg1,D1          ;check if data register is D0
+00000516  6700 0062                432                                  BEQ             ROD_D1_out              ;if equal got to output subroutine
+0000051A  6600 0002                433                                  BNE             ROD_Dn2                 ;if ROD check D2
+0000051E                           434  
+0000051E  B2BC 00000002            435  ROD_Dn2                         CMP.L           #match_ROD_D_reg2,D1          ;check if data register is D0
+00000524  6700 005C                436                                  BEQ             ROD_D2_out              ;if equal got to output subroutine
+00000528  6600 0002                437                                  BNE             ROD_Dn3                 ;if ROD check D3
+0000052C                           438  
+0000052C  B2BC 00000003            439  ROD_Dn3                         CMP.L           #match_ROD_D_reg3,D1          ;check if data register is D0
+00000532  6700 0056                440                                  BEQ             ROD_D3_out              ;if equal got to output subroutine
+00000536  6600 0002                441                                  BNE             ROD_Dn4                 ;if ROD check D4
+0000053A                           442  
+0000053A  B2BC 00000004            443  ROD_Dn4                         CMP.L           #match_ROD_D_reg4,D1          ;check if data register is D0
+00000540  6700 0050                444                                  BEQ             ROD_D4_out              ;if equal got to output subroutine
+00000544  6600 0002                445                                  BNE             ROD_Dn5                 ;if ROD check D5
+00000548                           446  
+00000548  B2BC 00000005            447  ROD_Dn5                         CMP.L           #match_ROD_D_reg5,D1          ;check if data register is D0
+0000054E  6700 004A                448                                  BEQ             ROD_D5_out              ;if equal got to output subroutine
+00000552  6600 0002                449                                  BNE             ROD_Dn6                 ;if ROD check D6
+00000556                           450  
+00000556  B2BC 00000006            451  ROD_Dn6                         CMP.L           #match_ROD_D_reg6,D1          ;check if data register is D0
+0000055C  6700 0044                452                                  BEQ             ROD_D6_out              ;if equal got to output subroutine
+00000560  6600 0002                453                                  BNE             ROD_Dn7                 ;if ROD check D7
+00000564                           454  
+00000564  B2BC 00000007            455  ROD_Dn7                         CMP.L           #match_ROD_D_reg7,D1          ;check if data register is D0
+0000056A  6700 003E                456                                  BEQ             ROD_D7_out              ;if equal got to output subroutine
+Line 457 ERROR: Undefined symbol
+0000056E  6600 B7A6                457                                  BNE             ERROR               :if none of the registers go to error sub routine
+00000572                           458                                  
+00000572                           459                                  
+00000572                           460  ;-------------------------------Dn Second Operand Output-----------------------------------------------------------------
+Line 461 ERROR: Undefined symbol
+00000572  227C 004DBD16            461  ROD_D0_out                    MOVE.L            #ea_D0,A1           ;load string constant into A1
+00000578  4E75                     462                                RTS                                   ;return to subroutine
+0000057A                           463  
+0000057A                           464  
+Line 465 ERROR: Undefined symbol
+0000057A  227C 004DBD16            465  ROD_D1_out                    MOVE.L            #ea_D1,A1           ;load string constant into A1
+00000580  4E75                     466                                RTS                                   ;return to subroutine
+00000582                           467  
+00000582                           468  
+Line 469 ERROR: Undefined symbol
+00000582  227C 004DBD16            469  ROD_D2_out                    MOVE.L            #ea_D2,A1           ;load string constant into A1
+00000588  4E75                     470                                RTS                                   ;return to subroutine
+0000058A                           471  
+0000058A                           472              
+Line 473 ERROR: Undefined symbol
+0000058A  227C 004DBD16            473  ROD_D3_out                    MOVE.L            #ea_D3,A1           ;load string constant into A1
+00000590  4E75                     474                                RTS                                   ;return to subroutine
+00000592                           475  
+00000592                           476  
+Line 477 ERROR: Undefined symbol
+00000592  227C 004DBD16            477  ROD_D4_out                    MOVE.L            #ea_D4,A1           ;load string constant into A1
+00000598  4E75                     478                                RTS                                   ;return to subroutine
+0000059A                           479  
+0000059A                           480  
+Line 481 ERROR: Undefined symbol
+0000059A  227C 004DBD16            481  ROD_D5_out                    MOVE.L            #ea_D5,A1           ;load string constant into A1
+000005A0  4E75                     482                                RTS                                   ;return to subroutine
+000005A2                           483  
+000005A2                           484  
+Line 485 ERROR: Undefined symbol
+000005A2  227C 004DBD16            485  ROD_D6_out                    MOVE.L            #ea_D6,A1           ;load string constant into A1
+000005A8  4E75                     486                                RTS                                   ;return to subroutine
+000005AA                           487  
+000005AA                           488  
+Line 489 ERROR: Undefined symbol
+000005AA  227C 004DBD16            489  ROD_D7_out                    MOVE.L            #ea_D7,A1           ;load string constant into A1
+000005B0  4E75                     490                                RTS                                   ;return to subroutine
+000005B2                           491  
+000005B2                           492  
+000005B2                           493  *----------------------------------------------------------------------------------------------------------------------------
+000005B2                           494  *                               Variables
+000005B2                           495  * 
+000005B2                           496  *----------------------------------------------------------------------------------------------------------------------------
+000005B2                           497                                      
+000005B2  =000000C0                498  mask_ROD_shift_type                         EQU             $00C0              ;masks bits 6&7 to determine if mem shift or reg shift
+000005B2  =00000038                499  mask_ROD_ea_mode                            EQU             $0038              ;masks bits 5-3 to determine ea mode
+000005B2  =0000003F                500  mask_ROD_ea_reg_and_mode                    EQU             $003F              ;masks bits 5-0 to determine the register with the given mode
+000005B2  =0000003F                501  mask_ROD_ea_mode_abs_add                    EQU             $003F              ;masks ea absolute addressing mode 
+000005B2  =00000020                502  mask_ROD_reg_shift_ir                           EQU             $0020              ;masks bit 5 to determine if the shift is immediate value or register
+000005B2  =00000E00                503  mask_ROD_count_shift                            EQU             $0E00              ;masks bits 11-9 to determine data register or immediate value
+000005B2  =00000020                504  mask_ROD_reg_shift                              EQU             $0020              ;mask to determine if reg shift or value shift
+000005B2  =00000007                505  mask_ROD_data_reg                               EQU             $0007              ;masks bits 2-0 to determine the data register in the second operand
+000005B2                           506  
+000005B2  =00000000                507  match_ROD_D_reg0                                EQU             $0000               ;match for second operand data register 0
+000005B2  =00000001                508  match_ROD_D_reg1                                EQU             $0001               ;match for second operand data register 1
+000005B2  =00000002                509  match_ROD_D_reg2                                EQU             $0002               ;match for second operand data register 2
+000005B2  =00000003                510  match_ROD_D_reg3                                EQU             $0003               ;match for second operand data register 3
+000005B2  =00000004                511  match_ROD_D_reg4                                EQU             $0004               ;match for second operand data register 4
+000005B2  =00000005                512  match_ROD_D_reg5                                EQU             $0005               ;match for second operand data register 5
+000005B2  =00000006                513  match_ROD_D_reg6                                EQU             $0006               ;match for second operand data register 6
+000005B2  =00000007                514  match_ROD_D_reg7                                EQU             $0007               ;match for second operand data register 7
+000005B2                           515  
+000005B2  =00000000                516  match_ROD_count_reg0                            EQU             $0000               ;match for bits 11-9 output D0
+000005B2  =00000200                517  match_ROD_count_reg1                            EQU             $0200               ;match for bits 11-9 output D1
+000005B2  =00000400                518  match_ROD_count_reg2                            EQU             $0400               ;match for bits 11-9 output D2
+000005B2  =00000600                519  match_ROD_count_reg3                            EQU             $0600               ;match for bits 11-9 output D3
+000005B2  =00000800                520  match_ROD_count_reg4                            EQU             $0800               ;match for bits 11-9 output D4
+000005B2  =00000A00                521  match_ROD_count_reg5                            EQU             $0A00               ;match for bits 11-9 output D5
+000005B2  =00000C00                522  match_ROD_count_reg6                            EQU             $0C00               ;match for bits 11-9 output D6
+000005B2  =00000E00                523  match_ROD_count_reg7                            EQU             $0E00               ;match for bits 11-9 output D7
+000005B2                           524  
+000005B2  =00000020                525  match_ROD_shift_reg                             EQU             $0020               ;match to for a register shift
+000005B2  =00000000                526  match_ROD_count_val0                            EQU             $0000               ;match for shift reg 0
+000005B2  =00000200                527  match_ROD_count_val1                           EQU             $0200               ;match for shift reg 1
+000005B2  =00000400                528  match_ROD_count_val2                            EQU             $0400               ;match for shift reg 2
+000005B2  =00000600                529  match_ROD_count_val3                            EQU             $0600               ;match for shift reg 3
+000005B2  =00000800                530  match_ROD_count_val4                            EQU             $0800               ;match for shift reg 4
+000005B2  =00000A00                531  match_ROD_count_val5                            EQU             $0A00               ;match for shift reg 5
+000005B2  =00000C00                532  match_ROD_count_val6                            EQU             $0C00               ;match for shift reg 6
+000005B2  =00000E00                533  match_ROD_count_val7                            EQU             $0E00               ;match for shift reg 7
+000005B2                           534  
+000005B2  =00000020                535  match_ROD_shift_count                           EQU             $0020
+000005B2  =000000C0                536  match_ROD_mem_shift                         EQU             $00C0              ;match for memory shift
+000005B2  =00000010                537  match_ROD_An_indir                          EQU             $0010              ;match for add reg indir
+000005B2  =00000020                538  match_ROD_An_indir_postinc                  EQU             $0020              ;match for add reg indir with postinc
+000005B2  =00000018                539  match_ROD_An_indir_predec                   EQU             $0018              ;match for add reg indir with predec
+000005B2  =00000039                540  match_ROD_abs_add_word                      EQU             $0039              ;match for word abs add 
+000005B2  =0000003C                541  match_ROD_abs_add_long                      EQU             $003C              ;match for long abs add
+000005B2                           542  
+000005B2                           543  
+000005B2  =00000010                544  match_ROD_An_indir_r0                       EQU             $0010              ;match for add reg indir with add reg 0
+000005B2  =00000011                545  match_ROD_An_indir_r1                       EQU             $0011              ;match for add reg indir with add reg 1
+000005B2  =00000012                546  match_ROD_An_indir_r2                       EQU             $0012              ;match for add reg indir with add reg 2
+000005B2  =00000013                547  match_ROD_An_indir_r3                       EQU             $0013              ;match for add reg indir with add reg 3
+000005B2  =00000014                548  match_ROD_An_indir_r4                       EQU             $0014              ;match for add reg indir with add reg 4
+000005B2  =00000015                549  match_ROD_An_indir_r5                       EQU             $0015              ;match for add reg indir with add reg 5
+000005B2  =00000016                550  match_ROD_An_indir_r6                       EQU             $0016              ;match for add reg indir with add reg 6
+000005B2  =00000017                551  match_ROD_An_indir_r7                       EQU             $0017              ;match for add reg indir with add reg 7
+000005B2                           552  
+000005B2                           553  
+000005B2  =00000020                554  match_ROD_An_indir_postinc_r0               EQU             $0020              ;match for add reg indir with postinc with add reg 0
+000005B2  =00000021                555  match_ROD_An_indir_postinc_r1               EQU             $0021              ;match for add reg indir with postinc with add reg 1
+000005B2  =00000022                556  match_ROD_An_indir_postinc_r2               EQU             $0022              ;match for add reg indir with postinc with add reg 2
+000005B2  =00000023                557  match_ROD_An_indir_postinc_r3               EQU             $0023              ;match for add reg indir with postinc with add reg 3
+000005B2  =00000024                558  match_ROD_An_indir_postinc_r4               EQU             $0024              ;match for add reg indir with postinc with add reg 4
+000005B2  =00000025                559  match_ROD_An_indir_postinc_r5               EQU             $0025              ;match for add reg indir with postinc with add reg 5
+000005B2  =00000026                560  match_ROD_An_indir_postinc_r6               EQU             $0026              ;match for add reg indir with postinc with add reg 6
+000005B2  =00000027                561  match_ROD_An_indir_postinc_r7               EQU             $0027              ;match for add reg indir with postinc with add reg 7
+000005B2                           562  
+000005B2  =00000018                563  match_ROD_An_indir_predec_r0                EQU             $0018              ;match for add reg indir with predec with add reg 0
+000005B2  =00000019                564  match_ROD_An_indir_predec_r1                EQU             $0019              ;match for add reg indir with predec with add reg 1
+000005B2  =0000001A                565  match_ROD_An_indir_predec_r2                EQU             $001A              ;match for add reg indir with predec with add reg 2
+000005B2  =0000001B                566  match_ROD_An_indir_predec_r3                EQU             $001B              ;match for add reg indir with predec with add reg 3
+000005B2  =0000001C                567  match_ROD_An_indir_predec_r4                EQU             $001C              ;match for add reg indir with predec with add reg 4
+000005B2  =0000001D                568  match_ROD_An_indir_predec_r5                EQU             $001D              ;match for add reg indir with predec with add reg 5
+000005B2  =0000001E                569  match_ROD_An_indir_predec_r6                EQU             $001E              ;match for add reg indir with predec with add reg 6
+000005B2  =0000001F                570  match_ROD_An_indir_predec_r7                EQU             $001F              ;match for add reg indir with predec with add reg 7
+000005B2                           571  
+000005B2                           572  
+000005B2                           573  
+000005B2                           574  
+000005B2                           575  
+000005B2                           576  
+000005B2                           577  
+000005B2                           578  
+Line 579 WARNING: END directive missing, starting address not set
+
+73 errors detected
+1 warning generated
+
+
+SYMBOL TABLE INFORMATION
+Symbol-name         Value
+-------------------------
+MASK_ROD_COUNT_SHIFT  E00
+MASK_ROD_DATA_REG   7
+MASK_ROD_EA_MODE    38
+MASK_ROD_EA_MODE_ABS_ADD  3F
+MASK_ROD_EA_REG_AND_MODE  3F
+MASK_ROD_REG_SHIFT  20
+MASK_ROD_REG_SHIFT_IR  20
+MASK_ROD_SHIFT_TYPE  C0
+MATCH_ROD_ABS_ADD_LONG  3C
+MATCH_ROD_ABS_ADD_WORD  39
+MATCH_ROD_AN_INDIR  10
+MATCH_ROD_AN_INDIR_POSTINC  20
+MATCH_ROD_AN_INDIR_POSTINC_R0  20
+MATCH_ROD_AN_INDIR_POSTINC_R1  21
+MATCH_ROD_AN_INDIR_POSTINC_R2  22
+MATCH_ROD_AN_INDIR_POSTINC_R3  23
+MATCH_ROD_AN_INDIR_POSTINC_R4  24
+MATCH_ROD_AN_INDIR_POSTINC_R5  25
+MATCH_ROD_AN_INDIR_POSTINC_R6  26
+MATCH_ROD_AN_INDIR_POSTINC_R7  27
+MATCH_ROD_AN_INDIR_PREDEC  18
+MATCH_ROD_AN_INDIR_PREDEC_R0  18
+MATCH_ROD_AN_INDIR_PREDEC_R1  19
+MATCH_ROD_AN_INDIR_PREDEC_R2  1A
+MATCH_ROD_AN_INDIR_PREDEC_R3  1B
+MATCH_ROD_AN_INDIR_PREDEC_R4  1C
+MATCH_ROD_AN_INDIR_PREDEC_R5  1D
+MATCH_ROD_AN_INDIR_PREDEC_R6  1E
+MATCH_ROD_AN_INDIR_PREDEC_R7  1F
+MATCH_ROD_AN_INDIR_R0  10
+MATCH_ROD_AN_INDIR_R1  11
+MATCH_ROD_AN_INDIR_R2  12
+MATCH_ROD_AN_INDIR_R3  13
+MATCH_ROD_AN_INDIR_R4  14
+MATCH_ROD_AN_INDIR_R5  15
+MATCH_ROD_AN_INDIR_R6  16
+MATCH_ROD_AN_INDIR_R7  17
+MATCH_ROD_COUNT_REG0  0
+MATCH_ROD_COUNT_REG1  200
+MATCH_ROD_COUNT_REG2  400
+MATCH_ROD_COUNT_REG3  600
+MATCH_ROD_COUNT_REG4  800
+MATCH_ROD_COUNT_REG5  A00
+MATCH_ROD_COUNT_REG6  C00
+MATCH_ROD_COUNT_REG7  E00
+MATCH_ROD_COUNT_VAL0  0
+MATCH_ROD_COUNT_VAL1  200
+MATCH_ROD_COUNT_VAL2  400
+MATCH_ROD_COUNT_VAL3  600
+MATCH_ROD_COUNT_VAL4  800
+MATCH_ROD_COUNT_VAL5  A00
+MATCH_ROD_COUNT_VAL6  C00
+MATCH_ROD_COUNT_VAL7  E00
+MATCH_ROD_D_REG0    0
+MATCH_ROD_D_REG1    1
+MATCH_ROD_D_REG2    2
+MATCH_ROD_D_REG3    3
+MATCH_ROD_D_REG4    4
+MATCH_ROD_D_REG5    5
+MATCH_ROD_D_REG6    6
+MATCH_ROD_D_REG7    7
+MATCH_ROD_MEM_SHIFT  C0
+MATCH_ROD_SHIFT_COUNT  20
+MATCH_ROD_SHIFT_REG  20
+ROD_ABS_ADD_LONG    66
+ROD_ABS_ADD_LONG_OUT  2A0
+ROD_ABS_ADD_WORD    4C
+ROD_ABS_ADD_WORD_OUT  296
+ROD_AN_INDIR        22
+ROD_AN_INDIR_PDEC_R0_OUT  256
+ROD_AN_INDIR_PDEC_R1  1F4
+ROD_AN_INDIR_PDEC_R1_OUT  25E
+ROD_AN_INDIR_PDEC_R2  202
+ROD_AN_INDIR_PDEC_R2_OUT  266
+ROD_AN_INDIR_PDEC_R3  210
+ROD_AN_INDIR_PDEC_R3_OUT  26E
+ROD_AN_INDIR_PDEC_R4  21E
+ROD_AN_INDIR_PDEC_R4_OUT  276
+ROD_AN_INDIR_PDEC_R5  22C
+ROD_AN_INDIR_PDEC_R5_OUT  27E
+ROD_AN_INDIR_PDEC_R6  23A
+ROD_AN_INDIR_PDEC_R6_OUT  286
+ROD_AN_INDIR_PDEC_R7  248
+ROD_AN_INDIR_PDEC_R7_OUT  28E
+ROD_AN_INDIR_PINC_R0_OUT  1A2
+ROD_AN_INDIR_PINC_R1  140
+ROD_AN_INDIR_PINC_R1_OUT  1AA
+ROD_AN_INDIR_PINC_R2  14E
+ROD_AN_INDIR_PINC_R2_OUT  1B2
+ROD_AN_INDIR_PINC_R3  15C
+ROD_AN_INDIR_PINC_R3_OUT  1BA
+ROD_AN_INDIR_PINC_R4  16A
+ROD_AN_INDIR_PINC_R4_OUT  1C2
+ROD_AN_INDIR_PINC_R5  178
+ROD_AN_INDIR_PINC_R5_OUT  1CA
+ROD_AN_INDIR_PINC_R6  186
+ROD_AN_INDIR_PINC_R6_OUT  1D2
+ROD_AN_INDIR_PINC_R7  194
+ROD_AN_INDIR_PINC_R7_OUT  1DA
+ROD_AN_INDIR_POSTINC  30
+ROD_AN_INDIR_POSTINC_REG  12E
+ROD_AN_INDIR_PREDEC  3E
+ROD_AN_INDIR_PREDEC_REG  1E2
+ROD_AN_INDIR_REG    74
+ROD_AN_INDIR_REG0_OUT  EE
+ROD_AN_INDIR_REG1   8C
+ROD_AN_INDIR_REG1_OUT  F6
+ROD_AN_INDIR_REG2   9A
+ROD_AN_INDIR_REG2_OUT  FE
+ROD_AN_INDIR_REG3   A8
+ROD_AN_INDIR_REG3_OUT  106
+ROD_AN_INDIR_REG4   B6
+ROD_AN_INDIR_REG4_OUT  10E
+ROD_AN_INDIR_REG5   C4
+ROD_AN_INDIR_REG5_OUT  116
+ROD_AN_INDIR_REG6   D2
+ROD_AN_INDIR_REG6_OUT  11E
+ROD_AN_INDIR_REG7   E0
+ROD_AN_INDIR_REG7_OUT  126
+ROD_COUNT_REG0      2CE
+ROD_COUNT_REG0_OUT  458
+ROD_COUNT_REG1      2DC
+ROD_COUNT_REG1_OUT  46C
+ROD_COUNT_REG2      2EA
+ROD_COUNT_REG2_OUT  480
+ROD_COUNT_REG3      2F8
+ROD_COUNT_REG3_OUT  494
+ROD_COUNT_REG4      306
+ROD_COUNT_REG4_OUT  4A8
+ROD_COUNT_REG5      314
+ROD_COUNT_REG5_OUT  4BC
+ROD_COUNT_REG6      322
+ROD_COUNT_REG6_OUT  4D0
+ROD_COUNT_REG7      330
+ROD_COUNT_REG7_OUT  4E4
+ROD_COUNT_VAL       33E
+ROD_COUNT_VAL0_OUT  3B8
+ROD_COUNT_VAL1      356
+ROD_COUNT_VAL1_OUT  3CC
+ROD_COUNT_VAL2      364
+ROD_COUNT_VAL2_OUT  3E0
+ROD_COUNT_VAL3      372
+ROD_COUNT_VAL3_OUT  3F4
+ROD_COUNT_VAL4      380
+ROD_COUNT_VAL4_OUT  408
+ROD_COUNT_VAL5      38E
+ROD_COUNT_VAL5_OUT  41C
+ROD_COUNT_VAL6      39C
+ROD_COUNT_VAL6_OUT  430
+ROD_COUNT_VAL7      3AA
+ROD_COUNT_VAL7_OUT  444
+ROD_D0_OUT          572
+ROD_D1_OUT          57A
+ROD_D2_OUT          582
+ROD_D3_OUT          58A
+ROD_D4_OUT          592
+ROD_D5_OUT          59A
+ROD_D6_OUT          5A2
+ROD_D7_OUT          5AA
+ROD_DN0             4F8
+ROD_DN1             510
+ROD_DN2             51E
+ROD_DN3             52C
+ROD_DN4             53A
+ROD_DN5             548
+ROD_DN6             556
+ROD_DN7             564
+ROD_MEM_SHIFT       18
+ROD_REG_SHIFT       2AC
+ROD_SHIFT_REG       2C4
+ROD_SHIFT_TYPE      0
+ROD_SUB             0

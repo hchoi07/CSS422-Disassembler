@@ -30,9 +30,7 @@ MOVE_add_reg_indir_postinc      CMP.L             #match_MOVE_src_An_indir_posti
                                  BNE               MOVE_abs_add_word                                  ;if not go check abs add word
                                  BEQ               MOVE_An_indir_postinc_reg                          ;if equal go figure out the register
 
-MOVE_abs_add_word               CLR.L               D2
-                                MOVE.W              D0,D2
-                                AND.L             #mask_MOVE_src_abs_add,D2                        ;load mask to determine if abs add word or long
+MOVE_abs_add_word               AND.L             #mask_MOVE_src_abs_add,D2                        ;load mask to determine if abs add word or long
                                  
                                  CMP.L             #match_MOVE_src_abs_add_word,D2                  ;check if abs add word
                                  MOVE.L            (A0)+,D5                                      ;pull the next word instruction that holds the address
@@ -872,7 +870,6 @@ match_MOVE_dest_An_indir_pdec_r7			EQU			$0F00
 match_MOVE_dest_imm_add                           EQU         $01C0
 match_MOVE_dest_imm_add_word                      EQU         $01C0
 match_MOVE_dest_imm_add_long                      EQU         $09C0
-
 
 
 

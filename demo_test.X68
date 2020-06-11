@@ -24,6 +24,9 @@ NOP
     LEA     (A0),A7
     LEA     (A5),A7
     LEA     (A7),A7
+    ROR.B    #1,D1
+    ROR.W    D0,D1
+    ROL.L    D4,D5
     MOVE.B    D0,D1
     MOVE.B    D0,(A0)
     MOVE.B    D0,(A0)+
@@ -354,6 +357,8 @@ label4
 * Put variables and constants here
 
     END    START        ; last line of source
+
+
 
 
 

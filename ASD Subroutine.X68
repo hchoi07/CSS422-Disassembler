@@ -37,8 +37,7 @@ ASD_An_indir_predec              CMP.L             #match_ASD_An_indir_predec,D1
                                  BNE               ASD_abs_add_word                              ;if ASD go check abs add word
                                  BEQ               ASD_An_indir_predec_reg                       ;if equal go figure out the register
 
-ASD_abs_add_word                CLR.L   D2 
-                                MOVE.W D0,D2
+ASD_abs_add_word                 MOVE.W D0,D2
                                 AND.L             #mask_ASD_ea_mode_abs_add,D2              ;load mask to determine if abs add word or long
                                  
                                  CMP.L             #match_ASD_abs_add_word,D2                ;check if abs add word
@@ -588,7 +587,6 @@ match_ASD_An_indir_predec_r4		    	EQU				$001C              ;match for add reg 
 match_ASD_An_indir_predec_r5	    		EQU				$001D              ;match for add reg indir with predec with add reg 5
 match_ASD_An_indir_predec_r6		    	EQU				$001E              ;match for add reg indir with predec with add reg 6
 match_ASD_An_indir_predec_r7		    	EQU				$001F              ;match for add reg indir with predec with add reg 7
-
 
 
 

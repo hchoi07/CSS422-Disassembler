@@ -1,0 +1,40 @@
+00001000 Starting Address
+Assembler used: EASy68K Editor/Assembler v5.16.01
+Created On: 6/10/2020 7:55:50 PM
+
+00000000                             1  *-----------------------------------------------------------
+00000000                             2  * Title      :
+00000000                             3  * Written by :
+00000000                             4  * Date       :
+00000000                             5  * Description:
+00000000                             6  *-----------------------------------------------------------
+00000000                             7      
+00001000                             8  START:          ORG    $1000                  ; first instruction of program
+00001000                             9  
+00001000  E32A                      10  NOP LSL.B     D1,D2
+00001002  E36A                      11      LSL.W     D1,D2
+00001004  E3D1                      12      LSL.W     (A1)
+00001006  E3D9                      13      LSL.W     (A1)+
+00001008  E3E1                      14      LSL.W     -(A1)
+0000100A  E3AA                      15      LSL.L     D1,D2
+0000100C  E22A                      16      LSR.B     D1,D2
+0000100E  E26A                      17      LSR.W     D1,D2
+00001010  E2D1                      18      LSR.W     (A1)
+00001012  E2D9                      19      LSR.W     (A1)+
+00001014  E2E1                      20      LSR.W     -(A1)
+00001016                            21      
+00001016  FFFF FFFF                 22      SIMHALT             ; halt simulator
+0000101A                            23  
+0000101A                            24  * Put variables and constants here
+0000101A                            25  
+0000101A                            26      END    START        ; last line of source
+
+No errors detected
+No warnings generated
+
+
+SYMBOL TABLE INFORMATION
+Symbol-name         Value
+-------------------------
+NOP                 1000
+START               1000

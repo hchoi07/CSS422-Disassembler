@@ -26,9 +26,7 @@ NOT_An_indir_predec              CMP.L             #match_NOT_An_indir_predec,D1
                                  BNE               NOT_abs_add_word                              ;if not go check abs add word
                                  BEQ               NOT_An_indir_predec_reg                       ;if equal go figure out the register
 
-NOT_abs_add_word                 CLR.L          D2
-                                MOVE.W          D0,D2
-                                    AND.L             #mask_NOT_ea_mode_abs_add,D2              ;load mask to determine if abs add word or long
+NOT_abs_add_word                 AND.L             #mask_NOT_ea_mode_abs_add,D2              ;load mask to determine if abs add word or long
                                  
                                  CMP.L             #match_NOT_abs_add_word,D2                ;check if abs add word
                                  MOVE.L            (A0)+,D5                                  ;pull the next word instruction that holds the address 
@@ -43,7 +41,6 @@ NOT_abs_add_long                 CMP.L             #match_NOT_abs_add_long,D2   
 ;--------------------Determine EFFECTIVE ADDRESS Register----------------------------------------------------------------------------------------
 ;-----------------------------------Data Register Direct--------------------------------
 NOT_Dn_reg                      CLR                D2                                      ;make sure D2 is empty
-                                MOVE.W              D0,D2
                                 AND.L              #mask_NOT_ea_reg_and_mode,D2            ;load the mask into D2 for the mode and the register
                                 CMP.L              #match_NOT_D0,D2                         ;check to see in the register is 0
                                 BNE                NOT_rD1                                      ;if not go check register 1
@@ -103,10 +100,7 @@ NOT_D7_output				MOVE.L			#ea_D7,A1							;load string constant into A1
 						    RTS												;return to subroutine
 									
 ;------------------Address Register Indirect-----------------------
-NOT_An_indir_reg                            CLR                D2                                      ;make sure D2 is empty
-                                            MOVE.W              D0,D2
-                                            AND.L              #mask_NOT_ea_reg_and_mode,D2 
-                                            CMP.L           #match_NOT_An_indir_r0,D2              ;check reg is equal to 0
+NOT_An_indir_reg                            CMP.L           #match_NOT_An_indir_r0,D2              ;check reg is equal to 0
                                             BNE             NOT_An_indir_reg1                            ;if not try reg 1
                                             BEQ             NOT_An_indir_reg0_out                     ;if equal go to output subroutine
 
@@ -165,10 +159,7 @@ NOT_An_indir_reg7_out			        MOVE.L			#ea_indir_A7,A1		    			      ;load str
 
 
 ;------------------Address Register Indirect with Post Increment-----------------------
-NOT_An_indir_postinc_reg                    CLR                D2                                      ;make sure D2 is empty
-                                            MOVE.W              D0,D2
-                                            AND.L              #mask_NOT_ea_reg_and_mode,D2 
-                                            CMP.L      #match_NOT_An_indir_postinc_r0,D2        ;check reg is equal to 0
+NOT_An_indir_postinc_reg                    CMP.L      #match_NOT_An_indir_postinc_r0,D2        ;check reg is equal to 0
                                             BNE        NOT_An_indir_pinc_r1                      ;if not try reg 1
                                             BEQ        NOT_An_indir_pinc_r0_out               ;if equal go to output subroutine
 
@@ -226,10 +217,7 @@ NOT_An_indir_pinc_r7_out			        MOVE.L			#ea_indir_postinc_A7,A1			;load stri
 											RTS												;return to subroutine
 													
 ;------------------Address Register Indirect with Pre Decrement-----------------------
-NOT_An_indir_predec_reg                  	CLR                D2                                      ;make sure D2 is empty
-                                            MOVE.W              D0,D2
-                                            AND.L              #mask_NOT_ea_reg_and_mode,D2 
-                                            CMP.L      #match_NOT_An_indir_predec_r0,D2         ;check reg is equal to 0
+NOT_An_indir_predec_reg                  	CMP.L      #match_NOT_An_indir_predec_r0,D2         ;check reg is equal to 0
                                             BNE        NOT_An_indir_pdec_r1                      ;if not try reg 1
                                             BEQ        NOT_An_indir_pdec_r0_out               ;if equal go to output subroutine
 
@@ -350,8 +338,6 @@ match_NOT_An_indir_predec_r4		    	EQU				$001C              ;match for add reg 
 match_NOT_An_indir_predec_r5	    		EQU				$001D              ;match for add reg indir with predec with add reg 5
 match_NOT_An_indir_predec_r6		    	EQU				$001E              ;match for add reg indir with predec with add reg 6
 match_NOT_An_indir_predec_r7		    	EQU				$001F              ;match for add reg indir with predec with add reg 7
-
-
 
 
 
